@@ -1831,6 +1831,16 @@
   ],
   "auditLogs": [
     {
+      "id": "AUD-1791351861318-705",
+      "timestamp": "10/7/2026, 11:44:21",
+      "entityType": "Auth",
+      "entityId": "USR-01",
+      "action": "LOGOUT",
+      "changedBy": "MD Yousuf Ali",
+      "source": "Dashboard",
+      "details": "User MD Yousuf Ali logged out."
+    },
+    {
       "id": "AUD-1791351834381-243",
       "timestamp": "10/7/2026, 11:43:54",
       "entityType": "Auth",
@@ -3827,7 +3837,7 @@
       "isConfigured": true,
       "appsScriptUrl": "https://script.google.com/macros/s/AKfycbx6QcViFYDS4KN8mU5fqR2wRDgot-ZquHRPBKoQfieimgqrVL443TyTwZEER8jUymWHPQ/exec",
       "deploymentId": "AKfycbx6QcViFYDS4KN8mU5fqR2wRDgot-ZquHRPBKoQfieimgqrVL443TyTwZEER8jUymWHPQ",
-      "lastSyncedAt": "2026-10-07T05:41:02.741Z",
+      "lastSyncedAt": "2026-10-07T05:45:35.242Z",
       "lastSyncStatus": "success",
       "lastSyncMessage": "Full reconciliation via Apps Script completed: 5 orders (+0, ~0, -0), 10 expenses (+0, ~0, -0), 6 payouts (+0, ~0, -0). Total Active: 21.",
       "syncSummary": {
@@ -3859,7 +3869,7 @@
           "totalActive": 6
         },
         "totalActiveRecords": 21,
-        "timestamp": "2026-10-07T05:41:02.741Z"
+        "timestamp": "2026-10-07T05:45:35.242Z"
       }
     },
     "telegram": {
