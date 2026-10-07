@@ -13,7 +13,7 @@
       "phone": "+8801711000000",
       "linkedEmployeeId": "EMP-01",
       "createdAt": "2024-01-01T00:00:00+06:00",
-      "lastLoginAt": "2026-10-07T05:43:54.378Z"
+      "lastLoginAt": "2026-10-06T14:11:17.831Z"
     },
     {
       "id": "USR-02",
@@ -32,82 +32,6 @@
       "workerName": "Mehejabin",
       "isPrimarySuperAdmin": false,
       "lastLoginAt": "2026-10-06T14:10:42.200Z"
-    },
-    {
-      "id": "USR-03",
-      "username": "tanvir",
-      "name": "Tanvir Hossain",
-      "email": "tanvir@totodev.com",
-      "passwordHash": "f85e1cba01645a3842289ff49a928316:625f4f8f99aaad6597a72bf0a394152f090fcc0fbc1e3efa149d238f4be453ad266faee11faf9b87a20ff39eb5225e683a1b672d83b6b31c632da0171cdb0898",
-      "roleId": "role-sales-officer",
-      "role": "Sales Officer",
-      "status": "Active",
-      "phone": "+8801911000000",
-      "salesRepCode": "Tanvir",
-      "linkedEmployeeId": "EMP-03",
-      "createdAt": "2024-06-15T00:00:00+06:00",
-      "lastLoginAt": "2026-10-07T05:20:42.395Z",
-      "isPrimarySuperAdmin": false
-    },
-    {
-      "id": "USR-04",
-      "username": "fatima",
-      "name": "Fatima Zohra",
-      "email": "finance@totodev.com",
-      "passwordHash": "f85e1cba01645a3842289ff49a928316:625f4f8f99aaad6597a72bf0a394152f090fcc0fbc1e3efa149d238f4be453ad266faee11faf9b87a20ff39eb5225e683a1b672d83b6b31c632da0171cdb0898",
-      "roleId": "role-finance-manager",
-      "role": "Finance Manager",
-      "status": "Active",
-      "phone": "+8801611000000",
-      "linkedEmployeeId": "EMP-04",
-      "createdAt": "2024-02-10T00:00:00+06:00",
-      "isPrimarySuperAdmin": false
-    },
-    {
-      "id": "USR-05",
-      "username": "hasan",
-      "name": "Hasan Mahmud",
-      "email": "hasan@totodev.com",
-      "passwordHash": "f85e1cba01645a3842289ff49a928316:625f4f8f99aaad6597a72bf0a394152f090fcc0fbc1e3efa149d238f4be453ad266faee11faf9b87a20ff39eb5225e683a1b672d83b6b31c632da0171cdb0898",
-      "roleId": "role-project-manager",
-      "role": "Project Manager",
-      "status": "Active",
-      "phone": "+8801511000000",
-      "linkedEmployeeId": "EMP-05",
-      "createdAt": "2024-04-01T00:00:00+06:00",
-      "lastLoginAt": "2026-10-07T05:20:42.450Z",
-      "isPrimarySuperAdmin": false
-    },
-    {
-      "id": "USR-06",
-      "username": "rahim",
-      "name": "Freelancer Rahim",
-      "email": "rahim@freelance.local",
-      "passwordHash": "f85e1cba01645a3842289ff49a928316:625f4f8f99aaad6597a72bf0a394152f090fcc0fbc1e3efa149d238f4be453ad266faee11faf9b87a20ff39eb5225e683a1b672d83b6b31c632da0171cdb0898",
-      "roleId": "role-employee",
-      "role": "Employee",
-      "status": "Active",
-      "phone": "+8801722000000",
-      "workerName": "Freelancer Rahim",
-      "linkedEmployeeId": "EMP-06",
-      "createdAt": "2024-08-01T00:00:00+06:00",
-      "lastLoginAt": "2026-10-07T05:20:42.509Z",
-      "isPrimarySuperAdmin": false
-    },
-    {
-      "id": "USR-07",
-      "username": "sakib",
-      "name": "Developer Sakib",
-      "email": "sakib@totodev.com",
-      "passwordHash": "f85e1cba01645a3842289ff49a928316:625f4f8f99aaad6597a72bf0a394152f090fcc0fbc1e3efa149d238f4be453ad266faee11faf9b87a20ff39eb5225e683a1b672d83b6b31c632da0171cdb0898",
-      "roleId": "role-employee",
-      "role": "Employee",
-      "status": "Active",
-      "phone": "+8801733000000",
-      "workerName": "Developer Sakib",
-      "linkedEmployeeId": "EMP-07",
-      "createdAt": "2024-05-12T00:00:00+06:00",
-      "isPrimarySuperAdmin": false
     }
   ],
   "roles": [
@@ -1407,8 +1331,8 @@
       "paymentStatus": "Partial",
       "deliveryStatus": "In Progress",
       "remarks": "",
-      "createdAt": "2026-10-06T17:03:33.818Z",
-      "updatedAt": "2026-10-06T17:03:33.818Z",
+      "createdAt": "2026-10-06T17:03:32.497Z",
+      "updatedAt": "2026-10-06T17:03:32.497Z",
       "source": "Google Sheets",
       "isArchived": false
     },
@@ -1428,8 +1352,8 @@
       "paymentStatus": "Paid",
       "deliveryStatus": "In Progress",
       "remarks": "",
-      "createdAt": "2026-10-06T18:33:31.963Z",
-      "updatedAt": "2026-10-06T18:33:31.963Z",
+      "createdAt": "2026-10-06T18:33:32.072Z",
+      "updatedAt": "2026-10-06T18:33:32.072Z",
       "source": "Google Sheets",
       "isArchived": false
     },
@@ -1449,8 +1373,8 @@
       "paymentStatus": "Partial",
       "deliveryStatus": "Pending",
       "remarks": "Automated A-to-Z Test Order",
-      "createdAt": "2026-10-06T18:48:32.952Z",
-      "updatedAt": "2026-10-06T18:48:32.952Z",
+      "createdAt": "2026-10-06T18:48:38.668Z",
+      "updatedAt": "2026-10-06T18:48:38.668Z",
       "source": "Google Sheets",
       "isArchived": false
     },
@@ -1470,8 +1394,8 @@
       "paymentStatus": "Unpaid",
       "deliveryStatus": "Pending",
       "remarks": "",
-      "createdAt": "2026-10-07T05:18:19.364Z",
-      "updatedAt": "2026-10-07T05:18:19.364Z",
+      "createdAt": "2026-10-07T05:23:06.722Z",
+      "updatedAt": "2026-10-07T05:23:06.722Z",
       "source": "Google Sheets",
       "isArchived": false
     },
@@ -1491,8 +1415,8 @@
       "paymentStatus": "Unpaid",
       "deliveryStatus": "Pending",
       "remarks": "",
-      "createdAt": "2026-10-07T05:25:30.383Z",
-      "updatedAt": "2026-10-07T05:25:30.383Z",
+      "createdAt": "2026-10-07T05:23:06.722Z",
+      "updatedAt": "2026-10-07T05:23:06.722Z",
       "source": "Google Sheets",
       "isArchived": false
     }
@@ -1513,7 +1437,7 @@
       "approvalStatus": "Pending Approval",
       "remarks": "",
       "createdAt": "2026-10-05T10:30:00+06:00",
-      "updatedAt": "2026-10-06T16:33:31.862Z",
+      "updatedAt": "2026-10-06T16:33:31.645Z",
       "source": "Google Sheets",
       "updatedBy": "Google Sheets Sync",
       "isArchived": false
@@ -1533,7 +1457,7 @@
       "approvalStatus": "Pending Approval",
       "remarks": "",
       "createdAt": "2026-10-05T20:39:23.750Z",
-      "updatedAt": "2026-10-06T16:33:31.863Z",
+      "updatedAt": "2026-10-06T16:33:31.645Z",
       "updatedBy": "Google Sheets Sync",
       "source": "Google Sheets",
       "isArchived": false
@@ -1553,7 +1477,7 @@
       "approvalStatus": "Pending Approval",
       "remarks": "",
       "createdAt": "2026-10-05T20:39:29.568Z",
-      "updatedAt": "2026-10-06T16:33:31.863Z",
+      "updatedAt": "2026-10-06T16:33:31.645Z",
       "updatedBy": "Google Sheets Sync",
       "source": "Google Sheets",
       "isArchived": false
@@ -1573,7 +1497,7 @@
       "approvalStatus": "Pending Approval",
       "remarks": "",
       "createdAt": "2026-10-06T12:56:26.176Z",
-      "updatedAt": "2026-10-06T16:28:48.217Z",
+      "updatedAt": "2026-10-06T16:28:42.918Z",
       "updatedBy": "Google Sheets Sync",
       "source": "Google Sheets",
       "isArchived": false
@@ -1592,8 +1516,8 @@
       "approvedBy": "MD Yousuf Ali",
       "approvalStatus": "Approved",
       "remarks": "",
-      "createdAt": "2026-10-06T17:13:33.175Z",
-      "updatedAt": "2026-10-06T17:13:33.175Z",
+      "createdAt": "2026-10-06T17:19:04.251Z",
+      "updatedAt": "2026-10-06T17:19:04.251Z",
       "source": "Google Sheets",
       "isArchived": false
     },
@@ -1611,8 +1535,8 @@
       "approvedBy": "MD Yousuf Ali",
       "approvalStatus": "Approved",
       "remarks": "",
-      "createdAt": "2026-10-06T17:13:33.175Z",
-      "updatedAt": "2026-10-06T17:13:33.175Z",
+      "createdAt": "2026-10-06T17:19:04.251Z",
+      "updatedAt": "2026-10-06T17:19:04.251Z",
       "source": "Google Sheets",
       "isArchived": false
     },
@@ -1630,8 +1554,8 @@
       "approvedBy": "MD Yousuf Ali",
       "approvalStatus": "Approved",
       "remarks": "",
-      "createdAt": "2026-10-06T17:53:33.441Z",
-      "updatedAt": "2026-10-06T17:53:33.441Z",
+      "createdAt": "2026-10-06T17:53:33.440Z",
+      "updatedAt": "2026-10-06T17:53:33.440Z",
       "source": "Google Sheets",
       "isArchived": false
     },
@@ -1649,8 +1573,8 @@
       "approvedBy": "",
       "approvalStatus": "Pending Approval",
       "remarks": "",
-      "createdAt": "2026-10-06T18:48:32.956Z",
-      "updatedAt": "2026-10-06T18:48:32.956Z",
+      "createdAt": "2026-10-06T18:48:38.675Z",
+      "updatedAt": "2026-10-06T18:48:38.675Z",
       "source": "Google Sheets",
       "isArchived": false
     },
@@ -1668,8 +1592,8 @@
       "approvedBy": "",
       "approvalStatus": "Pending Approval",
       "remarks": "",
-      "createdAt": "2026-10-07T05:18:19.366Z",
-      "updatedAt": "2026-10-07T05:18:19.366Z",
+      "createdAt": "2026-10-07T05:23:06.730Z",
+      "updatedAt": "2026-10-07T05:23:06.730Z",
       "source": "Google Sheets",
       "isArchived": false
     },
@@ -1687,8 +1611,8 @@
       "approvedBy": "",
       "approvalStatus": "Pending Approval",
       "remarks": "",
-      "createdAt": "2026-10-07T05:25:30.389Z",
-      "updatedAt": "2026-10-07T05:25:30.389Z",
+      "createdAt": "2026-10-07T05:23:06.730Z",
+      "updatedAt": "2026-10-07T05:23:06.730Z",
       "source": "Google Sheets",
       "isArchived": false
     }
@@ -1712,7 +1636,7 @@
       "transactionRefId": "",
       "remarks": "",
       "createdAt": "2026-10-05T10:45:00+06:00",
-      "updatedAt": "2026-10-06T16:33:31.863Z",
+      "updatedAt": "2026-10-06T16:33:31.646Z",
       "source": "Google Sheets",
       "updatedBy": "Google Sheets Sync",
       "isArchived": false
@@ -1735,7 +1659,7 @@
       "transactionRefId": "",
       "remarks": "",
       "createdAt": "2026-10-05T20:42:16.086Z",
-      "updatedAt": "2026-10-06T16:33:31.863Z",
+      "updatedAt": "2026-10-06T16:33:31.646Z",
       "updatedBy": "Google Sheets Sync",
       "source": "Google Sheets",
       "isArchived": false
@@ -1757,8 +1681,8 @@
       "paymentMethod": "Bank Transfer",
       "transactionRefId": "",
       "remarks": "",
-      "createdAt": "2026-10-06T17:28:59.041Z",
-      "updatedAt": "2026-10-06T17:28:59.041Z",
+      "createdAt": "2026-10-06T17:43:42.876Z",
+      "updatedAt": "2026-10-06T17:43:42.876Z",
       "source": "Google Sheets",
       "isArchived": false
     },
@@ -1779,8 +1703,8 @@
       "paymentMethod": "bKash",
       "transactionRefId": "",
       "remarks": "Lead Fullstack Developer Allocation",
-      "createdAt": "2026-10-06T18:48:32.958Z",
-      "updatedAt": "2026-10-06T18:48:32.958Z",
+      "createdAt": "2026-10-06T18:48:38.677Z",
+      "updatedAt": "2026-10-06T18:48:38.678Z",
       "source": "Google Sheets",
       "isArchived": false
     },
@@ -1801,8 +1725,8 @@
       "paymentMethod": "bKash",
       "transactionRefId": "BKASH-TXN-998877",
       "remarks": "Lead Fullstack Developer Allocation",
-      "createdAt": "2026-10-07T05:18:19.367Z",
-      "updatedAt": "2026-10-07T05:18:19.367Z",
+      "createdAt": "2026-10-07T05:23:06.731Z",
+      "updatedAt": "2026-10-07T05:23:06.731Z",
       "source": "Google Sheets",
       "isArchived": false
     },
@@ -1823,46 +1747,16 @@
       "paymentMethod": "bKash",
       "transactionRefId": "",
       "remarks": "Lead Fullstack Developer Allocation",
-      "createdAt": "2026-10-07T05:25:30.390Z",
-      "updatedAt": "2026-10-07T05:25:30.390Z",
+      "createdAt": "2026-10-07T05:23:06.731Z",
+      "updatedAt": "2026-10-07T05:23:06.731Z",
       "source": "Google Sheets",
       "isArchived": false
     }
   ],
   "auditLogs": [
     {
-      "id": "AUD-1791351861318-705",
-      "timestamp": "10/7/2026, 11:44:21",
-      "entityType": "Auth",
-      "entityId": "USR-01",
-      "action": "LOGOUT",
-      "changedBy": "MD Yousuf Ali",
-      "source": "Dashboard",
-      "details": "User MD Yousuf Ali logged out."
-    },
-    {
-      "id": "AUD-1791351834381-243",
-      "timestamp": "10/7/2026, 11:43:54",
-      "entityType": "Auth",
-      "entityId": "USR-01",
-      "action": "LOGIN",
-      "changedBy": "MD Yousuf Ali",
-      "source": "Dashboard",
-      "details": "User MD Yousuf Ali (Super Admin) logged in successfully."
-    },
-    {
-      "id": "AUD-1791351822955-63",
-      "timestamp": "10/7/2026, 11:43:42",
-      "entityType": "Auth",
-      "entityId": "USR-01",
-      "action": "LOGOUT",
-      "changedBy": "MD Yousuf Ali",
-      "source": "Dashboard",
-      "details": "User MD Yousuf Ali logged out."
-    },
-    {
-      "id": "AUD-1791350730390-252",
-      "timestamp": "10/7/2026, 11:25:30",
+      "id": "AUD-1791350586732-664",
+      "timestamp": "10/7/2026, 11:23:06",
       "entityType": "Payout",
       "entityId": "PAY-PRJ-509",
       "action": "CREATE",
@@ -1871,172 +1765,8 @@
       "details": "Added new Payout PAY-PRJ-509 from Google Sheets (Developer Sakib, Agreed: ৳16500)."
     },
     {
-      "id": "AUD-1791350730389-910",
-      "timestamp": "10/7/2026, 11:25:30",
-      "entityType": "Expense",
-      "entityId": "EXP-2026-1014",
-      "action": "CREATE",
-      "changedBy": "Google Sheets Sync",
-      "source": "Google Sheets",
-      "details": "Added new Expense EXP-2026-1014 from Google Sheets (Other, Amount: ৳0)."
-    },
-    {
-      "id": "AUD-1791350730388-270",
-      "timestamp": "10/7/2026, 11:25:30",
-      "entityType": "Order",
-      "entityId": "ORD-1005",
-      "action": "CREATE",
-      "changedBy": "Google Sheets Sync",
-      "source": "Google Sheets",
-      "details": "Added new Order ORD-1005 from Google Sheets (, Total: ৳0)."
-    },
-    {
-      "id": "AUD-1791350442639-537",
-      "timestamp": "10/7/2026, 11:20:42",
-      "entityType": "Order",
-      "entityId": "ORD-1005",
-      "action": "DELETE",
-      "changedBy": "MD Yousuf Ali",
-      "source": "Dashboard",
-      "details": "Permanently deleted Order ORD-1005"
-    },
-    {
-      "id": "AUD-1791350442636-529",
-      "timestamp": "10/7/2026, 11:20:42",
-      "entityType": "Expense",
-      "entityId": "EXP-2026-1014",
-      "action": "DELETE",
-      "changedBy": "MD Yousuf Ali",
-      "source": "Dashboard",
-      "details": "Permanently deleted Expense EXP-2026-1014"
-    },
-    {
-      "id": "AUD-1791350442633-652",
-      "timestamp": "10/7/2026, 11:20:42",
-      "entityType": "Payout",
-      "entityId": "PAY-PRJ-509",
-      "action": "DELETE",
-      "changedBy": "MD Yousuf Ali",
-      "source": "Dashboard",
-      "details": "Permanently deleted Payout PAY-PRJ-509"
-    },
-    {
-      "id": "AUD-1791350442621-967",
-      "timestamp": "10/7/2026, 11:20:42",
-      "entityType": "Payout",
-      "entityId": "PAY-PRJ-509",
-      "action": "UPDATE",
-      "changedBy": "MD Yousuf Ali",
-      "source": "Dashboard",
-      "details": "Updated Payout PAY-PRJ-509"
-    },
-    {
-      "id": "AUD-1791350442616-509",
-      "timestamp": "10/7/2026, 11:20:42",
-      "entityType": "Payout",
-      "entityId": "PAY-PRJ-509",
-      "action": "CREATE",
-      "changedBy": "MD Yousuf Ali",
-      "source": "Dashboard",
-      "details": "Created Payout PAY-PRJ-509 for Developer Sakib on ORD-1005 (Agreed: ৳16500)"
-    },
-    {
-      "id": "AUD-1791350442608-96",
-      "timestamp": "10/7/2026, 11:20:42",
-      "entityType": "Expense",
-      "entityId": "EXP-2026-1014",
-      "action": "CREATE",
-      "changedBy": "MD Yousuf Ali",
-      "source": "Dashboard",
-      "details": "Created Expense EXP-2026-1014 of ৳4500 for Software / Subscription"
-    },
-    {
-      "id": "AUD-1791350442602-435",
-      "timestamp": "10/7/2026, 11:20:42",
-      "entityType": "Order",
-      "entityId": "ORD-1005",
-      "action": "UPDATE",
-      "changedBy": "MD Yousuf Ali",
-      "source": "Dashboard",
-      "details": "Updated details for Order ORD-1005"
-    },
-    {
-      "id": "AUD-1791350442602-609",
-      "timestamp": "10/7/2026, 11:20:42",
-      "entityType": "Order",
-      "entityId": "ORD-1005",
-      "action": "STATUS_CHANGE",
-      "fieldChanged": "deliveryStatus",
-      "previousValue": "Pending",
-      "newValue": "In Progress",
-      "changedBy": "MD Yousuf Ali",
-      "source": "Dashboard"
-    },
-    {
-      "id": "AUD-1791350442602-43",
-      "timestamp": "10/7/2026, 11:20:42",
-      "entityType": "Order",
-      "entityId": "ORD-1005",
-      "action": "STATUS_CHANGE",
-      "fieldChanged": "paymentStatus",
-      "previousValue": "Partial",
-      "newValue": "Paid",
-      "changedBy": "MD Yousuf Ali",
-      "source": "Dashboard"
-    },
-    {
-      "id": "AUD-1791350442520-701",
-      "timestamp": "10/7/2026, 11:20:42",
-      "entityType": "Order",
-      "entityId": "ORD-1005",
-      "action": "CREATE",
-      "changedBy": "MD Yousuf Ali",
-      "source": "Dashboard",
-      "details": "Created Order ORD-1005 for AtoZ Test Client Ltd (Total: ৳50000)"
-    },
-    {
-      "id": "AUD-1791350442510-286",
-      "timestamp": "10/7/2026, 11:20:42",
-      "entityType": "Auth",
-      "entityId": "USR-06",
-      "action": "LOGIN",
-      "changedBy": "Freelancer Rahim",
-      "source": "Dashboard",
-      "details": "User Freelancer Rahim (Employee) logged in successfully."
-    },
-    {
-      "id": "AUD-1791350442450-931",
-      "timestamp": "10/7/2026, 11:20:42",
-      "entityType": "Auth",
-      "entityId": "USR-05",
-      "action": "LOGIN",
-      "changedBy": "Hasan Mahmud",
-      "source": "Dashboard",
-      "details": "User Hasan Mahmud (Project Manager) logged in successfully."
-    },
-    {
-      "id": "AUD-1791350442396-275",
-      "timestamp": "10/7/2026, 11:20:42",
-      "entityType": "Auth",
-      "entityId": "USR-03",
-      "action": "LOGIN",
-      "changedBy": "Tanvir Hossain",
-      "source": "Dashboard",
-      "details": "User Tanvir Hossain (Sales Officer) logged in successfully."
-    },
-    {
-      "id": "AUD-1791350442318-634",
-      "timestamp": "10/7/2026, 11:20:42",
-      "entityType": "Auth",
-      "entityId": "USR-01",
-      "action": "LOGIN",
-      "changedBy": "MD Yousuf Ali",
-      "source": "Dashboard",
-      "details": "User MD Yousuf Ali (Super Admin) logged in successfully."
-    },
-    {
-      "id": "AUD-1791350299367-347",
-      "timestamp": "10/7/2026, 11:18:19",
+      "id": "AUD-1791350586732-243",
+      "timestamp": "10/7/2026, 11:23:06",
       "entityType": "Payout",
       "entityId": "PAY-PRJ-508",
       "action": "CREATE",
@@ -2045,8 +1775,18 @@
       "details": "Added new Payout PAY-PRJ-508 from Google Sheets (Developer Sakib, Agreed: ৳16500)."
     },
     {
-      "id": "AUD-1791350299367-856",
-      "timestamp": "10/7/2026, 11:18:19",
+      "id": "AUD-1791350586731-634",
+      "timestamp": "10/7/2026, 11:23:06",
+      "entityType": "Expense",
+      "entityId": "EXP-2026-1014",
+      "action": "CREATE",
+      "changedBy": "Google Sheets Sync",
+      "source": "Google Sheets",
+      "details": "Added new Expense EXP-2026-1014 from Google Sheets (Other, Amount: ৳0)."
+    },
+    {
+      "id": "AUD-1791350586730-625",
+      "timestamp": "10/7/2026, 11:23:06",
       "entityType": "Expense",
       "entityId": "EXP-2026-1013",
       "action": "CREATE",
@@ -2055,8 +1795,18 @@
       "details": "Added new Expense EXP-2026-1013 from Google Sheets (Software / Subscription, Amount: ৳4500)."
     },
     {
-      "id": "AUD-1791350299365-10",
-      "timestamp": "10/7/2026, 11:18:19",
+      "id": "AUD-1791350586729-529",
+      "timestamp": "10/7/2026, 11:23:06",
+      "entityType": "Order",
+      "entityId": "ORD-1005",
+      "action": "CREATE",
+      "changedBy": "Google Sheets Sync",
+      "source": "Google Sheets",
+      "details": "Added new Order ORD-1005 from Google Sheets (, Total: ৳0)."
+    },
+    {
+      "id": "AUD-1791350586729-655",
+      "timestamp": "10/7/2026, 11:23:06",
       "entityType": "Order",
       "entityId": "ORD-1004",
       "action": "CREATE",
@@ -2065,140 +1815,8 @@
       "details": "Added new Order ORD-1004 from Google Sheets (, Total: ৳0)."
     },
     {
-      "id": "AUD-1791350150197-106",
-      "timestamp": "10/7/2026, 11:15:50",
-      "entityType": "Order",
-      "entityId": "ORD-1004",
-      "action": "DELETE",
-      "changedBy": "MD Yousuf Ali",
-      "source": "Dashboard",
-      "details": "Permanently deleted Order ORD-1004"
-    },
-    {
-      "id": "AUD-1791350150192-183",
-      "timestamp": "10/7/2026, 11:15:50",
-      "entityType": "Expense",
-      "entityId": "EXP-2026-1013",
-      "action": "DELETE",
-      "changedBy": "MD Yousuf Ali",
-      "source": "Dashboard",
-      "details": "Permanently deleted Expense EXP-2026-1013"
-    },
-    {
-      "id": "AUD-1791350150188-367",
-      "timestamp": "10/7/2026, 11:15:50",
-      "entityType": "Payout",
-      "entityId": "PAY-PRJ-508",
-      "action": "DELETE",
-      "changedBy": "MD Yousuf Ali",
-      "source": "Dashboard",
-      "details": "Permanently deleted Payout PAY-PRJ-508"
-    },
-    {
-      "id": "AUD-1791350150174-156",
-      "timestamp": "10/7/2026, 11:15:50",
-      "entityType": "Payout",
-      "entityId": "PAY-PRJ-508",
-      "action": "UPDATE",
-      "changedBy": "MD Yousuf Ali",
-      "source": "Dashboard",
-      "details": "Updated Payout PAY-PRJ-508"
-    },
-    {
-      "id": "AUD-1791350150167-382",
-      "timestamp": "10/7/2026, 11:15:50",
-      "entityType": "Payout",
-      "entityId": "PAY-PRJ-508",
-      "action": "CREATE",
-      "changedBy": "MD Yousuf Ali",
-      "source": "Dashboard",
-      "details": "Created Payout PAY-PRJ-508 for Developer Sakib on ORD-1004 (Agreed: ৳16500)"
-    },
-    {
-      "id": "AUD-1791350150157-821",
-      "timestamp": "10/7/2026, 11:15:50",
-      "entityType": "Expense",
-      "entityId": "EXP-2026-1013",
-      "action": "CREATE",
-      "changedBy": "MD Yousuf Ali",
-      "source": "Dashboard",
-      "details": "Created Expense EXP-2026-1013 of ৳4500 for Software / Subscription"
-    },
-    {
-      "id": "AUD-1791350150147-805",
-      "timestamp": "10/7/2026, 11:15:50",
-      "entityType": "Order",
-      "entityId": "ORD-1004",
-      "action": "UPDATE",
-      "changedBy": "MD Yousuf Ali",
-      "source": "Dashboard",
-      "details": "Updated details for Order ORD-1004"
-    },
-    {
-      "id": "AUD-1791350150146-989",
-      "timestamp": "10/7/2026, 11:15:50",
-      "entityType": "Order",
-      "entityId": "ORD-1004",
-      "action": "STATUS_CHANGE",
-      "fieldChanged": "deliveryStatus",
-      "previousValue": "Pending",
-      "newValue": "In Progress",
-      "changedBy": "MD Yousuf Ali",
-      "source": "Dashboard"
-    },
-    {
-      "id": "AUD-1791350150038-761",
-      "timestamp": "10/7/2026, 11:15:50",
-      "entityType": "Order",
-      "entityId": "ORD-1004",
-      "action": "CREATE",
-      "changedBy": "MD Yousuf Ali",
-      "source": "Dashboard",
-      "details": "Created Order ORD-1004 for AtoZ Test Client Ltd (Total: ৳50000)"
-    },
-    {
-      "id": "AUD-1791350150025-223",
-      "timestamp": "10/7/2026, 11:15:50",
-      "entityType": "Auth",
-      "entityId": "USR-06",
-      "action": "LOGIN",
-      "changedBy": "Freelancer Rahim",
-      "source": "Dashboard",
-      "details": "User Freelancer Rahim (Employee) logged in successfully."
-    },
-    {
-      "id": "AUD-1791350149967-958",
-      "timestamp": "10/7/2026, 11:15:49",
-      "entityType": "Auth",
-      "entityId": "USR-05",
-      "action": "LOGIN",
-      "changedBy": "Hasan Mahmud",
-      "source": "Dashboard",
-      "details": "User Hasan Mahmud (Project Manager) logged in successfully."
-    },
-    {
-      "id": "AUD-1791350149906-271",
-      "timestamp": "10/7/2026, 11:15:49",
-      "entityType": "Auth",
-      "entityId": "USR-03",
-      "action": "LOGIN",
-      "changedBy": "Tanvir Hossain",
-      "source": "Dashboard",
-      "details": "User Tanvir Hossain (Sales Officer) logged in successfully."
-    },
-    {
-      "id": "AUD-1791350149831-354",
-      "timestamp": "10/7/2026, 11:15:49",
-      "entityType": "Auth",
-      "entityId": "USR-01",
-      "action": "LOGIN",
-      "changedBy": "MD Yousuf Ali",
-      "source": "Dashboard",
-      "details": "User MD Yousuf Ali (Super Admin) logged in successfully."
-    },
-    {
-      "id": "AUD-1791312512959-213",
-      "timestamp": "10/7/2026, 00:48:32",
+      "id": "AUD-1791312518680-880",
+      "timestamp": "10/7/2026, 00:48:38",
       "entityType": "Payout",
       "entityId": "PAY-PRJ-507",
       "action": "CREATE",
@@ -2207,8 +1825,8 @@
       "details": "Added new Payout PAY-PRJ-507 from Google Sheets (Developer Sakib, Agreed: ৳16500)."
     },
     {
-      "id": "AUD-1791312512957-519",
-      "timestamp": "10/7/2026, 00:48:32",
+      "id": "AUD-1791312518677-862",
+      "timestamp": "10/7/2026, 00:48:38",
       "entityType": "Expense",
       "entityId": "EXP-2026-1012",
       "action": "CREATE",
@@ -2217,8 +1835,8 @@
       "details": "Added new Expense EXP-2026-1012 from Google Sheets (Software / Subscription, Amount: ৳4500)."
     },
     {
-      "id": "AUD-1791312512955-994",
-      "timestamp": "10/7/2026, 00:48:32",
+      "id": "AUD-1791312518675-41",
+      "timestamp": "10/7/2026, 00:48:38",
       "entityType": "Order",
       "entityId": "ORD-1003",
       "action": "CREATE",
@@ -2227,8 +1845,8 @@
       "details": "Added new Order ORD-1003 from Google Sheets (AtoZ Test Client Ltd, Total: ৳50000)."
     },
     {
-      "id": "AUD-1791311611969-287",
-      "timestamp": "10/7/2026, 00:33:31",
+      "id": "AUD-1791311612085-61",
+      "timestamp": "10/7/2026, 00:33:32",
       "entityType": "Order",
       "entityId": "ORD-1002",
       "action": "CREATE",
@@ -2237,7 +1855,7 @@
       "details": "Added new Order ORD-1002 from Google Sheets (md max, Total: ৳1000)."
     },
     {
-      "id": "AUD-1791309213444-768",
+      "id": "AUD-1791309213442-93",
       "timestamp": "10/6/2026, 23:53:33",
       "entityType": "Expense",
       "entityId": "EXP-2026-1011",
@@ -2247,8 +1865,8 @@
       "details": "Added new Expense EXP-2026-1011 from Google Sheets (Employee Salary, Amount: ৳3999)."
     },
     {
-      "id": "AUD-1791307739045-55",
-      "timestamp": "10/6/2026, 23:28:59",
+      "id": "AUD-1791308622878-357",
+      "timestamp": "10/6/2026, 23:43:42",
       "entityType": "Payout",
       "entityId": "PAY-PRJ-506",
       "action": "CREATE",
@@ -2257,8 +1875,8 @@
       "details": "Added new Payout PAY-PRJ-506 from Google Sheets (desiger rohim, Agreed: ৳5000)."
     },
     {
-      "id": "AUD-1791306813184-32",
-      "timestamp": "10/6/2026, 23:13:33",
+      "id": "AUD-1791307144262-866",
+      "timestamp": "10/6/2026, 23:19:04",
       "entityType": "Expense",
       "entityId": "EXP-2026-1010",
       "action": "CREATE",
@@ -2267,8 +1885,8 @@
       "details": "Added new Expense EXP-2026-1010 from Google Sheets (Employee Salary, Amount: ৳5000)."
     },
     {
-      "id": "AUD-1791306813180-113",
-      "timestamp": "10/6/2026, 23:13:33",
+      "id": "AUD-1791307144261-505",
+      "timestamp": "10/6/2026, 23:19:04",
       "entityType": "Expense",
       "entityId": "EXP-2026-1009",
       "action": "CREATE",
@@ -2277,8 +1895,8 @@
       "details": "Added new Expense EXP-2026-1009 from Google Sheets (Employee Salary, Amount: ৳5000)."
     },
     {
-      "id": "AUD-1791306213833-144",
-      "timestamp": "10/6/2026, 23:03:33",
+      "id": "AUD-1791306212509-910",
+      "timestamp": "10/6/2026, 23:03:32",
       "entityType": "Order",
       "entityId": "ORD-1001",
       "action": "CREATE",
@@ -2287,8 +1905,8 @@
       "details": "Added new Order ORD-1001 from Google Sheets (MD MAX, Total: ৳1000)."
     },
     {
-      "id": "AUD-1791302914702-903",
-      "timestamp": "10/6/2026, 22:08:34",
+      "id": "AUD-1791302614776-857",
+      "timestamp": "10/6/2026, 22:03:34",
       "entityType": "Order",
       "entityId": "ORD-1013",
       "action": "DELETE",
@@ -2297,8 +1915,8 @@
       "details": "Removed Order ORD-1013 from active dataset as it was deleted from Google Sheets."
     },
     {
-      "id": "AUD-1791302914702-610",
-      "timestamp": "10/6/2026, 22:08:34",
+      "id": "AUD-1791302614775-723",
+      "timestamp": "10/6/2026, 22:03:34",
       "entityType": "Order",
       "entityId": "ORD-TEST-DEL",
       "action": "DELETE",
@@ -2307,8 +1925,8 @@
       "details": "Removed Order ORD-TEST-DEL from active dataset as it was deleted from Google Sheets."
     },
     {
-      "id": "AUD-1791302914700-697",
-      "timestamp": "10/6/2026, 22:08:34",
+      "id": "AUD-1791302614774-267",
+      "timestamp": "10/6/2026, 22:03:34",
       "entityType": "Order",
       "entityId": "ORD-1012",
       "action": "DELETE",
@@ -2317,8 +1935,8 @@
       "details": "Removed Order ORD-1012 from active dataset as it was deleted from Google Sheets."
     },
     {
-      "id": "AUD-1791301219073-573",
-      "timestamp": "10/6/2026, 21:40:19",
+      "id": "AUD-1791301332541-642",
+      "timestamp": "10/6/2026, 21:42:12",
       "entityType": "Order",
       "entityId": "ORD-1013",
       "action": "CREATE",
@@ -2327,8 +1945,8 @@
       "details": "Added new Order ORD-1013 from Google Sheets (Yousuf, Total: ৳1000)."
     },
     {
-      "id": "AUD-1791301219073-462",
-      "timestamp": "10/6/2026, 21:40:19",
+      "id": "AUD-1791301332540-608",
+      "timestamp": "10/6/2026, 21:42:12",
       "entityType": "Order",
       "entityId": "ORD-TEST-DEL",
       "action": "CREATE",
@@ -3837,9 +3455,9 @@
       "isConfigured": true,
       "appsScriptUrl": "https://script.google.com/macros/s/AKfycbx6QcViFYDS4KN8mU5fqR2wRDgot-ZquHRPBKoQfieimgqrVL443TyTwZEER8jUymWHPQ/exec",
       "deploymentId": "AKfycbx6QcViFYDS4KN8mU5fqR2wRDgot-ZquHRPBKoQfieimgqrVL443TyTwZEER8jUymWHPQ",
-      "lastSyncedAt": "2026-10-07T05:45:35.242Z",
-      "lastSyncStatus": "success",
-      "lastSyncMessage": "Full reconciliation via Apps Script completed: 5 orders (+0, ~0, -0), 10 expenses (+0, ~0, -0), 6 payouts (+0, ~0, -0). Total Active: 21.",
+      "lastSyncedAt": "2026-10-07T05:53:13.269Z",
+      "lastSyncStatus": "error",
+      "lastSyncMessage": "Sync Failed: HTTP 404: Not Found",
       "syncSummary": {
         "orders": {
           "added": 0,
@@ -3869,7 +3487,7 @@
           "totalActive": 6
         },
         "totalActiveRecords": 21,
-        "timestamp": "2026-10-07T05:45:35.242Z"
+        "timestamp": "2026-10-07T05:53:13.269Z"
       }
     },
     "telegram": {
