@@ -1,0 +1,130 @@
+@import "tailwindcss";
+
+:root {
+  --bg-app: #0b0f17;
+  --text-main: #f8fafc;
+}
+
+html.dark,
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg-app: #0b0f17;
+  --text-main: #f8fafc;
+}
+
+html.light,
+:root[data-theme="light"] {
+  color-scheme: light;
+  --bg-app: #f8fafc;
+  --text-main: #0f172a;
+
+  /* Theme Overrides for Light Mode across all Tailwind Slate Utilities */
+  --color-slate-950: #f8fafc;
+  --color-slate-900: #ffffff;
+  --color-slate-800: #e2e8f0;
+  --color-slate-700: #cbd5e1;
+  --color-slate-600: #94a3b8;
+  --color-slate-500: #64748b;
+  --color-slate-400: #475569;
+  --color-slate-300: #334155;
+  --color-slate-200: #1e293b;
+  --color-slate-100: #0f172a;
+  --color-slate-50: #020617;
+
+  /* Brand Accents on Light Surface */
+  --color-blue-400: #2563eb;
+  --color-emerald-400: #059669;
+  --color-amber-400: #d97706;
+  --color-rose-400: #e11d48;
+  --color-purple-400: #7c3aed;
+  --color-indigo-400: #4f46e5;
+}
+
+@layer base {
+  html {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+
+  body {
+    background-color: var(--bg-app);
+    color: var(--text-main);
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* Light Mode Overrides for text readability & forms */
+html.light .text-white {
+  color: #0f172a;
+}
+
+/* Retain pure white text on primary/action buttons & badges */
+html.light button.bg-blue-600,
+html.light button.bg-amber-600,
+html.light button.bg-emerald-600,
+html.light button.bg-rose-600,
+html.light button.bg-indigo-600,
+html.light a.bg-blue-600,
+html.light a.bg-amber-600,
+html.light [class*="bg-blue-600"] *,
+html.light [class*="bg-amber-600"] *,
+html.light [class*="bg-emerald-600"] *,
+html.light [class*="bg-rose-600"] *,
+html.light [class*="bg-indigo-600"] *,
+html.light [class*="bg-gradient-"] *,
+html.light .text-white-forced {
+  color: #ffffff !important;
+}
+
+/* Light mode form inputs & controls */
+html.light input:not([type="checkbox"]):not([type="radio"]),
+html.light select,
+html.light textarea {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+  border-color: #cbd5e1 !important;
+}
+
+html.light input::placeholder,
+html.light textarea::placeholder {
+  color: #94a3b8 !important;
+}
+
+html.light select option {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+}
+
+/* Shadow enhancements in Light Mode for cards & modals */
+html.light .shadow-2xl {
+  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.12), 0 0 1px 1px rgba(0, 0, 0, 0.05) !important;
+}
+
+html.light .shadow-lg {
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 0 1px 1px rgba(0, 0, 0, 0.03) !important;
+}
+
+/* Custom Sleek Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.3);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.5);
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: rgba(71, 85, 105, 0.5);
+}
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: rgba(100, 116, 139, 0.7);
+}
