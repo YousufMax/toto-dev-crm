@@ -27,6 +27,11 @@ export function generateToken(user: User): string {
 
 // Extract authenticated user & role from token or headers via PostgreSQL
 export async function authenticate(req: AuthenticatedRequest, res: Response, next: NextFunction) {
+  // Always allow unauthenticated auth routes (login, register, public user list)
+  if (req.path.startsWith('/api/auth') || req.path.startsWith('/auth')) {
+    return next();
+  }
+
   try {
     let userId: string | undefined;
 

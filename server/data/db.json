@@ -2416,6 +2416,60 @@
   ],
   "auditLogs": [
     {
+      "id": "AUD-1791473671647-942",
+      "timestamp": "10/8/2026, 21:34:31",
+      "entityType": "Order",
+      "entityId": "AUDIT-TEST-1791473671567",
+      "action": "DELETE",
+      "changedBy": "MD Yousuf Ali",
+      "source": "Dashboard",
+      "details": "Permanently deleted Order AUDIT-TEST-1791473671567"
+    },
+    {
+      "id": "AUD-1791473671626-854",
+      "timestamp": "10/8/2026, 21:34:31",
+      "entityType": "Order",
+      "entityId": "AUDIT-TEST-1791473671567",
+      "action": "UPDATE",
+      "changedBy": "MD Yousuf Ali",
+      "source": "Dashboard",
+      "details": "Updated details for Order AUDIT-TEST-1791473671567"
+    },
+    {
+      "id": "AUD-1791473671626-584",
+      "timestamp": "10/8/2026, 21:34:31",
+      "entityType": "Order",
+      "entityId": "AUDIT-TEST-1791473671567",
+      "action": "STATUS_CHANGE",
+      "fieldChanged": "deliveryStatus",
+      "previousValue": "Pending",
+      "newValue": "Delivered",
+      "changedBy": "MD Yousuf Ali",
+      "source": "Dashboard"
+    },
+    {
+      "id": "AUD-1791473671625-462",
+      "timestamp": "10/8/2026, 21:34:31",
+      "entityType": "Order",
+      "entityId": "AUDIT-TEST-1791473671567",
+      "action": "STATUS_CHANGE",
+      "fieldChanged": "paymentStatus",
+      "previousValue": "Partial",
+      "newValue": "Paid",
+      "changedBy": "MD Yousuf Ali",
+      "source": "Dashboard"
+    },
+    {
+      "id": "AUD-1791473671582-919",
+      "timestamp": "10/8/2026, 21:34:31",
+      "entityType": "Order",
+      "entityId": "AUDIT-TEST-1791473671567",
+      "action": "CREATE",
+      "changedBy": "MD Yousuf Ali",
+      "source": "Dashboard",
+      "details": "Created Order AUDIT-TEST-1791473671567 for Audit Test Client (Total: ৳5000)"
+    },
+    {
       "id": "AUD-1791471722591-352",
       "timestamp": "10/8/2026, 21:02:02",
       "entityType": "Order",
@@ -4610,15 +4664,15 @@
       "isConfigured": true,
       "appsScriptUrl": "https://script.google.com/macros/s/AKfycbx6QcViFYDS4KN8mU5fqR2wRDgot-ZquHRPBKoQfieimgqrVL443TyTwZEER8jUymWHPQ/exec",
       "deploymentId": "AKfycbx6QcViFYDS4KN8mU5fqR2wRDgot-ZquHRPBKoQfieimgqrVL443TyTwZEER8jUymWHPQ",
-      "lastSyncedAt": "2026-10-08T15:05:44.547Z",
+      "lastSyncedAt": "2026-10-08T15:30:44.555Z",
       "lastSyncStatus": "success",
-      "lastSyncMessage": "Full reconciliation via Apps Script completed: 26 orders (+0, ~1, -0), 14 expenses (+0, ~0, -0), 11 payouts (+0, ~0, -0). Total Active: 51.",
+      "lastSyncMessage": "Full reconciliation via Apps Script completed: 26 orders (+0, ~0, -0), 14 expenses (+0, ~0, -0), 11 payouts (+0, ~0, -0). Total Active: 51.",
       "syncSummary": {
         "orders": {
           "added": 0,
-          "updated": 1,
+          "updated": 0,
           "removed": 0,
-          "unchanged": 25,
+          "unchanged": 26,
           "duplicates": 8,
           "invalid": 0,
           "totalActive": 26
@@ -4642,7 +4696,7 @@
           "totalActive": 11
         },
         "totalActiveRecords": 51,
-        "timestamp": "2026-10-08T15:05:44.547Z"
+        "timestamp": "2026-10-08T15:30:44.555Z"
       }
     },
     "telegram": {

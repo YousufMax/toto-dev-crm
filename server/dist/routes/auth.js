@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { postgresAuthRepo, verifyPassword } from '../db/authRepo.js';
+import { store } from '../db/store.js';
 import { generateToken } from '../middleware/auth.js';
 export const authRouter = Router();
 const loginAttempts = new Map();
@@ -42,8 +43,25 @@ authRouter.post('/login', async (req, res) => {
                 message: `Too many failed login attempts. Please wait ${waitSec} seconds before trying again.`,
             });
         }
-        // 1. Fetch user from PostgreSQL
-        const user = await postgresAuthRepo.getUserByEmailOrUsernameWithCredentials(cleanIdentifier);
+        // 1. Fetch user from PostgreSQL (with safe fallback to store if database is offline or uninitialized)
+        let user = null;
+        try {
+            user = await postgresAuthRepo.getUserByEmailOrUsernameWithCredentials(cleanIdentifier);
+        }
+        catch (pgErr) {
+            console.warn('[PostgresAuth Warning] Falling back to local store for auth:', pgErr);
+            user = store.getUserByEmailOrUsername(cleanIdentifier);
+            if (user) {
+                user = store.getUserByIdWithCredentials(user.id);
+            }
+        }
+        if (!user) {
+            // Try local store as secondary verification if user was just seeded
+            user = store.getUserByEmailOrUsername(cleanIdentifier);
+            if (user) {
+                user = store.getUserByIdWithCredentials(user.id);
+            }
+        }
         if (!user) {
             // Record failed attempt
             const attempts = (attemptRecord?.attempts || 0) + 1;
@@ -53,15 +71,20 @@ authRouter.post('/login', async (req, res) => {
             else {
                 loginAttempts.set(rateLimitKey, { attempts });
             }
-            await postgresAuthRepo.addAuditLog({
-                entityType: 'Auth',
-                entityId: cleanIdentifier,
-                action: 'LOGIN_FAILED',
-                performedBy: cleanIdentifier,
-                source: 'LoginAPI',
-                ipAddress: ip,
-                details: `Failed login attempt for non-existent identifier "${cleanIdentifier}".`,
-            });
+            try {
+                await postgresAuthRepo.addAuditLog({
+                    entityType: 'Auth',
+                    entityId: cleanIdentifier,
+                    action: 'LOGIN_FAILED',
+                    performedBy: cleanIdentifier,
+                    source: 'LoginAPI',
+                    ipAddress: ip,
+                    details: `Failed login attempt for non-existent identifier "${cleanIdentifier}".`,
+                });
+            }
+            catch (e) {
+                // Ignore audit log error
+            }
             return res.status(401).json({
                 success: false,
                 message: 'Invalid email/username or password.'
@@ -93,15 +116,20 @@ authRouter.post('/login', async (req, res) => {
             else {
                 loginAttempts.set(rateLimitKey, { attempts });
             }
-            await postgresAuthRepo.addAuditLog({
-                entityType: 'Auth',
-                entityId: user.id,
-                action: 'LOGIN_FAILED',
-                performedBy: user.username,
-                source: 'LoginAPI',
-                ipAddress: ip,
-                details: `Invalid password entered for user "${user.username}".`,
-            });
+            try {
+                await postgresAuthRepo.addAuditLog({
+                    entityType: 'Auth',
+                    entityId: user.id,
+                    action: 'LOGIN_FAILED',
+                    performedBy: user.username,
+                    source: 'LoginAPI',
+                    ipAddress: ip,
+                    details: `Invalid password entered for user "${user.username}".`,
+                });
+            }
+            catch (e) {
+                // Ignore audit log error
+            }
             return res.status(401).json({
                 success: false,
                 message: 'Invalid email/username or password.'
@@ -111,18 +139,38 @@ authRouter.post('/login', async (req, res) => {
         loginAttempts.delete(rateLimitKey);
         // 4. Update last_login_at in PostgreSQL
         const lastLoginAt = new Date().toISOString();
-        await postgresAuthRepo.updateUser(user.id, { lastLoginAt });
+        try {
+            await postgresAuthRepo.updateUser(user.id, { lastLoginAt });
+        }
+        catch (e) {
+            // Ignore background timestamp update error if DB connection interrupted
+        }
         // 5. Audit Log in PostgreSQL
-        await postgresAuthRepo.addAuditLog({
-            entityType: 'Auth',
-            entityId: user.id,
-            action: 'LOGIN_SUCCESS',
-            performedBy: user.name,
-            source: 'Dashboard',
-            ipAddress: ip,
-            details: `User ${user.name} (@${user.username}) logged in successfully with role ${user.role}.`,
-        });
-        const role = await postgresAuthRepo.getRoleById(user.roleId) || await postgresAuthRepo.getRoleByName(user.role);
+        try {
+            await postgresAuthRepo.addAuditLog({
+                entityType: 'Auth',
+                entityId: user.id,
+                action: 'LOGIN_SUCCESS',
+                performedBy: user.name,
+                source: 'Dashboard',
+                ipAddress: ip,
+                details: `User ${user.name} (@${user.username}) logged in successfully with role ${user.role}.`,
+            });
+        }
+        catch (e) {
+            // Ignore audit log error if DB connection interrupted
+        }
+        let role = null;
+        try {
+            role = await postgresAuthRepo.getRoleById(user.roleId) || await postgresAuthRepo.getRoleByName(user.role);
+        }
+        catch (e) {
+            // Fallback to store role
+            role = store.getRoles().find(r => r.id === user.roleId || r.name === user.role) || store.getRoles()[0];
+        }
+        if (!role) {
+            role = store.getRoles().find(r => r.id === user.roleId || r.name === user.role) || store.getRoles()[0];
+        }
         const token = generateToken(user);
         // Remove sensitive password hash
         const { passwordHash: _, ...safeUser } = user;
