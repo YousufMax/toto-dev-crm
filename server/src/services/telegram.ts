@@ -1,6 +1,19 @@
 import { store } from '../db/store.js';
 import { Order, Expense, Payout } from '../types/index.js';
 
+/**
+ * Parse one or multiple chat IDs from a formatted string
+ * Supports comma, newline, semicolon, or space separation and trims tokens.
+ */
+export function parseChatIds(raw: string | undefined | null): string[] {
+  if (!raw || typeof raw !== 'string') return [];
+  const parts = raw
+    .split(/[\n,;]+/)
+    .map(s => s.trim())
+    .filter(Boolean);
+  return Array.from(new Set(parts));
+}
+
 export class TelegramService {
   private async sendMessage(botToken: string, chatId: string, text: string): Promise<boolean> {
     if (!botToken || !chatId) {
@@ -21,14 +34,48 @@ export class TelegramService {
 
       const data: any = await res.json();
       if (!res.ok || !data.ok) {
-        console.warn('[Telegram] API Error:', data.description || res.statusText);
+        console.warn(`[Telegram] API Error for chat ${chatId}:`, data.description || res.statusText);
         return false;
       }
       return true;
     } catch (err: any) {
-      console.warn('[Telegram] Failed to dispatch message:', err.message);
+      console.warn(`[Telegram] Failed to dispatch message to ${chatId}:`, err.message);
       return false;
     }
+  }
+
+  /**
+   * Broadcast message to all parsed target chat IDs concurrently using Promise.allSettled
+   * An error or bad chat ID on one channel never blocks the others.
+   */
+  public async sendMessageToChats(
+    botToken: string, 
+    rawChatIds: string, 
+    text: string
+  ): Promise<{ success: boolean; sentCount: number; totalCount: number; failedIds: string[] }> {
+    const chatIds = parseChatIds(rawChatIds);
+    if (!botToken || chatIds.length === 0) {
+      return { success: false, sentCount: 0, totalCount: 0, failedIds: [] };
+    }
+
+    const failedIds: string[] = [];
+    const results = await Promise.allSettled(
+      chatIds.map(async (id) => {
+        const ok = await this.sendMessage(botToken, id, text);
+        if (!ok) {
+          failedIds.push(id);
+        }
+        return ok;
+      })
+    );
+
+    const sentCount = results.filter(r => r.status === 'fulfilled' && r.value === true).length;
+    return {
+      success: sentCount > 0,
+      sentCount,
+      totalCount: chatIds.length,
+      failedIds,
+    };
   }
 
   // --- BOT 1: Sales & Orders Notifications ---
@@ -44,6 +91,7 @@ export class TelegramService {
       `*Contact:* ${order.clientContact || 'N/A'}`,
       `*Service:* ${order.serviceName}`,
       `*Quantity:* ${order.quantityUnit}`,
+      `*Target Deadline:* ${order.targetDeadline || 'Open'}`,
       `*Total Amount:* ৳${order.totalAmount.toLocaleString()}`,
       `*Paid Amount:* ৳${order.paidAmount.toLocaleString()}`,
       `*Due Amount:* ৳${order.dueAmount.toLocaleString()}`,
@@ -56,7 +104,8 @@ export class TelegramService {
       `_Logged via ${order.source}_`,
     ].filter(Boolean).join('\n');
 
-    return this.sendMessage(config.botToken, config.chatId, message);
+    const result = await this.sendMessageToChats(config.botToken, config.chatId, message);
+    return result.success;
   }
 
   public async notifyOrderUpdate(order: Order, changeSummary: string): Promise<boolean> {
@@ -74,7 +123,8 @@ export class TelegramService {
       `*Paid:* ৳${order.paidAmount.toLocaleString()} | *Due:* ৳${order.dueAmount.toLocaleString()}`,
     ].join('\n');
 
-    return this.sendMessage(config.botToken, config.chatId, message);
+    const result = await this.sendMessageToChats(config.botToken, config.chatId, message);
+    return result.success;
   }
 
   // --- BOT 2: Expense Management Notifications ---
@@ -100,7 +150,8 @@ export class TelegramService {
       expense.remarks ? `*Remarks:* _${expense.remarks}_` : '',
     ].filter(Boolean).join('\n');
 
-    return this.sendMessage(config.botToken, config.chatId, message);
+    const result = await this.sendMessageToChats(config.botToken, config.chatId, message);
+    return result.success;
   }
 
   public async notifyExpenseApproved(expense: Expense, approver: string): Promise<boolean> {
@@ -118,7 +169,8 @@ export class TelegramService {
       `*Status:* ${expense.approvalStatus}`,
     ].join('\n');
 
-    return this.sendMessage(config.botToken, config.chatId, message);
+    const result = await this.sendMessageToChats(config.botToken, config.chatId, message);
+    return result.success;
   }
 
   // --- BOT 3: Project Payout Notifications ---
@@ -141,7 +193,8 @@ export class TelegramService {
       `*Payment Status:* ${payout.paymentStatus}`,
     ].join('\n');
 
-    return this.sendMessage(config.botToken, config.chatId, message);
+    const result = await this.sendMessageToChats(config.botToken, config.chatId, message);
+    return result.success;
   }
 
   public async notifyPayoutUpdate(payout: Payout, statusText: string): Promise<boolean> {
@@ -161,24 +214,55 @@ export class TelegramService {
       payout.transactionRefId ? `*Txn ID:* \`${payout.transactionRefId}\`` : '',
     ].filter(Boolean).join('\n');
 
-    return this.sendMessage(config.botToken, config.chatId, message);
+    const result = await this.sendMessageToChats(config.botToken, config.chatId, message);
+    return result.success;
   }
 
   // --- Test Notification Sender ---
-  public async sendTestMessage(botType: 'sales' | 'expense' | 'payout', botToken: string, chatId: string): Promise<{ success: boolean; message: string }> {
+  public async sendTestMessage(
+    botType: 'sales' | 'expense' | 'payout', 
+    botToken: string, 
+    rawChatIds: string
+  ): Promise<{ success: boolean; message: string; sentCount?: number; totalCount?: number; failedIds?: string[] }> {
     const names = {
       sales: 'Sales & Orders Bot (Bot 1)',
       expense: 'Expense & Cost Management Bot (Bot 2)',
       payout: 'Project & Resource Payout Bot (Bot 3)',
     };
 
-    const text = `🤖 *TOTO DEVELOPMENT TELEGRAM BOT TEST*\n\n✅ *${names[botType]}* is connected and working perfectly!\n\n_Time: ${new Date().toLocaleString('en-US', { timeZone: 'Asia/Dhaka' })} (Dhaka Time)_`;
-
-    const ok = await this.sendMessage(botToken, chatId, text);
-    if (ok) {
-      return { success: true, message: `Test message successfully sent to ${names[botType]}!` };
+    const chatIds = parseChatIds(rawChatIds);
+    if (chatIds.length === 0) {
+      return { success: false, message: 'Please provide at least one valid Chat ID or channel username.' };
     }
-    return { success: false, message: `Failed to deliver message. Please verify Bot Token and Chat ID.` };
+
+    const text = `🤖 *TOTO DEVELOPMENT TELEGRAM BOT TEST*\n\n✅ *${names[botType]}* is connected and working perfectly!\n\n_Dispatched to ${chatIds.length} target chat(s)_\n_Time: ${new Date().toLocaleString('en-US', { timeZone: 'Asia/Dhaka' })} (Dhaka Time)_`;
+
+    const result = await this.sendMessageToChats(botToken, rawChatIds, text);
+
+    if (result.sentCount === result.totalCount && result.totalCount > 0) {
+      return {
+        success: true,
+        message: `Test message successfully delivered to all ${result.sentCount} configured chat(s)! (${chatIds.join(', ')})`,
+        sentCount: result.sentCount,
+        totalCount: result.totalCount,
+      };
+    } else if (result.sentCount > 0) {
+      return {
+        success: true,
+        message: `Partially delivered: Sent to ${result.sentCount}/${result.totalCount} chat(s). Failed for: ${result.failedIds.join(', ')}.`,
+        sentCount: result.sentCount,
+        totalCount: result.totalCount,
+        failedIds: result.failedIds,
+      };
+    }
+
+    return {
+      success: false,
+      message: `Failed to deliver to any of the ${result.totalCount} chat targets. Please verify Bot Token and Chat IDs.`,
+      sentCount: 0,
+      totalCount: result.totalCount,
+      failedIds: result.failedIds,
+    };
   }
 }
 

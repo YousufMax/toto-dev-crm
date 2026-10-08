@@ -12,12 +12,17 @@ import {
   Sliders,
   Link2,
   Zap,
-  Globe
+  Globe,
+  Sun,
+  Moon,
+  Monitor
 } from 'lucide-react';
 import { api } from '../api';
 import { GoogleSheetsConfig, TelegramConfig, SyncConflict } from '../types';
+import { useTheme } from '../context/ThemeContext';
 
 export const SettingsView: React.FC = () => {
+  const { theme, setTheme } = useTheme();
   const [sheetsConfig, setSheetsConfig] = useState<GoogleSheetsConfig | null>(null);
   const [telegramConfig, setTelegramConfig] = useState<TelegramConfig | null>(null);
   const [conflicts, setConflicts] = useState<SyncConflict[]>([]);
@@ -258,6 +263,78 @@ export const SettingsView: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* SYSTEM APPEARANCE & THEME CONTROL */}
+      <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-5 space-y-4 shadow-xl">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800/80 pb-4">
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 rounded-xl border bg-amber-500/10 text-amber-400 border-amber-500/30">
+              <Sun className="h-5 w-5" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h3 className="text-sm font-bold text-white">System Appearance & Desktop Theme</h3>
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold border uppercase tracking-wider bg-slate-800 text-amber-400 border-slate-700">
+                  {theme} mode active
+                </span>
+              </div>
+              <p className="text-[11px] text-slate-400 mt-0.5">
+                Toggle between high-contrast Dark, crisp Light, or automatic PC System default.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <button
+            type="button"
+            onClick={() => setTheme('light')}
+            className={`flex items-center gap-3 p-3.5 rounded-xl border transition-all text-left ${
+              theme === 'light'
+                ? 'bg-amber-500/15 border-amber-500/60 ring-1 ring-amber-500/40 text-slate-900 font-bold'
+                : 'bg-slate-950/70 border-slate-800 hover:border-slate-700 text-slate-300'
+            }`}
+          >
+            <Sun className="h-5 w-5 text-amber-400" />
+            <div>
+              <span className="text-xs font-bold block">Light Theme</span>
+              <span className="text-[10px] text-slate-400">Clean white cards & dark text</span>
+            </div>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setTheme('dark')}
+            className={`flex items-center gap-3 p-3.5 rounded-xl border transition-all text-left ${
+              theme === 'dark'
+                ? 'bg-indigo-500/15 border-indigo-500/60 ring-1 ring-indigo-500/40 text-white font-bold'
+                : 'bg-slate-950/70 border-slate-800 hover:border-slate-700 text-slate-300'
+            }`}
+          >
+            <Moon className="h-5 w-5 text-indigo-400" />
+            <div>
+              <span className="text-xs font-bold block">Dark Theme</span>
+              <span className="text-[10px] text-slate-400">High contrast navy & slate</span>
+            </div>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setTheme('system')}
+            className={`flex items-center gap-3 p-3.5 rounded-xl border transition-all text-left ${
+              theme === 'system'
+                ? 'bg-blue-500/15 border-blue-500/60 ring-1 ring-blue-500/40 text-white font-bold'
+                : 'bg-slate-950/70 border-slate-800 hover:border-slate-700 text-slate-300'
+            }`}
+          >
+            <Monitor className="h-5 w-5 text-blue-400" />
+            <div>
+              <span className="text-xs font-bold block">System Default</span>
+              <span className="text-[10px] text-slate-400">Matches PC Windows theme</span>
+            </div>
+          </button>
+        </div>
+      </div>
 
       {/* SYNC SOURCE-OF-TRUTH RECONCILIATION TELEMETRY */}
       <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-5 space-y-4 shadow-xl">
@@ -613,14 +690,24 @@ export const SettingsView: React.FC = () => {
               />
             </div>
             <div>
-              <label className="text-[11px] text-slate-400 block mb-1">Target Chat ID / Channel ID</label>
-              <input
-                type="text"
+              <div className="flex items-center justify-between mb-1">
+                <label className="text-[11px] text-slate-400">Target Chat IDs / Channel Usernames</label>
+                {salesChatId && (
+                  <span className="text-[10px] font-bold text-blue-400 bg-blue-500/10 border border-blue-500/20 px-2 py-0.5 rounded-full">
+                    {salesChatId.split(/[\n,;]+/).map(s => s.trim()).filter(Boolean).length} Target(s) Configured
+                  </span>
+                )}
+              </div>
+              <textarea
+                rows={2}
                 value={salesChatId}
                 onChange={e => setSalesChatId(e.target.value)}
-                placeholder="e.g. -100123456789 or @totodevsales"
+                placeholder="e.g. -100123456789, @totodevsales, 987654321"
                 className="w-full rounded-lg border border-slate-800 bg-slate-900 px-3 py-1.5 text-xs text-white font-mono"
               />
+              <p className="text-[10px] text-slate-500 mt-0.5">
+                Support multiple Chat IDs separated by commas, semicolons, or new lines.
+              </p>
             </div>
           </div>
         </div>
@@ -667,14 +754,24 @@ export const SettingsView: React.FC = () => {
               />
             </div>
             <div>
-              <label className="text-[11px] text-slate-400 block mb-1">Target Chat ID</label>
-              <input
-                type="text"
+              <div className="flex items-center justify-between mb-1">
+                <label className="text-[11px] text-slate-400">Target Chat IDs</label>
+                {expChatId && (
+                  <span className="text-[10px] font-bold text-rose-400 bg-rose-500/10 border border-rose-500/20 px-2 py-0.5 rounded-full">
+                    {expChatId.split(/[\n,;]+/).map(s => s.trim()).filter(Boolean).length} Target(s) Configured
+                  </span>
+                )}
+              </div>
+              <textarea
+                rows={2}
                 value={expChatId}
                 onChange={e => setExpChatId(e.target.value)}
-                placeholder="Chat ID..."
+                placeholder="e.g. -100123456789, @expenses_channel"
                 className="w-full rounded-lg border border-slate-800 bg-slate-900 px-3 py-1.5 text-xs text-white font-mono"
               />
+              <p className="text-[10px] text-slate-500 mt-0.5">
+                Support multiple Chat IDs separated by commas or new lines.
+              </p>
             </div>
             <div>
               <label className="text-[11px] text-slate-400 block mb-1">Large Expense Threshold (BDT)</label>
@@ -730,14 +827,24 @@ export const SettingsView: React.FC = () => {
               />
             </div>
             <div>
-              <label className="text-[11px] text-slate-400 block mb-1">Target Chat ID</label>
-              <input
-                type="text"
+              <div className="flex items-center justify-between mb-1">
+                <label className="text-[11px] text-slate-400">Target Chat IDs</label>
+                {payChatId && (
+                  <span className="text-[10px] font-bold text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded-full">
+                    {payChatId.split(/[\n,;]+/).map(s => s.trim()).filter(Boolean).length} Target(s) Configured
+                  </span>
+                )}
+              </div>
+              <textarea
+                rows={2}
                 value={payChatId}
                 onChange={e => setPayChatId(e.target.value)}
-                placeholder="Chat ID..."
+                placeholder="e.g. -100123456789, @payouts_channel"
                 className="w-full rounded-lg border border-slate-800 bg-slate-900 px-3 py-1.5 text-xs text-white font-mono"
               />
+              <p className="text-[10px] text-slate-500 mt-0.5">
+                Support multiple Chat IDs separated by commas or new lines.
+              </p>
             </div>
           </div>
         </div>

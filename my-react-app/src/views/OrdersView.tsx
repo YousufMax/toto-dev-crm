@@ -8,11 +8,14 @@ import {
   CheckSquare, 
   Square, 
   MoreHorizontal, 
-  ArrowUpDown,
-  Calendar,
-  DollarSign,
-  FileSpreadsheet,
-  Trash2
+  ArrowUpDown, 
+  Calendar, 
+  DollarSign, 
+  FileSpreadsheet, 
+  Trash2,
+  Clock,
+  Flame,
+  AlertTriangle
 } from 'lucide-react';
 import { Order, OrderPaymentStatus, OrderDeliveryStatus } from '../types';
 import { PaymentBadge, DeliveryBadge, SourceBadge } from '../components/Badges';
@@ -20,6 +23,8 @@ import { formatCurrency, formatDate, exportToCSV } from '../utils/formatters';
 import { api } from '../api';
 import { useAuth } from '../context/AuthContext';
 import { DeleteConfirmModal } from '../components/DeleteConfirmModal';
+import { DeadlineControlCenter, DeadlineQuickFilter } from '../components/DeadlineControlCenter';
+import { calculateDeadlineInfo, getDhakaNow, isActiveOrder } from '../utils/deadlines';
 
 interface OrdersViewProps {
   onSelectOrder: (order: Order) => void;
@@ -42,6 +47,18 @@ export const OrdersView: React.FC<OrdersViewProps> = ({
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [orderToDelete, setOrderToDelete] = useState<Order | null>(null);
+
+  // Live Timer grounded in Asia/Dhaka (updates every 30s locally with 0 API calls)
+  const [nowDhaka, setNowDhaka] = useState<Date>(() => getDhakaNow());
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setNowDhaka(getDhakaNow());
+    }, 30000);
+    return () => clearInterval(timer);
+  }, []);
+
+  // Control Center Quick Filter State
+  const [deadlineFilter, setDeadlineFilter] = useState<DeadlineQuickFilter>('all');
 
   // Filters
   const [search, setSearch] = useState('');
@@ -82,11 +99,31 @@ export const OrdersView: React.FC<OrdersViewProps> = ({
   // Unique sales reps for filter dropdown
   const uniqueReps = Array.from(new Set(orders.map(o => o.salesRep).filter(Boolean)));
 
+  // Client-side Deadline & Status filter pipeline
+  const filteredOrders = orders.filter(order => {
+    if (deadlineFilter === 'all') return true;
+    const isActive = isActiveOrder(order.deliveryStatus);
+    const deadline = calculateDeadlineInfo(order.targetDeadline, order.deliveryStatus, nowDhaka);
+
+    if (deadlineFilter === 'running') return isActive;
+    if (deadlineFilter === 'dueToday') return isActive && deadline.isDueToday;
+    if (deadlineFilter === 'due24h') return isActive && deadline.isDueWithin24h;
+    if (deadlineFilter === 'overdue') return isActive && deadline.isOverdue;
+    if (deadlineFilter === 'unpaid') return order.paymentStatus === 'Unpaid';
+    if (deadlineFilter === 'partial') return order.paymentStatus === 'Partial';
+    if (deadlineFilter === 'paid') return order.paymentStatus === 'Paid';
+    if (deadlineFilter === 'myOrders') {
+      const rep = (currentUser?.salesRepCode || currentUser?.name || '').toLowerCase();
+      return order.salesRep.toLowerCase() === rep;
+    }
+    return true;
+  });
+
   const handleSelectAll = () => {
-    if (selectedIds.length === orders.length) {
+    if (selectedIds.length === filteredOrders.length) {
       setSelectedIds([]);
     } else {
-      setSelectedIds(orders.map(o => o.id));
+      setSelectedIds(filteredOrders.map(o => o.id));
     }
   };
 
@@ -118,12 +155,14 @@ export const OrdersView: React.FC<OrdersViewProps> = ({
     fetchOrders();
   };
 
-  // CSV Export respecting current active filters!
+  // CSV Export respecting ALL currently active filters & deadline status!
   const handleExportCSV = () => {
     const headers = [
       'Order ID',
       'Booking Date/Time',
       'Target Deadline',
+      'Time Remaining (Dhaka)',
+      'Deadline State',
       'Client / Brand Name',
       'Client Contact',
       'Sales Representative',
@@ -139,39 +178,44 @@ export const OrdersView: React.FC<OrdersViewProps> = ({
       'Data Source',
     ];
 
-    const rows = orders.map(o => [
-      o.id,
-      o.bookingDate,
-      o.targetDeadline,
-      o.clientName,
-      o.clientContact,
-      o.salesRep,
-      o.serviceName,
-      o.quantityUnit,
-      o.totalAmount,
-      o.paidAmount,
-      o.dueAmount,
-      o.paymentMethod,
-      o.paymentStatus,
-      o.deliveryStatus,
-      o.remarks,
-      o.source,
-    ]);
+    const rows = filteredOrders.map(o => {
+      const dInfo = calculateDeadlineInfo(o.targetDeadline, o.deliveryStatus, nowDhaka);
+      return [
+        o.id,
+        o.bookingDate,
+        o.targetDeadline,
+        dInfo.timeRemainingStr,
+        dInfo.state,
+        o.clientName,
+        o.clientContact,
+        o.salesRep,
+        o.serviceName,
+        o.quantityUnit,
+        o.totalAmount,
+        o.paidAmount,
+        o.dueAmount,
+        o.paymentMethod,
+        o.paymentStatus,
+        o.deliveryStatus,
+        o.remarks,
+        o.source,
+      ];
+    });
 
     exportToCSV('sales_orders_report', headers, rows);
   };
 
   // Financial aggregates of currently filtered orders
-  const totalFilteredSales = orders.reduce((sum, o) => sum + (o.totalAmount || 0), 0);
-  const totalFilteredPaid = orders.reduce((sum, o) => sum + (o.paidAmount || 0), 0);
-  const totalFilteredDue = orders.reduce((sum, o) => sum + (o.dueAmount || 0), 0);
+  const totalFilteredSales = filteredOrders.reduce((sum, o) => sum + (o.totalAmount || 0), 0);
+  const totalFilteredPaid = filteredOrders.reduce((sum, o) => sum + (o.paidAmount || 0), 0);
+  const totalFilteredDue = filteredOrders.reduce((sum, o) => sum + (o.dueAmount || 0), 0);
 
   return (
     <div className="space-y-4">
-      {/* Top Controls */}
+      {/* Top Header Controls */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <h2 className="text-xl font-bold tracking-tight text-white flex items-center gap-2">
+          <h2 className="text-xl font-bold tracking-tight text-slate-100 flex items-center gap-2">
             <ShoppingBag className="h-6 w-6 text-blue-400" />
             Module A — Sales & Order Operations
           </h2>
@@ -187,7 +231,7 @@ export const OrdersView: React.FC<OrdersViewProps> = ({
             title="Export filtered records to CSV"
           >
             <Download className="h-3.5 w-3.5 text-slate-400" />
-            Export CSV ({orders.length})
+            Export CSV ({filteredOrders.length})
           </button>
 
           <button
@@ -200,7 +244,17 @@ export const OrdersView: React.FC<OrdersViewProps> = ({
         </div>
       </div>
 
-      {/* Financial Bar of Current Filter */}
+      {/* ACTIVE ORDERS & DEADLINE CONTROL CENTER */}
+      <DeadlineControlCenter
+        orders={orders}
+        activeFilter={deadlineFilter}
+        onSelectFilter={setDeadlineFilter}
+        onSelectOrder={onSelectOrder}
+        currentUserSalesRep={currentUser?.salesRepCode || currentUser?.name}
+        nowDhaka={nowDhaka}
+      />
+
+      {/* Financial Bar of Current Active Filter */}
       <div className="grid grid-cols-3 gap-3">
         <div className="rounded-xl border border-slate-800 bg-slate-950 p-3">
           <span className="text-[11px] text-slate-400 block">Filtered Booked Sales</span>
@@ -226,7 +280,7 @@ export const OrdersView: React.FC<OrdersViewProps> = ({
               type="text"
               value={search}
               onChange={e => setSearch(e.target.value)}
-              placeholder="Filter by Order ID, client, service, phone..."
+              placeholder="Filter by Order ID, client, service, phone, notes..."
               className="w-full rounded-lg border border-slate-800 bg-slate-950 pl-8 pr-3 py-1.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500"
             />
           </div>
@@ -281,21 +335,29 @@ export const OrdersView: React.FC<OrdersViewProps> = ({
             type="date"
             value={startDate}
             onChange={e => setStartDate(e.target.value)}
-            className="rounded-lg border border-slate-800 bg-slate-950 px-2 py-1 text-xs text-white"
+            className="rounded-lg border border-slate-800 bg-slate-950 px-2 py-1 text-xs text-slate-200"
           />
           <span>to</span>
           <input
             type="date"
             value={endDate}
             onChange={e => setEndDate(e.target.value)}
-            className="rounded-lg border border-slate-800 bg-slate-950 px-2 py-1 text-xs text-white"
+            className="rounded-lg border border-slate-800 bg-slate-950 px-2 py-1 text-xs text-slate-200"
           />
-          {(startDate || endDate) && (
+          {(startDate || endDate || search || paymentStatus !== 'All' || deliveryStatus !== 'All' || salesRep !== 'All' || deadlineFilter !== 'all') && (
             <button
-              onClick={() => { setStartDate(''); setEndDate(''); }}
-              className="text-xs text-slate-500 hover:text-white"
+              onClick={() => {
+                setSearch('');
+                setPaymentStatus('All');
+                setDeliveryStatus('All');
+                setSalesRep('All');
+                setStartDate('');
+                setEndDate('');
+                setDeadlineFilter('all');
+              }}
+              className="text-[10px] text-blue-400 hover:text-blue-300 ml-1 font-semibold"
             >
-              Clear
+              Reset All
             </button>
           )}
         </div>
@@ -332,7 +394,7 @@ export const OrdersView: React.FC<OrdersViewProps> = ({
         </div>
       )}
 
-      {/* Main Orders Data Table */}
+      {/* Main Orders Data Table with Live Deadlines */}
       <div className="rounded-2xl border border-slate-800 bg-slate-900/60 overflow-hidden shadow-sm">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
@@ -340,7 +402,7 @@ export const OrdersView: React.FC<OrdersViewProps> = ({
               <tr>
                 <th className="py-3 px-3 w-8 text-center">
                   <button onClick={handleSelectAll}>
-                    {selectedIds.length === orders.length && orders.length > 0 ? (
+                    {selectedIds.length === filteredOrders.length && filteredOrders.length > 0 ? (
                       <CheckSquare className="h-4 w-4 text-blue-400" />
                     ) : (
                       <Square className="h-4 w-4 text-slate-600" />
@@ -351,11 +413,12 @@ export const OrdersView: React.FC<OrdersViewProps> = ({
                 <th className="py-3 px-3">Client / Brand</th>
                 <th className="py-3 px-3">Service</th>
                 <th className="py-3 px-3">Sales Rep</th>
+                <th className="py-3 px-3">Target Deadline</th>
+                <th className="py-3 px-3">Time Remaining</th>
                 <th className="py-3 px-3 text-right">Total (BDT)</th>
-                <th className="py-3 px-3 text-right">Paid</th>
-                <th className="py-3 px-3 text-right">Due</th>
+                <th className="py-3 px-3 text-right">Due / Paid</th>
                 <th className="py-3 px-3">Payment</th>
-                <th className="py-3 px-3">Delivery</th>
+                <th className="py-3 px-3">Delivery Status</th>
                 <th className="py-3 px-3">Source</th>
                 {isSuperAdmin && <th className="py-3 px-3 text-center">Action</th>}
               </tr>
@@ -363,19 +426,21 @@ export const OrdersView: React.FC<OrdersViewProps> = ({
             <tbody className="divide-y divide-slate-800/60 text-slate-300">
               {loading ? (
                 <tr>
-                  <td colSpan={isSuperAdmin ? 12 : 11} className="py-12 text-center text-slate-500">
+                  <td colSpan={isSuperAdmin ? 13 : 12} className="py-12 text-center text-slate-500">
                     Loading orders from database...
                   </td>
                 </tr>
-              ) : orders.length === 0 ? (
+              ) : filteredOrders.length === 0 ? (
                 <tr>
-                  <td colSpan={isSuperAdmin ? 12 : 11} className="py-12 text-center text-slate-500">
+                  <td colSpan={isSuperAdmin ? 13 : 12} className="py-12 text-center text-slate-500">
                     No orders found matching the filter criteria.
                   </td>
                 </tr>
               ) : (
-                orders.map(order => {
+                filteredOrders.map(order => {
                   const isSelected = selectedIds.includes(order.id);
+                  const deadline = calculateDeadlineInfo(order.targetDeadline, order.deliveryStatus, nowDhaka);
+
                   return (
                     <tr
                       key={order.id}
@@ -405,17 +470,61 @@ export const OrdersView: React.FC<OrdersViewProps> = ({
                       <td className="py-3 px-3 text-slate-300 font-medium">
                         {order.salesRep}
                       </td>
-                      <td className="py-3 px-3 text-right font-bold text-white">
+
+                      {/* Target Deadline */}
+                      <td className="py-3 px-3 whitespace-nowrap">
+                        {order.targetDeadline ? (
+                          <div>
+                            <span className="font-medium text-slate-200 block text-[11px]">
+                              {order.targetDeadline}
+                            </span>
+                            <span className={`text-[10px] font-semibold ${deadline.colorClass.text}`}>
+                              {deadline.state}
+                            </span>
+                          </div>
+                        ) : (
+                          <span className="text-[10px] text-slate-500 italic">Open</span>
+                        )}
+                      </td>
+
+                      {/* Time Remaining Live Countdown */}
+                      <td className="py-3 px-3 whitespace-nowrap">
+                        {deadline.hasDeadline ? (
+                          <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold border ${deadline.colorClass.badge}`}>
+                            <span className={`h-1.5 w-1.5 rounded-full ${deadline.colorClass.dot}`} />
+                            {deadline.timeRemainingStr}
+                          </span>
+                        ) : (
+                          <span className="text-[10px] text-slate-500">—</span>
+                        )}
+                      </td>
+
+                      {/* Financials */}
+                      <td className="py-3 px-3 text-right font-bold text-slate-100">
                         {formatCurrency(order.totalAmount)}
                       </td>
-                      <td className="py-3 px-3 text-right font-semibold text-emerald-400">
-                        {formatCurrency(order.paidAmount)}
+                      <td className="py-3 px-3 text-right">
+                        {order.dueAmount > 0 ? (
+                          <div>
+                            <span className="font-bold text-rose-400 block text-[11px]">
+                              {formatCurrency(order.dueAmount)} Due
+                            </span>
+                            <span className="text-[10px] text-emerald-400">
+                              Paid: {formatCurrency(order.paidAmount)}
+                            </span>
+                          </div>
+                        ) : (
+                          <div>
+                            <span className="font-semibold text-emerald-400 block text-[11px]">
+                              Paid In Full
+                            </span>
+                            <span className="text-[10px] text-slate-500">
+                              {formatCurrency(order.paidAmount)}
+                            </span>
+                          </div>
+                        )}
                       </td>
-                      <td className={`py-3 px-3 text-right font-semibold ${
-                        order.dueAmount > 0 ? 'text-rose-400' : 'text-slate-500'
-                      }`}>
-                        {formatCurrency(order.dueAmount)}
-                      </td>
+
                       <td className="py-3 px-3">
                         <PaymentBadge status={order.paymentStatus} />
                       </td>

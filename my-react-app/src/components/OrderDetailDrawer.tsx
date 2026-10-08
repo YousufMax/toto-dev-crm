@@ -20,6 +20,7 @@ import {
 import { Order, Payout, AuditLog, OrderPaymentStatus, OrderDeliveryStatus } from '../types';
 import { PaymentBadge, DeliveryBadge, SourceBadge } from './Badges';
 import { formatCurrency, formatDate } from '../utils/formatters';
+import { calculateDeadlineInfo } from '../utils/deadlines';
 import { api } from '../api';
 import { useAuth } from '../context/AuthContext';
 import { DeleteConfirmModal } from './DeleteConfirmModal';
@@ -348,9 +349,26 @@ export const OrderDetailDrawer: React.FC<OrderDetailDrawerProps> = ({
                     </button>
                   </div>
                   {!isEditingDeadline ? (
-                    <span className="font-semibold text-amber-400 block mt-0.5">
-                      {order.targetDeadline || 'Open (No Deadline)'}
-                    </span>
+                    <div className="mt-1 space-y-1">
+                      <span className="font-semibold text-slate-100 block text-xs">
+                        {order.targetDeadline || 'Open (No Deadline)'}
+                      </span>
+                      {(() => {
+                        const dInfo = calculateDeadlineInfo(order.targetDeadline, order.deliveryStatus);
+                        if (!dInfo.hasDeadline) return null;
+                        return (
+                          <div className="flex items-center gap-1.5 pt-0.5">
+                            <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold border ${dInfo.colorClass.badge}`}>
+                              <span className={`h-1.5 w-1.5 rounded-full ${dInfo.colorClass.dot}`} />
+                              {dInfo.timeRemainingStr}
+                            </span>
+                            <span className={`text-[10px] font-semibold ${dInfo.colorClass.text}`}>
+                              ({dInfo.state})
+                            </span>
+                          </div>
+                        );
+                      })()}
+                    </div>
                   ) : (
                     <div className="mt-1 space-y-1.5 p-2 rounded-lg bg-slate-900 border border-slate-800">
                       <div className="grid grid-cols-2 gap-1.5">
