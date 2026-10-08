@@ -1796,6 +1796,91 @@
       "updatedBy": "Google Sheets Sync",
       "source": "Google Sheets",
       "isArchived": false
+    },
+    {
+      "id": "AUDIT-TEST-1791471385115",
+      "bookingDate": "2026-10-08 20:56",
+      "targetDeadline": "2026-10-30 18:00",
+      "clientName": "Audit Test Client",
+      "clientContact": "1700000000",
+      "salesRep": "Audit Bot",
+      "serviceName": "Audit Inspection Service",
+      "quantityUnit": "1 Unit",
+      "totalAmount": 5000,
+      "paidAmount": 2000,
+      "dueAmount": 3000,
+      "paymentMethod": "bKash",
+      "paymentStatus": "Partial",
+      "deliveryStatus": "Pending",
+      "remarks": "Automated production audit test record",
+      "createdAt": "2026-10-08T15:00:47.062Z",
+      "updatedAt": "2026-10-08T15:00:47.062Z",
+      "source": "Google Sheets",
+      "isArchived": false
+    },
+    {
+      "id": "AUDIT-TEST-1791471519984",
+      "bookingDate": "",
+      "targetDeadline": "",
+      "clientName": "",
+      "clientContact": "",
+      "salesRep": "",
+      "serviceName": "",
+      "quantityUnit": "1 Unit",
+      "totalAmount": 0,
+      "paidAmount": 0,
+      "dueAmount": 0,
+      "paymentMethod": "bKash",
+      "paymentStatus": "Unpaid",
+      "deliveryStatus": "Pending",
+      "remarks": "",
+      "createdAt": "2026-10-08T15:00:47.062Z",
+      "updatedAt": "2026-10-08T15:00:47.062Z",
+      "source": "Google Sheets",
+      "isArchived": false
+    },
+    {
+      "id": "AUDIT-TEST-1791471584009",
+      "bookingDate": "",
+      "targetDeadline": "",
+      "clientName": "",
+      "clientContact": "",
+      "salesRep": "",
+      "serviceName": "",
+      "quantityUnit": "1 Unit",
+      "totalAmount": 0,
+      "paidAmount": 0,
+      "dueAmount": 0,
+      "paymentMethod": "bKash",
+      "paymentStatus": "Unpaid",
+      "deliveryStatus": "Pending",
+      "remarks": "",
+      "createdAt": "2026-10-08T15:00:47.062Z",
+      "updatedAt": "2026-10-08T15:00:47.062Z",
+      "source": "Google Sheets",
+      "isArchived": false
+    },
+    {
+      "id": "ORD-1023",
+      "bookingDate": "2026-10-08 21:02",
+      "targetDeadline": "2026-10-15 18:00",
+      "clientName": "md halim",
+      "clientContact": "17488883883",
+      "salesRep": "Rajib",
+      "serviceName": "web",
+      "quantityUnit": "1 Unit",
+      "totalAmount": 3000,
+      "paidAmount": 2000,
+      "dueAmount": 1000,
+      "paymentMethod": "bKash",
+      "paymentStatus": "Partial",
+      "deliveryStatus": "In Progress",
+      "remarks": "",
+      "createdAt": "2026-10-08T15:02:02.589Z",
+      "updatedAt": "2026-10-08T15:05:44.546Z",
+      "updatedBy": "Google Sheets Sync",
+      "source": "Google Sheets",
+      "isArchived": false
     }
   ],
   "expenses": [
@@ -2330,6 +2415,46 @@
     }
   ],
   "auditLogs": [
+    {
+      "id": "AUD-1791471722591-352",
+      "timestamp": "10/8/2026, 21:02:02",
+      "entityType": "Order",
+      "entityId": "ORD-1023",
+      "action": "CREATE",
+      "changedBy": "MD Yousuf Ali",
+      "source": "Dashboard",
+      "details": "Created Order ORD-1023 for md halim (Total: ৳3000)"
+    },
+    {
+      "id": "AUD-1791471647063-654",
+      "timestamp": "10/8/2026, 21:00:47",
+      "entityType": "Order",
+      "entityId": "AUDIT-TEST-1791471584009",
+      "action": "CREATE",
+      "changedBy": "Google Sheets Sync",
+      "source": "Google Sheets",
+      "details": "Added new Order AUDIT-TEST-1791471584009 from Google Sheets (, Total: ৳0)."
+    },
+    {
+      "id": "AUD-1791471647063-431",
+      "timestamp": "10/8/2026, 21:00:47",
+      "entityType": "Order",
+      "entityId": "AUDIT-TEST-1791471519984",
+      "action": "CREATE",
+      "changedBy": "Google Sheets Sync",
+      "source": "Google Sheets",
+      "details": "Added new Order AUDIT-TEST-1791471519984 from Google Sheets (, Total: ৳0)."
+    },
+    {
+      "id": "AUD-1791471647063-174",
+      "timestamp": "10/8/2026, 21:00:47",
+      "entityType": "Order",
+      "entityId": "AUDIT-TEST-1791471385115",
+      "action": "CREATE",
+      "changedBy": "Google Sheets Sync",
+      "source": "Google Sheets",
+      "details": "Added new Order AUDIT-TEST-1791471385115 from Google Sheets (Audit Test Client, Total: ৳5000)."
+    },
     {
       "id": "AUD-1791471584060-99",
       "timestamp": "10/8/2026, 20:59:44",
@@ -4485,24 +4610,24 @@
       "isConfigured": true,
       "appsScriptUrl": "https://script.google.com/macros/s/AKfycbx6QcViFYDS4KN8mU5fqR2wRDgot-ZquHRPBKoQfieimgqrVL443TyTwZEER8jUymWHPQ/exec",
       "deploymentId": "AKfycbx6QcViFYDS4KN8mU5fqR2wRDgot-ZquHRPBKoQfieimgqrVL443TyTwZEER8jUymWHPQ",
-      "lastSyncedAt": "2026-10-08T14:55:47.976Z",
+      "lastSyncedAt": "2026-10-08T15:05:44.547Z",
       "lastSyncStatus": "success",
-      "lastSyncMessage": "Full reconciliation via Apps Script completed: 22 orders (+0, ~20, -0), 14 expenses (+0, ~9, -0), 11 payouts (+0, ~0, -0). Total Active: 47.",
+      "lastSyncMessage": "Full reconciliation via Apps Script completed: 26 orders (+0, ~1, -0), 14 expenses (+0, ~0, -0), 11 payouts (+0, ~0, -0). Total Active: 51.",
       "syncSummary": {
         "orders": {
           "added": 0,
-          "updated": 20,
+          "updated": 1,
           "removed": 0,
-          "unchanged": 2,
-          "duplicates": 3,
+          "unchanged": 25,
+          "duplicates": 8,
           "invalid": 0,
-          "totalActive": 22
+          "totalActive": 26
         },
         "expenses": {
           "added": 0,
-          "updated": 9,
+          "updated": 0,
           "removed": 0,
-          "unchanged": 5,
+          "unchanged": 14,
           "duplicates": 1,
           "invalid": 0,
           "totalActive": 14
@@ -4516,8 +4641,8 @@
           "invalid": 0,
           "totalActive": 11
         },
-        "totalActiveRecords": 47,
-        "timestamp": "2026-10-08T14:55:47.976Z"
+        "totalActiveRecords": 51,
+        "timestamp": "2026-10-08T15:05:44.547Z"
       }
     },
     "telegram": {

@@ -8,6 +8,7 @@ const __dirname = path.dirname(__filename);
 dotenv.config({ path: path.resolve(__dirname, '../../../.env') });
 dotenv.config();
 const { Pool } = pg;
+const isCloudDb = process.env.DATABASE_URL && (process.env.DATABASE_URL.includes('render.com') || process.env.DATABASE_URL.includes('neon.tech') || process.env.DATABASE_URL.includes('supabase.co') || process.env.DATABASE_URL.includes('sslmode=require'));
 export const pool = new Pool({
     connectionString: process.env.DATABASE_URL || undefined,
     host: process.env.PGHOST || 'localhost',
@@ -15,6 +16,7 @@ export const pool = new Pool({
     user: process.env.PGUSER || 'postgres',
     password: process.env.PGPASSWORD || 'Yousuf',
     database: process.env.PGDATABASE || 'toto_crm',
+    ssl: isCloudDb ? { rejectUnauthorized: false } : undefined,
     max: 20,
     idleTimeoutMillis: 30000,
     connectionTimeoutMillis: 5000,

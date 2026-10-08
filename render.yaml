@@ -1,0 +1,26 @@
+services:
+  - type: web
+    name: toto-dev-crm
+    env: node
+    plan: free
+    region: oregon
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: JWT_SECRET
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: toto-crm-postgres
+          property: connectionString
+
+databases:
+  - name: toto-crm-postgres
+    plan: free
+    databaseName: toto_crm
+    user: toto_admin
+    region: oregon
