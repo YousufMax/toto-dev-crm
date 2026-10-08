@@ -72,12 +72,12 @@ export const EmployeesView: React.FC<EmployeesViewProps> = ({ onSelectOrderById 
   const fetchEmployeesData = async () => {
     setLoadingEmployees(true);
     try {
-      const [empRes, userRes] = await Promise.all([
+      const [empRes, userRes] = await Promise.allSettled([
         api.getEmployees(),
         api.getUsers(),
       ]);
-      setEmployees(empRes.employees || []);
-      setUsers(userRes.users || []);
+      setEmployees(empRes.status === 'fulfilled' ? (empRes.value.employees || []) : []);
+      setUsers(userRes.status === 'fulfilled' ? (userRes.value.users || []) : []);
     } catch (err: any) {
       console.error('Error fetching employees directory:', err);
     } finally {

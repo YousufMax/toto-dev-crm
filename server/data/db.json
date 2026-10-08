@@ -1314,7 +1314,71 @@
       "updatedAt": "2026-10-06T14:12:19.958Z"
     }
   ],
-  "orders": [],
+  "orders": [
+    {
+      "id": "ORD-1001",
+      "bookingDate": "2026-10-08 22:00",
+      "targetDeadline": "2026-10-16 18:00",
+      "clientName": "md",
+      "clientContact": "155555",
+      "salesRep": "Rajib",
+      "serviceName": "web",
+      "quantityUnit": "1 Unit",
+      "totalAmount": 983,
+      "paidAmount": 399,
+      "dueAmount": 584,
+      "paymentMethod": "bKash",
+      "paymentStatus": "Partial",
+      "deliveryStatus": "In Progress",
+      "remarks": "",
+      "createdAt": "2026-10-08T16:00:47.944Z",
+      "updatedAt": "2026-10-08T16:00:47.944Z",
+      "source": "Google Sheets",
+      "isArchived": false
+    },
+    {
+      "id": "ORD-1002",
+      "bookingDate": "2026-10-08 22:01",
+      "targetDeadline": "2026-10-16 18:00",
+      "clientName": "nnnn",
+      "clientContact": "18172737",
+      "salesRep": "Rajib",
+      "serviceName": "max",
+      "quantityUnit": "1 Unit",
+      "totalAmount": 10000,
+      "paidAmount": 3000,
+      "dueAmount": 7000,
+      "paymentMethod": "bKash",
+      "paymentStatus": "Partial",
+      "deliveryStatus": "In Progress",
+      "remarks": "",
+      "createdAt": "2026-10-08T16:05:44.059Z",
+      "updatedAt": "2026-10-08T16:05:44.059Z",
+      "source": "Google Sheets",
+      "isArchived": false
+    },
+    {
+      "id": "ORD-1003",
+      "bookingDate": "2026-10-08 22:01",
+      "targetDeadline": "2026-10-16 18:00",
+      "clientName": "nnnn",
+      "clientContact": "18172737",
+      "salesRep": "Rajib",
+      "serviceName": "max",
+      "quantityUnit": "1 Unit",
+      "totalAmount": 10000,
+      "paidAmount": 0,
+      "dueAmount": 10000,
+      "paymentMethod": "bKash",
+      "paymentStatus": "Unpaid",
+      "deliveryStatus": "In Progress",
+      "remarks": "",
+      "createdAt": "2026-10-08T16:05:44.059Z",
+      "updatedAt": "2026-10-08T16:05:44.059Z",
+      "source": "Google Sheets",
+      "isArchived": false
+    }
+  ],
   "expenses": [
     {
       "id": "EXP-2026-1001",
@@ -1847,6 +1911,36 @@
     }
   ],
   "auditLogs": [
+    {
+      "id": "AUD-1791475544061-930",
+      "timestamp": "10/8/2026, 22:05:44",
+      "entityType": "Order",
+      "entityId": "ORD-1003",
+      "action": "CREATE",
+      "changedBy": "Google Sheets Sync",
+      "source": "Google Sheets",
+      "details": "Added new Order ORD-1003 from Google Sheets (nnnn, Total: ৳10000)."
+    },
+    {
+      "id": "AUD-1791475544061-252",
+      "timestamp": "10/8/2026, 22:05:44",
+      "entityType": "Order",
+      "entityId": "ORD-1002",
+      "action": "CREATE",
+      "changedBy": "Google Sheets Sync",
+      "source": "Google Sheets",
+      "details": "Added new Order ORD-1002 from Google Sheets (nnnn, Total: ৳10000)."
+    },
+    {
+      "id": "AUD-1791475247949-715",
+      "timestamp": "10/8/2026, 22:00:47",
+      "entityType": "Order",
+      "entityId": "ORD-1001",
+      "action": "CREATE",
+      "changedBy": "Google Sheets Sync",
+      "source": "Google Sheets",
+      "details": "Added new Order ORD-1001 from Google Sheets (md, Total: ৳983)."
+    },
     {
       "id": "AUD-1791474644609-719",
       "timestamp": "10/8/2026, 21:50:44",
@@ -4376,18 +4470,18 @@
       "isConfigured": true,
       "appsScriptUrl": "https://script.google.com/macros/s/AKfycbx6QcViFYDS4KN8mU5fqR2wRDgot-ZquHRPBKoQfieimgqrVL443TyTwZEER8jUymWHPQ/exec",
       "deploymentId": "AKfycbx6QcViFYDS4KN8mU5fqR2wRDgot-ZquHRPBKoQfieimgqrVL443TyTwZEER8jUymWHPQ",
-      "lastSyncedAt": "2026-10-08T15:55:46.233Z",
+      "lastSyncedAt": "2026-10-08T16:48:10.297Z",
       "lastSyncStatus": "success",
-      "lastSyncMessage": "Full reconciliation via Apps Script completed: 0 orders (+0, ~0, -0), 14 expenses (+0, ~0, -0), 11 payouts (+0, ~0, -0). Total Active: 25.",
+      "lastSyncMessage": "Full reconciliation via Apps Script completed: 3 orders (+0, ~0, -0), 14 expenses (+0, ~0, -0), 11 payouts (+0, ~0, -0). Total Active: 28.",
       "syncSummary": {
         "orders": {
           "added": 0,
           "updated": 0,
           "removed": 0,
-          "unchanged": 0,
+          "unchanged": 3,
           "duplicates": 0,
           "invalid": 0,
-          "totalActive": 0
+          "totalActive": 3
         },
         "expenses": {
           "added": 0,
@@ -4407,8 +4501,8 @@
           "invalid": 0,
           "totalActive": 11
         },
-        "totalActiveRecords": 25,
-        "timestamp": "2026-10-08T15:55:46.233Z"
+        "totalActiveRecords": 28,
+        "timestamp": "2026-10-08T16:48:10.297Z"
       }
     },
     "telegram": {

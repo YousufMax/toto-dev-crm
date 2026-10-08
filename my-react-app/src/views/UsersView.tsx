@@ -19,11 +19,22 @@ import { api } from '../api';
 import { User, Role, Employee } from '../types';
 import { useAuth } from '../context/AuthContext';
 
+const FALLBACK_ROLES: Role[] = [
+  { id: 'role-super-admin', name: 'Super Admin', description: 'Full access', isSystem: true, recordScope: { orders: 'all', expenses: 'all', payouts: 'all' }, permissions: {} as any },
+  { id: 'role-coo', name: 'COO', description: 'Executive operational control', isSystem: true, recordScope: { orders: 'all', expenses: 'all', payouts: 'all' }, permissions: {} as any },
+  { id: 'role-sales-manager', name: 'Sales Manager', description: 'Sales oversight', isSystem: true, recordScope: { orders: 'team', expenses: 'own', payouts: 'all' }, permissions: {} as any },
+  { id: 'role-sales-officer', name: 'Sales Officer', description: 'Sales pipeline', isSystem: true, recordScope: { orders: 'assigned', expenses: 'own', payouts: 'assigned' }, permissions: {} as any },
+  { id: 'role-finance-manager', name: 'Finance Manager', description: 'Finances', isSystem: true, recordScope: { orders: 'all', expenses: 'all', payouts: 'all' }, permissions: {} as any },
+  { id: 'role-project-manager', name: 'Project Manager', description: 'Operations', isSystem: true, recordScope: { orders: 'all', expenses: 'own', payouts: 'all' }, permissions: {} as any },
+  { id: 'role-employee', name: 'Employee', description: 'Standard Employee', isSystem: true, recordScope: { orders: 'assigned', expenses: 'own', payouts: 'assigned' }, permissions: {} as any },
+  { id: 'role-viewer', name: 'Viewer', description: 'Read only', isSystem: true, recordScope: { orders: 'all', expenses: 'all', payouts: 'all' }, permissions: {} as any },
+];
+
 export const UsersView: React.FC = () => {
   const { user: currentUser } = useAuth();
 
   const [users, setUsers] = useState<User[]>([]);
-  const [roles, setRoles] = useState<Role[]>([]);
+  const [roles, setRoles] = useState<Role[]>(FALLBACK_ROLES);
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -41,7 +52,7 @@ export const UsersView: React.FC = () => {
     username: '',
     email: '',
     password: '',
-    roleId: '',
+    roleId: 'role-sales-officer',
     phone: '',
     salesRepCode: '',
     workerName: '',
@@ -51,17 +62,31 @@ export const UsersView: React.FC = () => {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const [uRes, rRes, eRes] = await Promise.all([
+      const [uRes, rRes, eRes] = await Promise.allSettled([
         api.getUsers(),
         api.getRoles(),
         api.getEmployees(),
       ]);
-      setUsers(uRes.users || []);
-      setRoles(rRes.roles || []);
-      setEmployees(eRes.employees || []);
-      if (rRes.roles && rRes.roles.length > 0 && !formData.roleId) {
-        setFormData(prev => ({ ...prev, roleId: rRes.roles[0].id }));
-      }
+
+      const loadedRoles = (rRes.status === 'fulfilled' && rRes.value?.roles?.length) 
+        ? rRes.value.roles 
+        : FALLBACK_ROLES;
+      setRoles(loadedRoles);
+
+      const loadedUsers = (uRes.status === 'fulfilled' && uRes.value?.users) 
+        ? uRes.value.users 
+        : [];
+      setUsers(loadedUsers);
+
+      const loadedEmployees = (eRes.status === 'fulfilled' && eRes.value?.employees) 
+        ? eRes.value.employees 
+        : [];
+      setEmployees(loadedEmployees);
+
+      setFormData(prev => ({
+        ...prev,
+        roleId: prev.roleId || loadedRoles[0]?.id || 'role-sales-officer'
+      }));
     } catch (err: any) {
       console.error(err);
     } finally {
@@ -76,15 +101,32 @@ export const UsersView: React.FC = () => {
   const handleCreateUser = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await api.createUser(formData);
-      setStatusMessage(`User ${formData.name} created successfully.`);
+      const activeRoles = roles.length > 0 ? roles : FALLBACK_ROLES;
+      const targetRoleId = formData.roleId || activeRoles[0]?.id || 'role-sales-officer';
+      const targetRole = activeRoles.find(r => r.id === targetRoleId) || activeRoles[0];
+
+      const payload = {
+        name: formData.name.trim(),
+        username: formData.username.trim(),
+        email: formData.email.trim(),
+        password: formData.password.trim(),
+        roleId: targetRoleId,
+        role: targetRole?.name || 'Sales Officer',
+        phone: formData.phone.trim(),
+        salesRepCode: formData.salesRepCode.trim(),
+        workerName: formData.workerName.trim(),
+        linkedEmployeeId: formData.linkedEmployeeId || undefined,
+      };
+
+      await api.createUser(payload);
+      setStatusMessage(`User ${payload.name} created successfully.`);
       setIsAddOpen(false);
       setFormData({
         name: '',
         username: '',
         email: '',
         password: '',
-        roleId: roles[0]?.id || '',
+        roleId: roles[0]?.id || 'role-sales-officer',
         phone: '',
         salesRepCode: '',
         workerName: '',
@@ -180,7 +222,13 @@ export const UsersView: React.FC = () => {
         </div>
 
         <button
-          onClick={() => setIsAddOpen(true)}
+          onClick={() => {
+            setFormData(prev => ({
+              ...prev,
+              roleId: prev.roleId || roles[0]?.id || FALLBACK_ROLES[0]?.id || 'role-sales-officer'
+            }));
+            setIsAddOpen(true);
+          }}
           className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-xs font-semibold text-white hover:bg-blue-500 transition-colors shadow-lg shadow-blue-600/20"
         >
           <UserPlus className="h-4 w-4" />
@@ -443,11 +491,11 @@ export const UsersView: React.FC = () => {
                 <div>
                   <label className="block text-slate-300 font-semibold mb-1">Assigned Role *</label>
                   <select
-                    value={formData.roleId}
+                    value={formData.roleId || (roles.length > 0 ? roles[0].id : FALLBACK_ROLES[0].id)}
                     onChange={e => setFormData({ ...formData, roleId: e.target.value })}
                     className="w-full p-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white"
                   >
-                    {roles.map(r => (
+                    {(roles.length > 0 ? roles : FALLBACK_ROLES).map(r => (
                       <option key={r.id} value={r.id}>{r.name}</option>
                     ))}
                   </select>
@@ -565,7 +613,7 @@ export const UsersView: React.FC = () => {
                     onChange={e => setEditingUser({ ...editingUser, roleId: e.target.value })}
                     className="w-full p-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white disabled:opacity-50"
                   >
-                    {roles.map(r => (
+                    {(roles.length > 0 ? roles : FALLBACK_ROLES).map(r => (
                       <option key={r.id} value={r.id}>{r.name}</option>
                     ))}
                   </select>
