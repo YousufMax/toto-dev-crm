@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
 import { postgresAuthRepo } from '../db/authRepo.js';
+import { store } from '../db/store.js';
 const JWT_SECRET = process.env.JWT_SECRET || 'toto-crm-super-secure-jwt-secret-key-2026';
 export function generateToken(user) {
     return jwt.sign({
@@ -43,27 +44,43 @@ export async function authenticate(req, res, next) {
                     userId = found.id;
             }
         }
-        // Default to Primary Super Admin if running without auth in dev
-        if (!userId) {
-            const allUsers = await postgresAuthRepo.getUsers();
-            const defaultAdmin = allUsers.find(u => u.isPrimarySuperAdmin) || allUsers[0];
-            if (defaultAdmin)
-                userId = defaultAdmin.id;
-        }
+        let user;
+        let role;
         if (userId) {
-            const user = await postgresAuthRepo.getUserById(userId);
-            if (user) {
-                if (user.status === 'Inactive' && !user.isPrimarySuperAdmin) {
-                    return res.status(403).json({
-                        success: false,
-                        message: 'Your account has been deactivated. Please contact your system administrator.'
-                    });
-                }
-                req.user = user;
-                req.role = await postgresAuthRepo.getRoleById(user.roleId) ||
-                    await postgresAuthRepo.getRoleByName(user.role) ||
-                    (await postgresAuthRepo.getRoles())[0];
+            try {
+                user = await postgresAuthRepo.getUserById(userId);
             }
+            catch (e) {
+                user = store.getUserById(userId);
+            }
+        }
+        // Default to Primary Super Admin if running without auth in dev/public
+        if (!user) {
+            try {
+                const allUsers = await postgresAuthRepo.getUsers();
+                user = allUsers.find(u => u.isPrimarySuperAdmin) || allUsers[0];
+            }
+            catch (e) {
+                const allUsers = store.getUsers();
+                user = allUsers.find(u => u.isPrimarySuperAdmin) || allUsers[0];
+            }
+        }
+        if (user) {
+            if (user.status === 'Inactive' && !user.isPrimarySuperAdmin) {
+                return res.status(403).json({
+                    success: false,
+                    message: 'Your account has been deactivated. Please contact your system administrator.'
+                });
+            }
+            req.user = user;
+            try {
+                role = await postgresAuthRepo.getRoleById(user.roleId) ||
+                    await postgresAuthRepo.getRoleByName(user.role);
+            }
+            catch (e) {
+                role = store.getRoles().find(r => r.id === user?.roleId || r.name === user?.role);
+            }
+            req.role = role || store.getRoles()[0];
         }
         next();
     }
