@@ -55,7 +55,7 @@ function fullModulePerms() {
         restore: true,
     };
 }
-const DEFAULT_ROLES = [
+export const DEFAULT_ROLES = [
     {
         id: 'role-super-admin',
         name: 'Super Admin',
@@ -209,7 +209,7 @@ const DEFAULT_ROLES = [
         }
     }
 ];
-const DEFAULT_EMPLOYEES = [
+export const DEFAULT_EMPLOYEES = [
     {
         id: 'EMP-01',
         name: 'MD Yousuf Ali',
@@ -290,7 +290,7 @@ const DEFAULT_EMPLOYEES = [
 ];
 // Pre-seeded hashed password for 'admin123'
 const SEED_PASSWORD_HASH = hashPassword('admin123');
-const DEFAULT_USERS = [
+export const DEFAULT_USERS = [
     {
         id: 'USR-01',
         username: 'admin',
@@ -790,12 +790,8 @@ class Store {
                         isPrimarySuperAdmin: Boolean(u.isPrimarySuperAdmin || u.email === 'admin@totodev.com' || u.id === 'USR-01'),
                     };
                 });
-                // Ensure all default role users exist for role evaluations
-                for (const defUser of DEFAULT_USERS) {
-                    if (!users.some(u => u.id === defUser.id || (u.email && u.email.toLowerCase() === defUser.email.toLowerCase()))) {
-                        users.push(defUser);
-                    }
-                }
+                // CRITICAL: Do NOT automatically recreate deleted user accounts!
+                // User accounts created or deleted by an administrator must remain persistent.
                 // Ensure MD Yousuf Ali is protected Primary Super Admin
                 const adminIndex = users.findIndex(u => u.isPrimarySuperAdmin || u.email === 'admin@totodev.com');
                 if (adminIndex !== -1) {

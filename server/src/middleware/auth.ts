@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-import { store } from '../db/store.js';
+import { postgresAuthRepo } from '../db/authRepo.js';
 import { User, Role, ModuleId, ActionType } from '../types/index.js';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'toto-crm-super-secure-jwt-secret-key-2026';
@@ -25,59 +25,64 @@ export function generateToken(user: User): string {
   );
 }
 
-// Extract authenticated user & role from token or headers
-export function authenticate(req: AuthenticatedRequest, res: Response, next: NextFunction) {
-  let userId: string | undefined;
+// Extract authenticated user & role from token or headers via PostgreSQL
+export async function authenticate(req: AuthenticatedRequest, res: Response, next: NextFunction) {
+  try {
+    let userId: string | undefined;
 
-  const authHeader = req.headers.authorization;
-  if (authHeader && authHeader.startsWith('Bearer ')) {
-    const token = authHeader.slice(7).trim();
-    try {
-      const decoded = jwt.verify(token, JWT_SECRET) as any;
-      userId = decoded.id;
-    } catch (err) {
-      // If token expired or invalid, fall back to checking user headers for seamless testing
-    }
-  }
-
-  // Fallback for dev convenience / switching headers
-  if (!userId) {
-    const headerUserId = req.headers['x-user-id'] as string;
-    const headerUserName = req.headers['x-user-name'] as string;
-
-    if (headerUserId) {
-      userId = headerUserId;
-    } else if (headerUserName) {
-      const found = store.getUsers().find(u => 
-        u.name.toLowerCase() === headerUserName.toLowerCase() ||
-        u.email.toLowerCase() === headerUserName.toLowerCase()
-      );
-      if (found) userId = found.id;
-    }
-  }
-
-  // Default to Primary Super Admin if running without auth in dev, but resolve proper user if available
-  if (!userId) {
-    const defaultAdmin = store.getUsers().find(u => u.isPrimarySuperAdmin) || store.getUsers()[0];
-    if (defaultAdmin) userId = defaultAdmin.id;
-  }
-
-  if (userId) {
-    const user = store.getUserById(userId);
-    if (user) {
-      if (user.status === 'Inactive' && !user.isPrimarySuperAdmin) {
-        return res.status(403).json({ 
-          success: false, 
-          message: 'Your account has been deactivated. Please contact your system administrator.' 
-        });
+    const authHeader = req.headers.authorization;
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      const token = authHeader.slice(7).trim();
+      try {
+        const decoded = jwt.verify(token, JWT_SECRET) as any;
+        userId = decoded.id;
+      } catch (err) {
+        // Token invalid or expired
       }
-
-      req.user = user;
-      req.role = store.getRoleById(user.roleId) || store.getRoleByName(user.role) || store.getRoles()[0];
     }
-  }
 
-  next();
+    // Fallback for dev convenience / switching headers
+    if (!userId) {
+      const headerUserId = req.headers['x-user-id'] as string;
+      const headerUserName = req.headers['x-user-name'] as string;
+
+      if (headerUserId) {
+        userId = headerUserId;
+      } else if (headerUserName) {
+        const found = await postgresAuthRepo.getUserByEmailOrUsername(headerUserName);
+        if (found) userId = found.id;
+      }
+    }
+
+    // Default to Primary Super Admin if running without auth in dev
+    if (!userId) {
+      const allUsers = await postgresAuthRepo.getUsers();
+      const defaultAdmin = allUsers.find(u => u.isPrimarySuperAdmin) || allUsers[0];
+      if (defaultAdmin) userId = defaultAdmin.id;
+    }
+
+    if (userId) {
+      const user = await postgresAuthRepo.getUserById(userId);
+      if (user) {
+        if (user.status === 'Inactive' && !user.isPrimarySuperAdmin) {
+          return res.status(403).json({ 
+            success: false, 
+            message: 'Your account has been deactivated. Please contact your system administrator.' 
+          });
+        }
+
+        req.user = user;
+        req.role = await postgresAuthRepo.getRoleById(user.roleId) || 
+                   await postgresAuthRepo.getRoleByName(user.role) || 
+                   (await postgresAuthRepo.getRoles())[0];
+      }
+    }
+
+    next();
+  } catch (err) {
+    console.error('[AuthMiddlewareError]', err);
+    next();
+  }
 }
 
 // Strict authentication enforcement

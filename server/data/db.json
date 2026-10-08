@@ -1331,8 +1331,8 @@
       "paymentStatus": "Partial",
       "deliveryStatus": "In Progress",
       "remarks": "",
-      "createdAt": "2026-10-06T17:03:32.497Z",
-      "updatedAt": "2026-10-06T17:03:32.497Z",
+      "createdAt": "2026-10-06T17:03:33.818Z",
+      "updatedAt": "2026-10-06T17:03:33.818Z",
       "source": "Google Sheets",
       "isArchived": false
     },
@@ -1352,8 +1352,8 @@
       "paymentStatus": "Paid",
       "deliveryStatus": "In Progress",
       "remarks": "",
-      "createdAt": "2026-10-06T18:33:32.072Z",
-      "updatedAt": "2026-10-06T18:33:32.072Z",
+      "createdAt": "2026-10-06T18:33:31.963Z",
+      "updatedAt": "2026-10-06T18:33:31.963Z",
       "source": "Google Sheets",
       "isArchived": false
     },
@@ -1373,8 +1373,8 @@
       "paymentStatus": "Partial",
       "deliveryStatus": "Pending",
       "remarks": "Automated A-to-Z Test Order",
-      "createdAt": "2026-10-06T18:48:38.668Z",
-      "updatedAt": "2026-10-06T18:48:38.668Z",
+      "createdAt": "2026-10-06T18:48:32.952Z",
+      "updatedAt": "2026-10-06T18:48:32.952Z",
       "source": "Google Sheets",
       "isArchived": false
     },
@@ -1394,8 +1394,8 @@
       "paymentStatus": "Unpaid",
       "deliveryStatus": "Pending",
       "remarks": "",
-      "createdAt": "2026-10-07T05:23:06.722Z",
-      "updatedAt": "2026-10-07T05:23:06.722Z",
+      "createdAt": "2026-10-07T05:17:58.947Z",
+      "updatedAt": "2026-10-07T05:17:58.947Z",
       "source": "Google Sheets",
       "isArchived": false
     },
@@ -1415,8 +1415,71 @@
       "paymentStatus": "Unpaid",
       "deliveryStatus": "Pending",
       "remarks": "",
-      "createdAt": "2026-10-07T05:23:06.722Z",
-      "updatedAt": "2026-10-07T05:23:06.722Z",
+      "createdAt": "2026-10-07T05:23:36.328Z",
+      "updatedAt": "2026-10-07T05:23:36.328Z",
+      "source": "Google Sheets",
+      "isArchived": false
+    },
+    {
+      "id": "ORD-1006",
+      "bookingDate": "2026-10-07 00:14",
+      "targetDeadline": "2026-10-09 16:00",
+      "clientName": "Sakib",
+      "clientContact": "1623363623",
+      "salesRep": "Mehejabin",
+      "serviceName": "Design",
+      "quantityUnit": "30 Unit",
+      "totalAmount": 500,
+      "paidAmount": 200,
+      "dueAmount": 300,
+      "paymentMethod": "Nagad",
+      "paymentStatus": "Paid",
+      "deliveryStatus": "Pending",
+      "remarks": "",
+      "createdAt": "2026-10-07T06:18:00.125Z",
+      "updatedAt": "2026-10-07T06:18:00.125Z",
+      "source": "Google Sheets",
+      "isArchived": false
+    },
+    {
+      "id": "ORD-1007",
+      "bookingDate": "2026-10-07 04:22",
+      "targetDeadline": "2026-10-31 10:00",
+      "clientName": "Ghranaj",
+      "clientContact": "1970056262",
+      "salesRep": "Rajib",
+      "serviceName": "Reels/ Graphic Design",
+      "quantityUnit": "10 Design / 2 Reels",
+      "totalAmount": 12000,
+      "paidAmount": 6000,
+      "dueAmount": 6000,
+      "paymentMethod": "bKash",
+      "paymentStatus": "Paid",
+      "deliveryStatus": "In Progress",
+      "remarks": "",
+      "createdAt": "2026-10-07T10:25:02.636Z",
+      "updatedAt": "2026-10-07T10:25:02.636Z",
+      "source": "Google Sheets",
+      "isArchived": false
+    },
+    {
+      "id": "ORD-1008",
+      "bookingDate": "2026-10-07 04:24",
+      "targetDeadline": "2026-10-23 12:00",
+      "clientName": "mD",
+      "clientContact": "ejids99399239832",
+      "salesRep": "Rajib",
+      "serviceName": "ndsskdncn",
+      "quantityUnit": "1 Unit",
+      "totalAmount": 3000,
+      "paidAmount": 3000,
+      "dueAmount": 0,
+      "paymentMethod": "bKash",
+      "paymentStatus": "Paid",
+      "deliveryStatus": "In Progress",
+      "remarks": "",
+      "createdAt": "2026-10-07T10:25:02.636Z",
+      "updatedAt": "2026-10-07T10:25:02.636Z",
       "source": "Google Sheets",
       "isArchived": false
     }
@@ -1437,7 +1500,7 @@
       "approvalStatus": "Pending Approval",
       "remarks": "",
       "createdAt": "2026-10-05T10:30:00+06:00",
-      "updatedAt": "2026-10-06T16:33:31.645Z",
+      "updatedAt": "2026-10-06T16:33:31.862Z",
       "source": "Google Sheets",
       "updatedBy": "Google Sheets Sync",
       "isArchived": false
@@ -1457,7 +1520,7 @@
       "approvalStatus": "Pending Approval",
       "remarks": "",
       "createdAt": "2026-10-05T20:39:23.750Z",
-      "updatedAt": "2026-10-06T16:33:31.645Z",
+      "updatedAt": "2026-10-06T16:33:31.863Z",
       "updatedBy": "Google Sheets Sync",
       "source": "Google Sheets",
       "isArchived": false
@@ -1477,7 +1540,7 @@
       "approvalStatus": "Pending Approval",
       "remarks": "",
       "createdAt": "2026-10-05T20:39:29.568Z",
-      "updatedAt": "2026-10-06T16:33:31.645Z",
+      "updatedAt": "2026-10-06T16:33:31.863Z",
       "updatedBy": "Google Sheets Sync",
       "source": "Google Sheets",
       "isArchived": false
@@ -1497,7 +1560,7 @@
       "approvalStatus": "Pending Approval",
       "remarks": "",
       "createdAt": "2026-10-06T12:56:26.176Z",
-      "updatedAt": "2026-10-06T16:28:42.918Z",
+      "updatedAt": "2026-10-06T16:28:48.217Z",
       "updatedBy": "Google Sheets Sync",
       "source": "Google Sheets",
       "isArchived": false
@@ -1516,8 +1579,8 @@
       "approvedBy": "MD Yousuf Ali",
       "approvalStatus": "Approved",
       "remarks": "",
-      "createdAt": "2026-10-06T17:19:04.251Z",
-      "updatedAt": "2026-10-06T17:19:04.251Z",
+      "createdAt": "2026-10-06T17:13:33.175Z",
+      "updatedAt": "2026-10-06T17:13:33.175Z",
       "source": "Google Sheets",
       "isArchived": false
     },
@@ -1535,8 +1598,8 @@
       "approvedBy": "MD Yousuf Ali",
       "approvalStatus": "Approved",
       "remarks": "",
-      "createdAt": "2026-10-06T17:19:04.251Z",
-      "updatedAt": "2026-10-06T17:19:04.251Z",
+      "createdAt": "2026-10-06T17:13:33.175Z",
+      "updatedAt": "2026-10-06T17:13:33.175Z",
       "source": "Google Sheets",
       "isArchived": false
     },
@@ -1554,8 +1617,8 @@
       "approvedBy": "MD Yousuf Ali",
       "approvalStatus": "Approved",
       "remarks": "",
-      "createdAt": "2026-10-06T17:53:33.440Z",
-      "updatedAt": "2026-10-06T17:53:33.440Z",
+      "createdAt": "2026-10-06T17:53:33.441Z",
+      "updatedAt": "2026-10-06T17:53:33.441Z",
       "source": "Google Sheets",
       "isArchived": false
     },
@@ -1573,8 +1636,8 @@
       "approvedBy": "",
       "approvalStatus": "Pending Approval",
       "remarks": "",
-      "createdAt": "2026-10-06T18:48:38.675Z",
-      "updatedAt": "2026-10-06T18:48:38.675Z",
+      "createdAt": "2026-10-06T18:48:32.956Z",
+      "updatedAt": "2026-10-06T18:48:32.956Z",
       "source": "Google Sheets",
       "isArchived": false
     },
@@ -1592,8 +1655,8 @@
       "approvedBy": "",
       "approvalStatus": "Pending Approval",
       "remarks": "",
-      "createdAt": "2026-10-07T05:23:06.730Z",
-      "updatedAt": "2026-10-07T05:23:06.730Z",
+      "createdAt": "2026-10-07T05:17:58.953Z",
+      "updatedAt": "2026-10-07T05:17:58.953Z",
       "source": "Google Sheets",
       "isArchived": false
     },
@@ -1611,8 +1674,8 @@
       "approvedBy": "",
       "approvalStatus": "Pending Approval",
       "remarks": "",
-      "createdAt": "2026-10-07T05:23:06.730Z",
-      "updatedAt": "2026-10-07T05:23:06.730Z",
+      "createdAt": "2026-10-07T05:23:36.331Z",
+      "updatedAt": "2026-10-07T05:23:36.331Z",
       "source": "Google Sheets",
       "isArchived": false
     }
@@ -1636,7 +1699,7 @@
       "transactionRefId": "",
       "remarks": "",
       "createdAt": "2026-10-05T10:45:00+06:00",
-      "updatedAt": "2026-10-06T16:33:31.646Z",
+      "updatedAt": "2026-10-06T16:33:31.863Z",
       "source": "Google Sheets",
       "updatedBy": "Google Sheets Sync",
       "isArchived": false
@@ -1659,7 +1722,7 @@
       "transactionRefId": "",
       "remarks": "",
       "createdAt": "2026-10-05T20:42:16.086Z",
-      "updatedAt": "2026-10-06T16:33:31.646Z",
+      "updatedAt": "2026-10-06T16:33:31.863Z",
       "updatedBy": "Google Sheets Sync",
       "source": "Google Sheets",
       "isArchived": false
@@ -1681,8 +1744,8 @@
       "paymentMethod": "Bank Transfer",
       "transactionRefId": "",
       "remarks": "",
-      "createdAt": "2026-10-06T17:43:42.876Z",
-      "updatedAt": "2026-10-06T17:43:42.876Z",
+      "createdAt": "2026-10-06T17:28:59.041Z",
+      "updatedAt": "2026-10-06T17:28:59.041Z",
       "source": "Google Sheets",
       "isArchived": false
     },
@@ -1703,8 +1766,8 @@
       "paymentMethod": "bKash",
       "transactionRefId": "",
       "remarks": "Lead Fullstack Developer Allocation",
-      "createdAt": "2026-10-06T18:48:38.677Z",
-      "updatedAt": "2026-10-06T18:48:38.678Z",
+      "createdAt": "2026-10-06T18:48:32.958Z",
+      "updatedAt": "2026-10-06T18:48:32.958Z",
       "source": "Google Sheets",
       "isArchived": false
     },
@@ -1725,8 +1788,8 @@
       "paymentMethod": "bKash",
       "transactionRefId": "BKASH-TXN-998877",
       "remarks": "Lead Fullstack Developer Allocation",
-      "createdAt": "2026-10-07T05:23:06.731Z",
-      "updatedAt": "2026-10-07T05:23:06.731Z",
+      "createdAt": "2026-10-07T05:17:58.953Z",
+      "updatedAt": "2026-10-07T05:17:58.953Z",
       "source": "Google Sheets",
       "isArchived": false
     },
@@ -1747,16 +1810,78 @@
       "paymentMethod": "bKash",
       "transactionRefId": "",
       "remarks": "Lead Fullstack Developer Allocation",
-      "createdAt": "2026-10-07T05:23:06.731Z",
-      "updatedAt": "2026-10-07T05:23:06.731Z",
+      "createdAt": "2026-10-07T05:23:36.333Z",
+      "updatedAt": "2026-10-07T05:23:36.333Z",
+      "source": "Google Sheets",
+      "isArchived": false
+    },
+    {
+      "id": "PAY-PRJ-510",
+      "projectOrderId": "ORD-1007",
+      "serviceName": "Reels/ Graphic Design",
+      "clientName": "Ghranaj",
+      "resourceWorkerName": "Shariar + Rashidul",
+      "totalProjectBudget": 12000,
+      "commissionType": "Per Unit",
+      "agreedPayoutAmount": 5000,
+      "advancePaid": 2000,
+      "dueFinalPayable": 3000,
+      "deliveryStatus": "In Progress",
+      "paymentStatus": "Partial",
+      "approvalStatus": "Pending Approval",
+      "paymentMethod": "bKash",
+      "transactionRefId": "",
+      "remarks": "",
+      "createdAt": "2026-10-07T10:34:56.347Z",
+      "updatedAt": "2026-10-07T10:34:56.347Z",
       "source": "Google Sheets",
       "isArchived": false
     }
   ],
   "auditLogs": [
     {
-      "id": "AUD-1791350586732-664",
-      "timestamp": "10/7/2026, 11:23:06",
+      "id": "AUD-1791369296350-897",
+      "timestamp": "10/7/2026, 16:34:56",
+      "entityType": "Payout",
+      "entityId": "PAY-PRJ-510",
+      "action": "CREATE",
+      "changedBy": "Google Sheets Sync",
+      "source": "Google Sheets",
+      "details": "Added new Payout PAY-PRJ-510 from Google Sheets (Shariar + Rashidul, Agreed: ৳5000)."
+    },
+    {
+      "id": "AUD-1791368702647-747",
+      "timestamp": "10/7/2026, 16:25:02",
+      "entityType": "Order",
+      "entityId": "ORD-1008",
+      "action": "CREATE",
+      "changedBy": "Google Sheets Sync",
+      "source": "Google Sheets",
+      "details": "Added new Order ORD-1008 from Google Sheets (mD, Total: ৳3000)."
+    },
+    {
+      "id": "AUD-1791368702646-178",
+      "timestamp": "10/7/2026, 16:25:02",
+      "entityType": "Order",
+      "entityId": "ORD-1007",
+      "action": "CREATE",
+      "changedBy": "Google Sheets Sync",
+      "source": "Google Sheets",
+      "details": "Added new Order ORD-1007 from Google Sheets (Ghranaj, Total: ৳12000)."
+    },
+    {
+      "id": "AUD-1791353880137-540",
+      "timestamp": "10/7/2026, 12:18:00",
+      "entityType": "Order",
+      "entityId": "ORD-1006",
+      "action": "CREATE",
+      "changedBy": "Google Sheets Sync",
+      "source": "Google Sheets",
+      "details": "Added new Order ORD-1006 from Google Sheets (Sakib, Total: ৳500)."
+    },
+    {
+      "id": "AUD-1791350616334-102",
+      "timestamp": "10/7/2026, 11:23:36",
       "entityType": "Payout",
       "entityId": "PAY-PRJ-509",
       "action": "CREATE",
@@ -1765,18 +1890,8 @@
       "details": "Added new Payout PAY-PRJ-509 from Google Sheets (Developer Sakib, Agreed: ৳16500)."
     },
     {
-      "id": "AUD-1791350586732-243",
-      "timestamp": "10/7/2026, 11:23:06",
-      "entityType": "Payout",
-      "entityId": "PAY-PRJ-508",
-      "action": "CREATE",
-      "changedBy": "Google Sheets Sync",
-      "source": "Google Sheets",
-      "details": "Added new Payout PAY-PRJ-508 from Google Sheets (Developer Sakib, Agreed: ৳16500)."
-    },
-    {
-      "id": "AUD-1791350586731-634",
-      "timestamp": "10/7/2026, 11:23:06",
+      "id": "AUD-1791350616333-282",
+      "timestamp": "10/7/2026, 11:23:36",
       "entityType": "Expense",
       "entityId": "EXP-2026-1014",
       "action": "CREATE",
@@ -1785,18 +1900,8 @@
       "details": "Added new Expense EXP-2026-1014 from Google Sheets (Other, Amount: ৳0)."
     },
     {
-      "id": "AUD-1791350586730-625",
-      "timestamp": "10/7/2026, 11:23:06",
-      "entityType": "Expense",
-      "entityId": "EXP-2026-1013",
-      "action": "CREATE",
-      "changedBy": "Google Sheets Sync",
-      "source": "Google Sheets",
-      "details": "Added new Expense EXP-2026-1013 from Google Sheets (Software / Subscription, Amount: ৳4500)."
-    },
-    {
-      "id": "AUD-1791350586729-529",
-      "timestamp": "10/7/2026, 11:23:06",
+      "id": "AUD-1791350616330-828",
+      "timestamp": "10/7/2026, 11:23:36",
       "entityType": "Order",
       "entityId": "ORD-1005",
       "action": "CREATE",
@@ -1805,8 +1910,28 @@
       "details": "Added new Order ORD-1005 from Google Sheets (, Total: ৳0)."
     },
     {
-      "id": "AUD-1791350586729-655",
-      "timestamp": "10/7/2026, 11:23:06",
+      "id": "AUD-1791350278954-945",
+      "timestamp": "10/7/2026, 11:17:58",
+      "entityType": "Payout",
+      "entityId": "PAY-PRJ-508",
+      "action": "CREATE",
+      "changedBy": "Google Sheets Sync",
+      "source": "Google Sheets",
+      "details": "Added new Payout PAY-PRJ-508 from Google Sheets (Developer Sakib, Agreed: ৳16500)."
+    },
+    {
+      "id": "AUD-1791350278953-67",
+      "timestamp": "10/7/2026, 11:17:58",
+      "entityType": "Expense",
+      "entityId": "EXP-2026-1013",
+      "action": "CREATE",
+      "changedBy": "Google Sheets Sync",
+      "source": "Google Sheets",
+      "details": "Added new Expense EXP-2026-1013 from Google Sheets (Software / Subscription, Amount: ৳4500)."
+    },
+    {
+      "id": "AUD-1791350278952-309",
+      "timestamp": "10/7/2026, 11:17:58",
       "entityType": "Order",
       "entityId": "ORD-1004",
       "action": "CREATE",
@@ -1815,8 +1940,8 @@
       "details": "Added new Order ORD-1004 from Google Sheets (, Total: ৳0)."
     },
     {
-      "id": "AUD-1791312518680-880",
-      "timestamp": "10/7/2026, 00:48:38",
+      "id": "AUD-1791312512959-213",
+      "timestamp": "10/7/2026, 00:48:32",
       "entityType": "Payout",
       "entityId": "PAY-PRJ-507",
       "action": "CREATE",
@@ -1825,8 +1950,8 @@
       "details": "Added new Payout PAY-PRJ-507 from Google Sheets (Developer Sakib, Agreed: ৳16500)."
     },
     {
-      "id": "AUD-1791312518677-862",
-      "timestamp": "10/7/2026, 00:48:38",
+      "id": "AUD-1791312512957-519",
+      "timestamp": "10/7/2026, 00:48:32",
       "entityType": "Expense",
       "entityId": "EXP-2026-1012",
       "action": "CREATE",
@@ -1835,8 +1960,8 @@
       "details": "Added new Expense EXP-2026-1012 from Google Sheets (Software / Subscription, Amount: ৳4500)."
     },
     {
-      "id": "AUD-1791312518675-41",
-      "timestamp": "10/7/2026, 00:48:38",
+      "id": "AUD-1791312512955-994",
+      "timestamp": "10/7/2026, 00:48:32",
       "entityType": "Order",
       "entityId": "ORD-1003",
       "action": "CREATE",
@@ -1845,8 +1970,8 @@
       "details": "Added new Order ORD-1003 from Google Sheets (AtoZ Test Client Ltd, Total: ৳50000)."
     },
     {
-      "id": "AUD-1791311612085-61",
-      "timestamp": "10/7/2026, 00:33:32",
+      "id": "AUD-1791311611969-287",
+      "timestamp": "10/7/2026, 00:33:31",
       "entityType": "Order",
       "entityId": "ORD-1002",
       "action": "CREATE",
@@ -1855,7 +1980,7 @@
       "details": "Added new Order ORD-1002 from Google Sheets (md max, Total: ৳1000)."
     },
     {
-      "id": "AUD-1791309213442-93",
+      "id": "AUD-1791309213444-768",
       "timestamp": "10/6/2026, 23:53:33",
       "entityType": "Expense",
       "entityId": "EXP-2026-1011",
@@ -1865,8 +1990,8 @@
       "details": "Added new Expense EXP-2026-1011 from Google Sheets (Employee Salary, Amount: ৳3999)."
     },
     {
-      "id": "AUD-1791308622878-357",
-      "timestamp": "10/6/2026, 23:43:42",
+      "id": "AUD-1791307739045-55",
+      "timestamp": "10/6/2026, 23:28:59",
       "entityType": "Payout",
       "entityId": "PAY-PRJ-506",
       "action": "CREATE",
@@ -1875,8 +2000,8 @@
       "details": "Added new Payout PAY-PRJ-506 from Google Sheets (desiger rohim, Agreed: ৳5000)."
     },
     {
-      "id": "AUD-1791307144262-866",
-      "timestamp": "10/6/2026, 23:19:04",
+      "id": "AUD-1791306813184-32",
+      "timestamp": "10/6/2026, 23:13:33",
       "entityType": "Expense",
       "entityId": "EXP-2026-1010",
       "action": "CREATE",
@@ -1885,8 +2010,8 @@
       "details": "Added new Expense EXP-2026-1010 from Google Sheets (Employee Salary, Amount: ৳5000)."
     },
     {
-      "id": "AUD-1791307144261-505",
-      "timestamp": "10/6/2026, 23:19:04",
+      "id": "AUD-1791306813180-113",
+      "timestamp": "10/6/2026, 23:13:33",
       "entityType": "Expense",
       "entityId": "EXP-2026-1009",
       "action": "CREATE",
@@ -1895,8 +2020,8 @@
       "details": "Added new Expense EXP-2026-1009 from Google Sheets (Employee Salary, Amount: ৳5000)."
     },
     {
-      "id": "AUD-1791306212509-910",
-      "timestamp": "10/6/2026, 23:03:32",
+      "id": "AUD-1791306213833-144",
+      "timestamp": "10/6/2026, 23:03:33",
       "entityType": "Order",
       "entityId": "ORD-1001",
       "action": "CREATE",
@@ -1905,8 +2030,8 @@
       "details": "Added new Order ORD-1001 from Google Sheets (MD MAX, Total: ৳1000)."
     },
     {
-      "id": "AUD-1791302614776-857",
-      "timestamp": "10/6/2026, 22:03:34",
+      "id": "AUD-1791302914702-903",
+      "timestamp": "10/6/2026, 22:08:34",
       "entityType": "Order",
       "entityId": "ORD-1013",
       "action": "DELETE",
@@ -1915,8 +2040,8 @@
       "details": "Removed Order ORD-1013 from active dataset as it was deleted from Google Sheets."
     },
     {
-      "id": "AUD-1791302614775-723",
-      "timestamp": "10/6/2026, 22:03:34",
+      "id": "AUD-1791302914702-610",
+      "timestamp": "10/6/2026, 22:08:34",
       "entityType": "Order",
       "entityId": "ORD-TEST-DEL",
       "action": "DELETE",
@@ -1925,8 +2050,8 @@
       "details": "Removed Order ORD-TEST-DEL from active dataset as it was deleted from Google Sheets."
     },
     {
-      "id": "AUD-1791302614774-267",
-      "timestamp": "10/6/2026, 22:03:34",
+      "id": "AUD-1791302914700-697",
+      "timestamp": "10/6/2026, 22:08:34",
       "entityType": "Order",
       "entityId": "ORD-1012",
       "action": "DELETE",
@@ -1935,8 +2060,8 @@
       "details": "Removed Order ORD-1012 from active dataset as it was deleted from Google Sheets."
     },
     {
-      "id": "AUD-1791301332541-642",
-      "timestamp": "10/6/2026, 21:42:12",
+      "id": "AUD-1791301219073-573",
+      "timestamp": "10/6/2026, 21:40:19",
       "entityType": "Order",
       "entityId": "ORD-1013",
       "action": "CREATE",
@@ -1945,8 +2070,8 @@
       "details": "Added new Order ORD-1013 from Google Sheets (Yousuf, Total: ৳1000)."
     },
     {
-      "id": "AUD-1791301332540-608",
-      "timestamp": "10/6/2026, 21:42:12",
+      "id": "AUD-1791301219073-462",
+      "timestamp": "10/6/2026, 21:40:19",
       "entityType": "Order",
       "entityId": "ORD-TEST-DEL",
       "action": "CREATE",
@@ -3455,7 +3580,7 @@
       "isConfigured": true,
       "appsScriptUrl": "https://script.google.com/macros/s/AKfycbx6QcViFYDS4KN8mU5fqR2wRDgot-ZquHRPBKoQfieimgqrVL443TyTwZEER8jUymWHPQ/exec",
       "deploymentId": "AKfycbx6QcViFYDS4KN8mU5fqR2wRDgot-ZquHRPBKoQfieimgqrVL443TyTwZEER8jUymWHPQ",
-      "lastSyncedAt": "2026-10-07T05:53:13.269Z",
+      "lastSyncedAt": "2026-10-07T13:15:12.696Z",
       "lastSyncStatus": "error",
       "lastSyncMessage": "Sync Failed: HTTP 404: Not Found",
       "syncSummary": {
@@ -3463,10 +3588,10 @@
           "added": 0,
           "updated": 0,
           "removed": 0,
-          "unchanged": 5,
+          "unchanged": 8,
           "duplicates": 3,
           "invalid": 0,
-          "totalActive": 5
+          "totalActive": 8
         },
         "expenses": {
           "added": 0,
@@ -3481,13 +3606,13 @@
           "added": 0,
           "updated": 0,
           "removed": 0,
-          "unchanged": 6,
+          "unchanged": 7,
           "duplicates": 1,
           "invalid": 0,
-          "totalActive": 6
+          "totalActive": 7
         },
-        "totalActiveRecords": 21,
-        "timestamp": "2026-10-07T05:53:13.269Z"
+        "totalActiveRecords": 25,
+        "timestamp": "2026-10-07T13:15:12.694Z"
       }
     },
     "telegram": {

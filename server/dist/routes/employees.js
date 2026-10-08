@@ -1,11 +1,11 @@
 import { Router } from 'express';
-import { store } from '../db/store.js';
+import { postgresAuthRepo } from '../db/authRepo.js';
 import { requirePermission } from '../middleware/auth.js';
 export const employeesRouter = Router();
 // GET all employees
-employeesRouter.get('/', requirePermission('employees', 'view'), (req, res) => {
+employeesRouter.get('/', requirePermission('employees', 'view'), async (req, res) => {
     try {
-        const employees = store.getEmployees();
+        const employees = await postgresAuthRepo.getEmployees();
         res.json({ success: true, employees });
     }
     catch (err) {
@@ -13,15 +13,20 @@ employeesRouter.get('/', requirePermission('employees', 'view'), (req, res) => {
     }
 });
 // GET single employee
-employeesRouter.get('/:id', requirePermission('employees', 'view'), (req, res) => {
-    const emp = store.getEmployeeById(req.params.id);
-    if (!emp) {
-        return res.status(404).json({ success: false, message: 'Employee not found' });
+employeesRouter.get('/:id', requirePermission('employees', 'view'), async (req, res) => {
+    try {
+        const emp = await postgresAuthRepo.getEmployeeById(req.params.id);
+        if (!emp) {
+            return res.status(404).json({ success: false, message: 'Employee not found in PostgreSQL.' });
+        }
+        res.json({ success: true, employee: emp });
     }
-    res.json({ success: true, employee: emp });
+    catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
 });
 // POST Create employee record
-employeesRouter.post('/', requirePermission('employees', 'create'), (req, res) => {
+employeesRouter.post('/', requirePermission('employees', 'create'), async (req, res) => {
     try {
         const { name, designation, department, email, phone, status, joinedDate, baseSalary, notes, linkedUserId } = req.body;
         if (!name || !designation || !department) {
@@ -30,7 +35,7 @@ employeesRouter.post('/', requirePermission('employees', 'create'), (req, res) =
                 message: 'Name, designation, and department are required.'
             });
         }
-        const newEmp = store.createEmployee({
+        const newEmp = await postgresAuthRepo.createEmployee({
             name,
             designation,
             department,
@@ -42,11 +47,11 @@ employeesRouter.post('/', requirePermission('employees', 'create'), (req, res) =
             notes,
             linkedUserId,
         });
-        store.addAuditLog({
+        await postgresAuthRepo.addAuditLog({
             entityType: 'Employee',
             entityId: newEmp.id,
-            action: 'CREATE',
-            changedBy: req.user?.name || 'Admin',
+            action: 'EMPLOYEE_CREATED',
+            performedBy: req.user?.name || 'Admin',
             source: 'Dashboard',
             details: `Created employee record ${newEmp.name} (${newEmp.designation}, ${newEmp.department}).`,
         });
@@ -61,13 +66,13 @@ employeesRouter.post('/', requirePermission('employees', 'create'), (req, res) =
     }
 });
 // PUT Update employee record
-employeesRouter.put('/:id', requirePermission('employees', 'edit'), (req, res) => {
+employeesRouter.put('/:id', requirePermission('employees', 'edit'), async (req, res) => {
     try {
         const { id } = req.params;
         const { name, designation, department, email, phone, status, joinedDate, baseSalary, notes, linkedUserId } = req.body;
-        const previousEmp = store.getEmployeeById(id);
+        const previousEmp = await postgresAuthRepo.getEmployeeById(id);
         if (!previousEmp) {
-            return res.status(404).json({ success: false, message: 'Employee not found' });
+            return res.status(404).json({ success: false, message: 'Employee not found in PostgreSQL.' });
         }
         const updates = {};
         if (name !== undefined)
@@ -90,14 +95,14 @@ employeesRouter.put('/:id', requirePermission('employees', 'edit'), (req, res) =
             updates.notes = notes;
         if (linkedUserId !== undefined)
             updates.linkedUserId = linkedUserId;
-        const updatedEmp = store.updateEmployee(id, updates);
-        store.addAuditLog({
+        const updatedEmp = await postgresAuthRepo.updateEmployee(id, updates);
+        await postgresAuthRepo.addAuditLog({
             entityType: 'Employee',
             entityId: updatedEmp.id,
-            action: 'UPDATE',
-            changedBy: req.user?.name || 'Admin',
+            action: 'EMPLOYEE_UPDATED',
+            performedBy: req.user?.name || 'Admin',
             source: 'Dashboard',
-            details: `Updated employee record for ${updatedEmp.name}. Status: ${updatedEmp.status}. (Historical orders and payouts preserved).`,
+            details: `Updated employee record for ${updatedEmp.name}. Status: ${updatedEmp.status}. (Historical orders, expenses, and payouts preserved).`,
         });
         res.json({
             success: true,

@@ -1,16 +1,21 @@
 import { Router } from 'express';
-import { store } from '../db/store.js';
+import { postgresAuthRepo } from '../db/authRepo.js';
 import { requirePermission } from '../middleware/auth.js';
 export const auditRouter = Router();
-// GET recent audit logs
-auditRouter.get('/', requirePermission('audit', 'view'), (req, res) => {
-    const { entityType, entityId, limit } = req.query;
-    let logs = store.getAuditLogs(limit ? parseInt(limit, 10) : 100);
-    if (entityType && entityType !== 'All') {
-        logs = logs.filter(l => l.entityType.toLowerCase() === entityType.toLowerCase());
+// GET recent audit logs from PostgreSQL
+auditRouter.get('/', requirePermission('audit', 'view'), async (req, res) => {
+    try {
+        const { entityType, entityId, limit } = req.query;
+        let logs = await postgresAuthRepo.getAuditLogs(limit ? parseInt(limit, 10) : 100);
+        if (entityType && entityType !== 'All') {
+            logs = logs.filter(l => l.entityType.toLowerCase() === entityType.toLowerCase());
+        }
+        if (entityId) {
+            logs = logs.filter(l => l.entityId.toLowerCase().includes(entityId.toLowerCase()));
+        }
+        res.json({ success: true, count: logs.length, logs });
     }
-    if (entityId) {
-        logs = logs.filter(l => l.entityId.toLowerCase().includes(entityId.toLowerCase()));
+    catch (err) {
+        res.status(500).json({ success: false, message: err.message });
     }
-    res.json({ success: true, count: logs.length, logs });
 });

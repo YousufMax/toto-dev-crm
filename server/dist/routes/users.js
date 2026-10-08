@@ -1,11 +1,11 @@
 import { Router } from 'express';
-import { store } from '../db/store.js';
+import { postgresAuthRepo } from '../db/authRepo.js';
 import { requirePermission } from '../middleware/auth.js';
 export const usersRouter = Router();
 // GET all users
-usersRouter.get('/', requirePermission('users', 'view'), (req, res) => {
+usersRouter.get('/', requirePermission('users', 'view'), async (req, res) => {
     try {
-        const users = store.getUsers();
+        const users = await postgresAuthRepo.getUsers();
         res.json({ success: true, users });
     }
     catch (err) {
@@ -13,47 +13,45 @@ usersRouter.get('/', requirePermission('users', 'view'), (req, res) => {
     }
 });
 // GET single user
-usersRouter.get('/:id', requirePermission('users', 'view'), (req, res) => {
-    const user = store.getUserById(req.params.id);
-    if (!user) {
-        return res.status(404).json({ success: false, message: 'User not found' });
+usersRouter.get('/:id', requirePermission('users', 'view'), async (req, res) => {
+    try {
+        const user = await postgresAuthRepo.getUserById(req.params.id);
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'User not found in PostgreSQL.' });
+        }
+        res.json({ success: true, user });
     }
-    res.json({ success: true, user });
+    catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
 });
 // POST Create new user
-usersRouter.post('/', requirePermission('users', 'create'), (req, res) => {
+usersRouter.post('/', requirePermission('users', 'create'), async (req, res) => {
     try {
         const { name, username, email, password, roleId, phone, salesRepCode, workerName, linkedEmployeeId } = req.body;
-        if (!name || !email || !password || !roleId) {
+        if (!email || !password || !roleId) {
             return res.status(400).json({
                 success: false,
-                message: 'Name, email, password, and role are required.'
+                message: 'Email, password, and role are required.'
             });
         }
-        const createdUser = store.createUser({
-            name,
+        const creatorName = req.user?.name || 'Admin';
+        const createdUser = await postgresAuthRepo.createUser({
+            name: name || username || email.split('@')[0],
             username: username || email.split('@')[0],
             email,
             password,
             roleId,
-            role: '', // Resolved inside store
+            role: '',
             status: 'Active',
             phone,
             salesRepCode,
             workerName,
             linkedEmployeeId,
-        });
-        store.addAuditLog({
-            entityType: 'User',
-            entityId: createdUser.id,
-            action: 'CREATE',
-            changedBy: req.user?.name || 'Admin',
-            source: 'Dashboard',
-            details: `Created new user ${createdUser.name} (${createdUser.email}) with role ${createdUser.role}.`,
-        });
+        }, creatorName);
         res.status(201).json({
             success: true,
-            message: `User ${createdUser.name} created successfully.`,
+            message: `User ${createdUser.name} created successfully in PostgreSQL.`,
             user: createdUser,
         });
     }
@@ -62,16 +60,16 @@ usersRouter.post('/', requirePermission('users', 'create'), (req, res) => {
     }
 });
 // PUT Update user
-usersRouter.put('/:id', requirePermission('users', 'edit'), (req, res) => {
+usersRouter.put('/:id', requirePermission('users', 'edit'), async (req, res) => {
     try {
         const { id } = req.params;
         const { name, username, email, roleId, phone, salesRepCode, workerName, linkedEmployeeId, status } = req.body;
         const callerId = req.user?.id;
-        const previous = store.getUserById(id);
+        const previous = await postgresAuthRepo.getUserById(id);
         if (!previous) {
-            return res.status(404).json({ success: false, message: 'User not found' });
+            return res.status(404).json({ success: false, message: 'User not found in PostgreSQL.' });
         }
-        const updatedUser = store.updateUser(id, {
+        const updatedUser = await postgresAuthRepo.updateUser(id, {
             name,
             username,
             email,
@@ -82,11 +80,11 @@ usersRouter.put('/:id', requirePermission('users', 'edit'), (req, res) => {
             linkedEmployeeId,
             status,
         }, callerId);
-        store.addAuditLog({
+        await postgresAuthRepo.addAuditLog({
             entityType: 'User',
             entityId: updatedUser.id,
-            action: 'UPDATE',
-            changedBy: req.user?.name || 'Admin',
+            action: 'USER_UPDATED',
+            performedBy: req.user?.name || 'Admin',
             source: 'Dashboard',
             details: `Updated user profile for ${updatedUser.name} (${updatedUser.role}).`,
         });
@@ -100,25 +98,16 @@ usersRouter.put('/:id', requirePermission('users', 'edit'), (req, res) => {
         res.status(400).json({ success: false, message: err.message });
     }
 });
-// POST Reset user password
-usersRouter.post('/:id/reset-password', requirePermission('users', 'edit'), (req, res) => {
+// POST Reset user password (Admin action)
+usersRouter.post('/:id/reset-password', requirePermission('users', 'edit'), async (req, res) => {
     try {
         const { id } = req.params;
         const { newPassword } = req.body;
         if (!newPassword || newPassword.trim().length < 6) {
             return res.status(400).json({ success: false, message: 'Password must be at least 6 characters.' });
         }
-        const callerId = req.user?.id;
-        const updated = store.updateUser(id, { password: newPassword.trim() }, callerId);
-        store.addAuditLog({
-            entityType: 'User',
-            entityId: updated.id,
-            action: 'UPDATE',
-            fieldChanged: 'password',
-            changedBy: req.user?.name || 'Admin',
-            source: 'Dashboard',
-            details: `Password reset for user ${updated.name}.`,
-        });
+        const callerName = req.user?.name || 'Admin';
+        const updated = await postgresAuthRepo.resetPassword(id, newPassword.trim(), callerName);
         res.json({
             success: true,
             message: `Password reset successfully for ${updated.name}.`,
@@ -129,7 +118,7 @@ usersRouter.post('/:id/reset-password', requirePermission('users', 'edit'), (req
     }
 });
 // PATCH Toggle user status (Active / Inactive)
-usersRouter.patch('/:id/status', requirePermission('users', 'edit'), (req, res) => {
+usersRouter.patch('/:id/status', requirePermission('users', 'edit'), async (req, res) => {
     try {
         const { id } = req.params;
         const { status } = req.body;
@@ -137,17 +126,8 @@ usersRouter.patch('/:id/status', requirePermission('users', 'edit'), (req, res) 
             return res.status(400).json({ success: false, message: 'Status must be Active or Inactive.' });
         }
         const callerId = req.user?.id;
-        const updated = store.toggleUserStatus(id, status, callerId);
-        store.addAuditLog({
-            entityType: 'User',
-            entityId: updated.id,
-            action: 'STATUS_CHANGE',
-            fieldChanged: 'status',
-            newValue: status,
-            changedBy: req.user?.name || 'Admin',
-            source: 'Dashboard',
-            details: `User ${updated.name} status changed to ${status}.`,
-        });
+        const callerName = req.user?.name || 'Admin';
+        const updated = await postgresAuthRepo.toggleUserStatus(id, status, callerId, callerName);
         res.json({
             success: true,
             message: `User ${updated.name} is now ${status}.`,
@@ -158,24 +138,17 @@ usersRouter.patch('/:id/status', requirePermission('users', 'edit'), (req, res) 
         res.status(400).json({ success: false, message: err.message });
     }
 });
-// DELETE User (Strictly prevents deleting Primary Super Admin)
-usersRouter.delete('/:id', requirePermission('users', 'delete'), (req, res) => {
+// DELETE User (Permanently removes from active user list while preserving business history)
+usersRouter.delete('/:id', requirePermission('users', 'delete'), async (req, res) => {
     try {
         const { id } = req.params;
         const callerId = req.user?.id;
-        const userToDelete = store.getUserById(id);
+        const callerName = req.user?.name || 'Admin';
+        const userToDelete = await postgresAuthRepo.getUserById(id);
         if (!userToDelete) {
-            return res.status(404).json({ success: false, message: 'User not found' });
+            return res.status(404).json({ success: false, message: 'User not found in PostgreSQL.' });
         }
-        store.deleteUser(id, callerId);
-        store.addAuditLog({
-            entityType: 'User',
-            entityId: id,
-            action: 'DELETE',
-            changedBy: req.user?.name || 'Admin',
-            source: 'Dashboard',
-            details: `Deleted user ${userToDelete.name} (${userToDelete.email}).`,
-        });
+        await postgresAuthRepo.deleteUser(id, callerId, callerName);
         res.json({
             success: true,
             message: `User ${userToDelete.name} deleted successfully.`,

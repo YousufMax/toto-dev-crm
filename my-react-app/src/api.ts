@@ -79,6 +79,11 @@ export const api = {
     }),
   getMe: () => request<{ success: boolean; user: User; role: Role }>('/api/auth/me'),
   logout: () => request<{ success: boolean; message: string }>('/api/auth/logout', { method: 'POST' }),
+  changePassword: (passwords: { currentPassword: string; newPassword: string; confirmPassword?: string }) =>
+    request<{ success: boolean; message: string }>('/api/auth/change-password', {
+      method: 'POST',
+      body: JSON.stringify(passwords),
+    }),
   switchUser: (userId: string) => request<{ user: User; role: Role; token: string }>('/api/auth/switch-user', {
     method: 'POST',
     body: JSON.stringify({ userId }),

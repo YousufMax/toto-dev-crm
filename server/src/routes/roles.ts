@@ -1,13 +1,13 @@
 import { Router } from 'express';
-import { store } from '../db/store.js';
+import { postgresAuthRepo } from '../db/authRepo.js';
 import { AuthenticatedRequest, requirePermission } from '../middleware/auth.js';
 
 export const rolesRouter = Router();
 
 // GET all roles
-rolesRouter.get('/', requirePermission('roles', 'view'), (req: AuthenticatedRequest, res) => {
+rolesRouter.get('/', requirePermission('roles', 'view'), async (req: AuthenticatedRequest, res) => {
   try {
-    const roles = store.getRoles();
+    const roles = await postgresAuthRepo.getRoles();
     res.json({ success: true, roles });
   } catch (err: any) {
     res.status(500).json({ success: false, message: err.message });
@@ -15,16 +15,20 @@ rolesRouter.get('/', requirePermission('roles', 'view'), (req: AuthenticatedRequ
 });
 
 // GET single role
-rolesRouter.get('/:id', requirePermission('roles', 'view'), (req: AuthenticatedRequest, res) => {
-  const role = store.getRoleById(req.params.id);
-  if (!role) {
-    return res.status(404).json({ success: false, message: 'Role not found' });
+rolesRouter.get('/:id', requirePermission('roles', 'view'), async (req: AuthenticatedRequest, res) => {
+  try {
+    const role = await postgresAuthRepo.getRoleById(req.params.id);
+    if (!role) {
+      return res.status(404).json({ success: false, message: 'Role not found in PostgreSQL.' });
+    }
+    res.json({ success: true, role });
+  } catch (err: any) {
+    res.status(500).json({ success: false, message: err.message });
   }
-  res.json({ success: true, role });
 });
 
 // POST Create custom role
-rolesRouter.post('/', requirePermission('roles', 'create'), (req: AuthenticatedRequest, res) => {
+rolesRouter.post('/', requirePermission('roles', 'create'), async (req: AuthenticatedRequest, res) => {
   try {
     const { name, description, recordScope, permissions } = req.body;
 
@@ -35,7 +39,7 @@ rolesRouter.post('/', requirePermission('roles', 'create'), (req: AuthenticatedR
       });
     }
 
-    const newRole = store.createRole({
+    const newRole = await postgresAuthRepo.createRole({
       name,
       description: description || '',
       recordScope: recordScope || { orders: 'all', expenses: 'all', payouts: 'all' },
@@ -43,11 +47,11 @@ rolesRouter.post('/', requirePermission('roles', 'create'), (req: AuthenticatedR
       isSystem: false,
     });
 
-    store.addAuditLog({
+    await postgresAuthRepo.addAuditLog({
       entityType: 'Role',
       entityId: newRole.id,
-      action: 'CREATE',
-      changedBy: req.user?.name || 'Admin',
+      action: 'ROLE_CREATED',
+      performedBy: req.user?.name || 'Admin',
       source: 'Dashboard',
       details: `Created new custom role "${newRole.name}".`,
     });
@@ -63,28 +67,28 @@ rolesRouter.post('/', requirePermission('roles', 'create'), (req: AuthenticatedR
 });
 
 // PUT Update role (permissions, description, recordScope)
-rolesRouter.put('/:id', requirePermission('roles', 'edit'), (req: AuthenticatedRequest, res) => {
+rolesRouter.put('/:id', requirePermission('roles', 'edit'), async (req: AuthenticatedRequest, res) => {
   try {
     const { id } = req.params;
     const { name, description, recordScope, permissions } = req.body;
 
-    const previousRole = store.getRoleById(id);
+    const previousRole = await postgresAuthRepo.getRoleById(id);
     if (!previousRole) {
-      return res.status(404).json({ success: false, message: 'Role not found' });
+      return res.status(404).json({ success: false, message: 'Role not found in PostgreSQL.' });
     }
 
-    const updatedRole = store.updateRole(id, {
+    const updatedRole = await postgresAuthRepo.updateRole(id, {
       name,
       description,
       recordScope,
       permissions,
     });
 
-    store.addAuditLog({
+    await postgresAuthRepo.addAuditLog({
       entityType: 'Role',
       entityId: updatedRole.id,
-      action: 'UPDATE',
-      changedBy: req.user?.name || 'Admin',
+      action: 'ROLE_UPDATED',
+      performedBy: req.user?.name || 'Admin',
       source: 'Dashboard',
       details: `Updated permissions and scopes for role "${updatedRole.name}".`,
     });
@@ -99,25 +103,24 @@ rolesRouter.put('/:id', requirePermission('roles', 'edit'), (req: AuthenticatedR
   }
 });
 
-// DELETE Custom role (Strictly rejects system roles or roles with assigned users)
-rolesRouter.delete('/:id', requirePermission('roles', 'delete'), (req: AuthenticatedRequest, res) => {
+// DELETE Role
+rolesRouter.delete('/:id', requirePermission('roles', 'delete'), async (req: AuthenticatedRequest, res) => {
   try {
     const { id } = req.params;
-
-    const roleToDelete = store.getRoleById(id);
+    const roleToDelete = await postgresAuthRepo.getRoleById(id);
     if (!roleToDelete) {
-      return res.status(404).json({ success: false, message: 'Role not found' });
+      return res.status(404).json({ success: false, message: 'Role not found in PostgreSQL.' });
     }
 
-    store.deleteRole(id);
+    await postgresAuthRepo.deleteRole(id);
 
-    store.addAuditLog({
+    await postgresAuthRepo.addAuditLog({
       entityType: 'Role',
       entityId: id,
-      action: 'DELETE',
-      changedBy: req.user?.name || 'Admin',
+      action: 'ROLE_DELETED',
+      performedBy: req.user?.name || 'Admin',
       source: 'Dashboard',
-      details: `Deleted custom role "${roleToDelete.name}".`,
+      details: `Deleted role "${roleToDelete.name}".`,
     });
 
     res.json({

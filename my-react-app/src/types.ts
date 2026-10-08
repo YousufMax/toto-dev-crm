@@ -72,7 +72,10 @@ export interface User {
   workerName?: string;
   linkedEmployeeId?: string;
   createdAt?: string;
+  updatedAt?: string;
   lastLoginAt?: string;
+  passwordChangedAt?: string;
+  deletedAt?: string;
 }
 
 export type OrderPaymentStatus = 'Unpaid' | 'Partial' | 'Paid' | 'Refunded' | 'Cancelled';

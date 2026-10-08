@@ -16,6 +16,8 @@ import { usersRouter } from './routes/users.js';
 import { rolesRouter } from './routes/roles.js';
 import { employeesRouter } from './routes/employees.js';
 import { authenticate } from './middleware/auth.js';
+import { postgresAuthRepo } from './db/authRepo.js';
+import { store, DEFAULT_ROLES, DEFAULT_EMPLOYEES, DEFAULT_USERS } from './db/store.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 // Load environment variables from .env if present
@@ -77,10 +79,19 @@ app.use((err, req, res, next) => {
         message: err.message || 'Internal Server Error',
     });
 });
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
     console.log(`====================================================`);
     console.log(`🚀 TOTO Development CRM Backend is running!`);
     console.log(`📡 URL: http://localhost:${PORT}`);
     console.log(`⏰ Timezone: Asia/Dhaka`);
     console.log(`====================================================`);
+    try {
+        // Initialize and verify PostgreSQL Authentication & Security Database
+        await postgresAuthRepo.initSchema();
+        await postgresAuthRepo.migrateInitialData(DEFAULT_ROLES, DEFAULT_EMPLOYEES, DEFAULT_USERS, store.getUsersWithCredentials());
+        console.log(`🔒 PostgreSQL Auth & Security Engine is connected and ready!`);
+    }
+    catch (pgErr) {
+        console.error(`[PostgreSQL Warning] Failed to connect to PostgreSQL:`, pgErr);
+    }
 });

@@ -12,11 +12,13 @@ import {
   Monitor,
   LogOut,
   User as UserIcon,
-  Shield
+  Shield,
+  Key
 } from 'lucide-react';
 import { User } from '../types';
 import { useTheme } from '../context/ThemeContext';
 import { useAuth } from '../context/AuthContext';
+import { api } from '../api';
 
 interface NavbarProps {
   users: User[];
@@ -47,6 +49,49 @@ export const Navbar: React.FC<NavbarProps> = ({
   const { logout } = useAuth();
   const [showUserDropdown, setShowUserDropdown] = useState(false);
   const [showThemeMenu, setShowThemeMenu] = useState(false);
+
+  // Change Password Modal State
+  const [showChangePassModal, setShowChangePassModal] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [changePassError, setChangePassError] = useState('');
+  const [changePassSuccess, setChangePassSuccess] = useState('');
+  const [isChangingPass, setIsChangingPass] = useState(false);
+
+  const handleChangePassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!currentPassword || !newPassword) {
+      setChangePassError('Please enter both your current and new password.');
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      setChangePassError('New password and confirm password do not match.');
+      return;
+    }
+    if (newPassword.length < 6) {
+      setChangePassError('New password must be at least 6 characters.');
+      return;
+    }
+
+    setIsChangingPass(true);
+    setChangePassError('');
+    try {
+      const res = await api.changePassword({ currentPassword, newPassword, confirmPassword });
+      setChangePassSuccess(res.message || 'Password changed successfully!');
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+      setTimeout(() => {
+        setShowChangePassModal(false);
+        setChangePassSuccess('');
+      }, 2000);
+    } catch (err: any) {
+      setChangePassError(err.message || 'Failed to change password.');
+    } finally {
+      setIsChangingPass(false);
+    }
+  };
 
   return (
     <header className="sticky top-0 z-30 flex h-16 w-full items-center justify-between border-b border-slate-800 bg-slate-950/80 px-4 md:px-6 backdrop-blur-md">
@@ -267,8 +312,18 @@ export const Navbar: React.FC<NavbarProps> = ({
                 </div>
               </div>
 
-              {/* Logout Action */}
-              <div className="border-t border-slate-800/80 pt-1">
+              {/* Change Password & Logout Actions */}
+              <div className="border-t border-slate-800/80 pt-1 space-y-0.5">
+                <button
+                  onClick={() => {
+                    setShowUserDropdown(false);
+                    setShowChangePassModal(true);
+                  }}
+                  className="flex w-full items-center gap-2 rounded-xl px-2.5 py-2 text-xs font-semibold text-slate-300 hover:bg-slate-800 hover:text-white transition-colors"
+                >
+                  <Key className="h-3.5 w-3.5 text-blue-400" />
+                  <span>Change Password</span>
+                </button>
                 <button
                   onClick={() => {
                     setShowUserDropdown(false);
@@ -284,6 +339,94 @@ export const Navbar: React.FC<NavbarProps> = ({
           )}
         </div>
       </div>
+
+      {/* Change Password Modal */}
+      {showChangePassModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 w-full max-w-sm shadow-2xl space-y-4">
+            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+              <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                <Key className="h-4 w-4 text-blue-500" />
+                Change Password
+              </h3>
+              <button 
+                onClick={() => {
+                  setShowChangePassModal(false);
+                  setChangePassError('');
+                  setChangePassSuccess('');
+                }} 
+                className="text-slate-400 hover:text-white"
+              >
+                ✕
+              </button>
+            </div>
+
+            {changePassError && (
+              <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs">
+                {changePassError}
+              </div>
+            )}
+
+            {changePassSuccess && (
+              <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs">
+                {changePassSuccess}
+              </div>
+            )}
+
+            <form onSubmit={handleChangePassword} className="space-y-3 text-xs">
+              <div>
+                <label className="block text-slate-300 font-semibold mb-1">Current Password *</label>
+                <input
+                  type="password"
+                  required
+                  value={currentPassword}
+                  onChange={e => setCurrentPassword(e.target.value)}
+                  className="w-full p-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white focus:outline-none focus:border-blue-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-slate-300 font-semibold mb-1">New Password (min 6 characters) *</label>
+                <input
+                  type="password"
+                  required
+                  value={newPassword}
+                  onChange={e => setNewPassword(e.target.value)}
+                  className="w-full p-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white focus:outline-none focus:border-blue-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-slate-300 font-semibold mb-1">Confirm New Password *</label>
+                <input
+                  type="password"
+                  required
+                  value={confirmPassword}
+                  onChange={e => setConfirmPassword(e.target.value)}
+                  className="w-full p-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white focus:outline-none focus:border-blue-500"
+                />
+              </div>
+
+              <div className="flex justify-end gap-2 pt-2 border-t border-slate-800">
+                <button
+                  type="button"
+                  onClick={() => setShowChangePassModal(false)}
+                  className="px-4 py-2 rounded-xl border border-slate-700 bg-slate-800 text-slate-300"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isChangingPass}
+                  className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold disabled:opacity-50"
+                >
+                  {isChangingPass ? 'Updating...' : 'Update Password'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </header>
   );
 };
