@@ -171,10 +171,24 @@ export const SettingsView: React.FC = () => {
   const handleTestBot = async (botType: 'sales' | 'expense' | 'payout') => {
     setTestingBot(botType);
     try {
-      const res = await api.sendTelegramTest(botType);
+      let tokenToTest = '';
+      let chatIdToTest = '';
+
+      if (botType === 'sales') {
+        tokenToTest = salesToken;
+        chatIdToTest = salesChatId;
+      } else if (botType === 'expense') {
+        tokenToTest = expToken;
+        chatIdToTest = expChatId;
+      } else if (botType === 'payout') {
+        tokenToTest = payToken;
+        chatIdToTest = payChatId;
+      }
+
+      const res = await api.sendTelegramTest(botType, tokenToTest, chatIdToTest);
       alert(res.message);
     } catch (err: any) {
-      alert(err.message);
+      alert(err.message || 'Telegram connection test failed. Please verify Bot Token and Chat IDs.');
     } finally {
       setTestingBot(null);
     }

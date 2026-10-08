@@ -14,33 +14,69 @@ export function parseChatIds(raw: string | undefined | null): string[] {
   return Array.from(new Set(parts));
 }
 
+export interface SendMessageResult {
+  ok: boolean;
+  description?: string;
+}
+
 export class TelegramService {
-  private async sendMessage(botToken: string, chatId: string, text: string): Promise<boolean> {
+  /**
+   * Sends a message to a specific Telegram chat with HTML/Markdown fallback.
+   * If Markdown parsing fails due to illegal characters in user names or IDs,
+   * it gracefully falls back to raw plain text so messages are never lost.
+   */
+  private async sendMessage(botToken: string, chatId: string, text: string): Promise<SendMessageResult> {
     if (!botToken || !chatId) {
-      return false;
+      return { ok: false, description: 'Missing bot token or chat ID' };
     }
 
+    const cleanToken = botToken.trim();
+    const cleanChatId = chatId.trim();
+
     try {
-      const url = `https://api.telegram.org/bot${botToken}/sendMessage`;
-      const res = await fetch(url, {
+      const url = `https://api.telegram.org/bot${cleanToken}/sendMessage`;
+      
+      // Attempt 1: Send with Markdown parse mode
+      let res = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          chat_id: chatId,
+          chat_id: cleanChatId,
           text,
           parse_mode: 'Markdown',
         }),
       });
 
-      const data: any = await res.json();
+      let data: any = await res.json().catch(() => ({}));
+
+      // If Telegram rejects due to Markdown parse entity error, retry as plain text
       if (!res.ok || !data.ok) {
-        console.warn(`[Telegram] API Error for chat ${chatId}:`, data.description || res.statusText);
-        return false;
+        const errorDesc = String(data.description || res.statusText || '');
+        if (errorDesc.toLowerCase().includes('can\'t parse entities') || errorDesc.toLowerCase().includes('parse')) {
+          console.warn(`[Telegram] Markdown parse failed for chat ${cleanChatId}, retrying without parse_mode:`, errorDesc);
+          res = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              chat_id: cleanChatId,
+              text,
+            }),
+          });
+          data = await res.json().catch(() => ({}));
+        }
       }
-      return true;
+
+      if (!res.ok || !data.ok) {
+        const desc = data.description || res.statusText || 'Unknown Telegram API error';
+        console.warn(`[Telegram] API Error for chat ${cleanChatId}:`, desc);
+        return { ok: false, description: desc };
+      }
+
+      return { ok: true };
     } catch (err: any) {
-      console.warn(`[Telegram] Failed to dispatch message to ${chatId}:`, err.message);
-      return false;
+      const msg = err.message || 'Network connection failed';
+      console.warn(`[Telegram] Failed to dispatch message to ${cleanChatId}:`, msg);
+      return { ok: false, description: msg };
     }
   }
 
@@ -52,20 +88,35 @@ export class TelegramService {
     botToken: string, 
     rawChatIds: string, 
     text: string
-  ): Promise<{ success: boolean; sentCount: number; totalCount: number; failedIds: string[] }> {
+  ): Promise<{ 
+    success: boolean; 
+    sentCount: number; 
+    totalCount: number; 
+    failedIds: string[]; 
+    errorDetails: Record<string, string>;
+  }> {
     const chatIds = parseChatIds(rawChatIds);
     if (!botToken || chatIds.length === 0) {
-      return { success: false, sentCount: 0, totalCount: 0, failedIds: [] };
+      return { 
+        success: false, 
+        sentCount: 0, 
+        totalCount: 0, 
+        failedIds: [], 
+        errorDetails: {} 
+      };
     }
 
     const failedIds: string[] = [];
+    const errorDetails: Record<string, string> = {};
+
     const results = await Promise.allSettled(
       chatIds.map(async (id) => {
-        const ok = await this.sendMessage(botToken, id, text);
-        if (!ok) {
+        const res = await this.sendMessage(botToken, id, text);
+        if (!res.ok) {
           failedIds.push(id);
+          errorDetails[id] = res.description || 'Unknown error';
         }
-        return ok;
+        return res.ok;
       })
     );
 
@@ -75,6 +126,7 @@ export class TelegramService {
       sentCount,
       totalCount: chatIds.length,
       failedIds,
+      errorDetails,
     };
   }
 
@@ -247,18 +299,22 @@ export class TelegramService {
         totalCount: result.totalCount,
       };
     } else if (result.sentCount > 0) {
+      const details = Object.entries(result.errorDetails)
+        .map(([id, err]) => `${id}: ${err}`)
+        .join('; ');
       return {
         success: true,
-        message: `Partially delivered: Sent to ${result.sentCount}/${result.totalCount} chat(s). Failed for: ${result.failedIds.join(', ')}.`,
+        message: `Partially delivered: Sent to ${result.sentCount}/${result.totalCount} chat(s). Failed for: ${result.failedIds.join(', ')} (${details}).`,
         sentCount: result.sentCount,
         totalCount: result.totalCount,
         failedIds: result.failedIds,
       };
     }
 
+    const firstError = Object.values(result.errorDetails)[0] || 'Invalid Bot Token or Chat ID';
     return {
       success: false,
-      message: `Failed to deliver to any of the ${result.totalCount} chat targets. Please verify Bot Token and Chat IDs.`,
+      message: `Failed to deliver to Telegram: ${firstError}. Please verify your Bot Token and ensure your bot is an admin/member in the target chat(s).`,
       sentCount: 0,
       totalCount: result.totalCount,
       failedIds: result.failedIds,

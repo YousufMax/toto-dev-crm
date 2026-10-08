@@ -305,10 +305,10 @@ export const api = {
     method: 'POST',
     body: JSON.stringify(config),
   }),
-  sendTelegramTest: (botType: 'sales' | 'expense' | 'payout') => 
+  sendTelegramTest: (botType: 'sales' | 'expense' | 'payout', botToken?: string, chatId?: string) => 
     request<{ success: boolean; message: string }>('/api/telegram/test', {
       method: 'POST',
-      body: JSON.stringify({ botType }),
+      body: JSON.stringify({ botType, botToken, chatId }),
     }),
 
   // Audit Logs

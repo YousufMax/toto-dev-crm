@@ -74,27 +74,38 @@ telegramRouter.post('/config', (req, res) => {
 
 // POST send test notification
 telegramRouter.post('/test', async (req, res) => {
-  const { botType } = req.body as { botType: 'sales' | 'expense' | 'payout' };
+  const { botType, botToken: directToken, chatId: directChatId } = req.body as { 
+    botType: 'sales' | 'expense' | 'payout';
+    botToken?: string;
+    chatId?: string;
+  };
   const settings = store.getSettings().telegram;
 
-  let token = '';
-  let chatId = '';
+  let token = (directToken || '').trim();
+  let chatId = (directChatId || '').trim();
 
   if (botType === 'sales') {
-    token = settings.salesBot.botToken;
-    chatId = settings.salesBot.chatId;
+    token = token || settings.salesBot.botToken;
+    chatId = chatId || settings.salesBot.chatId;
   } else if (botType === 'expense') {
-    token = settings.expenseBot.botToken;
-    chatId = settings.expenseBot.chatId;
+    token = token || settings.expenseBot.botToken;
+    chatId = chatId || settings.expenseBot.chatId;
   } else if (botType === 'payout') {
-    token = settings.payoutBot.botToken;
-    chatId = settings.payoutBot.chatId;
+    token = token || settings.payoutBot.botToken;
+    chatId = chatId || settings.payoutBot.chatId;
   }
 
-  if (!token || !chatId) {
+  if (!token) {
     return res.status(400).json({
       success: false,
-      message: `Bot Token and Chat ID for ${botType} bot must be configured before testing.`,
+      message: `Bot Token for ${botType} bot is missing. Please enter your Telegram Bot Token from @BotFather.`,
+    });
+  }
+
+  if (!chatId) {
+    return res.status(400).json({
+      success: false,
+      message: `Chat ID for ${botType} bot is missing. Please enter your Chat ID (e.g. -100123456789 or @channel).`,
     });
   }
 
