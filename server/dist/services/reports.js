@@ -1,4 +1,5 @@
 import { store } from '../db/store.js';
+import { getDhakaTodayDateString } from '../utils/date.js';
 // Helper to check if a date string falls inside filter range
 function isDateInRange(dateStr, filter) {
     if (!filter || (!filter.startDate && !filter.endDate))
@@ -18,8 +19,8 @@ export class ReportsService {
         const orders = store.getOrders().filter(o => isDateInRange(o.bookingDate || o.createdAt, filter));
         const expenses = store.getExpenses().filter(e => isDateInRange(e.dateTime || e.createdAt, filter));
         const payouts = store.getPayouts().filter(p => isDateInRange(p.createdAt, filter));
-        // Today's values
-        const todayStr = new Date().toISOString().slice(0, 10);
+        // Today's values in Dhaka timezone
+        const todayStr = getDhakaTodayDateString();
         const todayOrders = store.getOrders().filter(o => (o.bookingDate || o.createdAt).startsWith(todayStr));
         const todayExpenses = store.getExpenses().filter(e => (e.dateTime || e.createdAt).startsWith(todayStr));
         // Sales Metrics
@@ -85,7 +86,7 @@ export class ReportsService {
     }
     // --- Hourly Distribution Report (00:00 to 23:00) ---
     getHourlyReport(targetDate) {
-        const dateStr = targetDate || new Date().toISOString().slice(0, 10);
+        const dateStr = targetDate || getDhakaTodayDateString();
         const orders = store.getOrders().filter(o => (o.bookingDate || o.createdAt).startsWith(dateStr));
         const expenses = store.getExpenses().filter(e => (e.dateTime || e.createdAt).startsWith(dateStr));
         const payouts = store.getPayouts().filter(p => (p.createdAt).startsWith(dateStr));

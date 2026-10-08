@@ -3,6 +3,7 @@ import { X, ShoppingBag, DollarSign, Calendar, Clock } from 'lucide-react';
 import { Order, OrderPaymentStatus, OrderDeliveryStatus } from '../types';
 import { api } from '../api';
 import { formatCurrency } from '../utils/formatters';
+import { getDhakaNow } from '../utils/deadlines';
 
 interface AddOrderModalProps {
   isOpen: boolean;
@@ -230,8 +231,11 @@ export const AddOrderModal: React.FC<AddOrderModalProps> = ({
                 <button
                   type="button"
                   onClick={() => {
-                    const today = new Date().toISOString().split('T')[0];
-                    setDeadlineDate(today);
+                    const d = getDhakaNow();
+                    const y = d.getFullYear();
+                    const m = String(d.getMonth() + 1).padStart(2, '0');
+                    const day = String(d.getDate()).padStart(2, '0');
+                    setDeadlineDate(`${y}-${m}-${day}`);
                   }}
                   className="rounded bg-slate-800/80 hover:bg-slate-700 px-2 py-0.5 text-[10px] text-slate-300 transition-colors"
                 >
@@ -240,9 +244,12 @@ export const AddOrderModal: React.FC<AddOrderModalProps> = ({
                 <button
                   type="button"
                   onClick={() => {
-                    const d = new Date();
+                    const d = getDhakaNow();
                     d.setDate(d.getDate() + 3);
-                    setDeadlineDate(d.toISOString().split('T')[0]);
+                    const y = d.getFullYear();
+                    const m = String(d.getMonth() + 1).padStart(2, '0');
+                    const day = String(d.getDate()).padStart(2, '0');
+                    setDeadlineDate(`${y}-${m}-${day}`);
                   }}
                   className="rounded bg-slate-800/80 hover:bg-slate-700 px-2 py-0.5 text-[10px] text-slate-300 transition-colors"
                 >
@@ -251,9 +258,12 @@ export const AddOrderModal: React.FC<AddOrderModalProps> = ({
                 <button
                   type="button"
                   onClick={() => {
-                    const d = new Date();
+                    const d = getDhakaNow();
                     d.setDate(d.getDate() + 7);
-                    setDeadlineDate(d.toISOString().split('T')[0]);
+                    const y = d.getFullYear();
+                    const m = String(d.getMonth() + 1).padStart(2, '0');
+                    const day = String(d.getDate()).padStart(2, '0');
+                    setDeadlineDate(`${y}-${m}-${day}`);
                   }}
                   className="rounded bg-slate-800/80 hover:bg-slate-700 px-2 py-0.5 text-[10px] text-slate-300 transition-colors"
                 >

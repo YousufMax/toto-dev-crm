@@ -1,5 +1,6 @@
 import { store } from '../db/store.js';
 import { Order, Expense, Payout } from '../types/index.js';
+import { getDhakaTodayDateString } from '../utils/date.js';
 
 export interface DateFilterRange {
   startDate?: string; // YYYY-MM-DD
@@ -24,8 +25,8 @@ export class ReportsService {
     const expenses = store.getExpenses().filter(e => isDateInRange(e.dateTime || e.createdAt, filter));
     const payouts = store.getPayouts().filter(p => isDateInRange(p.createdAt, filter));
 
-    // Today's values
-    const todayStr = new Date().toISOString().slice(0, 10);
+    // Today's values in Dhaka timezone
+    const todayStr = getDhakaTodayDateString();
     const todayOrders = store.getOrders().filter(o => (o.bookingDate || o.createdAt).startsWith(todayStr));
     const todayExpenses = store.getExpenses().filter(e => (e.dateTime || e.createdAt).startsWith(todayStr));
 
@@ -99,7 +100,7 @@ export class ReportsService {
 
   // --- Hourly Distribution Report (00:00 to 23:00) ---
   public getHourlyReport(targetDate?: string) {
-    const dateStr = targetDate || new Date().toISOString().slice(0, 10);
+    const dateStr = targetDate || getDhakaTodayDateString();
     const orders = store.getOrders().filter(o => (o.bookingDate || o.createdAt).startsWith(dateStr));
     const expenses = store.getExpenses().filter(e => (e.dateTime || e.createdAt).startsWith(dateStr));
     const payouts = store.getPayouts().filter(p => (p.createdAt).startsWith(dateStr));

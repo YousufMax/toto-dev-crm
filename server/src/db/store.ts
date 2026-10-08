@@ -17,6 +17,8 @@ import {
   SyncModuleSummary,
   SyncSummary
 } from '../types/index.js';
+import { getDhakaNowDateTimeString, normalizeDhakaDateTime } from '../utils/date.js';
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -1266,10 +1268,11 @@ class Store {
     const dueAmount = totalAmount - paidAmount;
 
     const now = new Date().toISOString();
+    const dhakaNow = getDhakaNowDateTimeString();
     const newOrder: Order = {
       id,
-      bookingDate: orderInput.bookingDate || now.replace('T', ' ').slice(0, 16),
-      targetDeadline: orderInput.targetDeadline || '',
+      bookingDate: orderInput.bookingDate ? normalizeDhakaDateTime(orderInput.bookingDate) : dhakaNow,
+      targetDeadline: orderInput.targetDeadline ? normalizeDhakaDateTime(orderInput.targetDeadline) : '',
       clientName: orderInput.clientName || '',
       clientContact: orderInput.clientContact || '',
       salesRep: orderInput.salesRep || '',
@@ -1342,9 +1345,17 @@ class Store {
       });
     }
 
+    const normalizedUpdates = { ...updates };
+    if (normalizedUpdates.bookingDate) {
+      normalizedUpdates.bookingDate = normalizeDhakaDateTime(normalizedUpdates.bookingDate);
+    }
+    if (normalizedUpdates.targetDeadline) {
+      normalizedUpdates.targetDeadline = normalizeDhakaDateTime(normalizedUpdates.targetDeadline);
+    }
+
     const updated: Order = {
       ...current,
-      ...updates,
+      ...normalizedUpdates,
       id: current.id, // ID is immutable!
       totalAmount,
       paidAmount,
@@ -1417,10 +1428,11 @@ class Store {
 
     const amount = Number(expenseInput.amount) || 0;
     const now = new Date().toISOString();
+    const dhakaNow = getDhakaNowDateTimeString();
 
     const newExpense: Expense = {
       id,
-      dateTime: expenseInput.dateTime || now.replace('T', ' ').slice(0, 16),
+      dateTime: expenseInput.dateTime ? normalizeDhakaDateTime(expenseInput.dateTime) : dhakaNow,
       category: expenseInput.category || 'Other',
       subCategoryPurpose: expenseInput.subCategoryPurpose || '',
       vendorReceiverName: expenseInput.vendorReceiverName || '',
@@ -1472,9 +1484,14 @@ class Store {
       });
     }
 
+    const normalizedUpdates = { ...updates };
+    if (normalizedUpdates.dateTime) {
+      normalizedUpdates.dateTime = normalizeDhakaDateTime(normalizedUpdates.dateTime);
+    }
+
     const updated: Expense = {
       ...current,
-      ...updates,
+      ...normalizedUpdates,
       id: current.id,
       amount: updates.amount !== undefined ? Number(updates.amount) : current.amount,
       updatedAt: new Date().toISOString(),
@@ -1825,8 +1842,8 @@ class Store {
 
       const orderRecord: Order = {
         id: rawId,
-        bookingDate: raw.bookingDate || '',
-        targetDeadline: raw.targetDeadline || '',
+        bookingDate: normalizeDhakaDateTime(raw.bookingDate),
+        targetDeadline: normalizeDhakaDateTime(raw.targetDeadline),
         clientName: raw.clientName || '',
         clientContact: raw.clientContact || '',
         salesRep: raw.salesRep || '',
@@ -1958,7 +1975,7 @@ class Store {
 
       const expenseRecord: Expense = {
         id: rawId,
-        dateTime: raw.dateTime || '',
+        dateTime: normalizeDhakaDateTime(raw.dateTime),
         category: raw.category || 'Other',
         subCategoryPurpose: raw.subCategoryPurpose || '',
         vendorReceiverName: raw.vendorReceiverName || '',

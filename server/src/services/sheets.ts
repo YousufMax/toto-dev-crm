@@ -1,6 +1,7 @@
 import { google } from 'googleapis';
 import { store } from '../db/store.js';
 import { Order, Expense, Payout } from '../types/index.js';
+import { normalizeDhakaDateTime } from '../utils/date.js';
 
 // Canonical headers for sheet creation & default mapping
 export const SALES_ORDERS_HEADERS = [
@@ -227,8 +228,8 @@ export class GoogleSheetsService {
 
           sheetOrdersData.push({
             id,
-            bookingDate: row[colDate] || '',
-            targetDeadline: row[colDeadline] || '',
+            bookingDate: normalizeDhakaDateTime(row[colDate]),
+            targetDeadline: normalizeDhakaDateTime(row[colDeadline]),
             clientName: row[colClient] || '',
             clientContact: row[colContact] || '',
             salesRep: row[colRep] || '',
@@ -286,7 +287,7 @@ export class GoogleSheetsService {
 
           sheetExpensesData.push({
             id,
-            dateTime: row[colDate] || '',
+            dateTime: normalizeDhakaDateTime(row[colDate]),
             category: row[colCat] || 'Other',
             subCategoryPurpose: row[colSub] || '',
             vendorReceiverName: row[colVendor] || '',
@@ -469,8 +470,8 @@ export class GoogleSheetsService {
 
           incomingOrders.push({
             id,
-            bookingDate: String(row['Booking Date/Time'] || row['bookingDate'] || '').slice(0, 16).replace('T', ' '),
-            targetDeadline: String(row['Target Deadline'] || row['targetDeadline'] || '').slice(0, 16).replace('T', ' '),
+            bookingDate: normalizeDhakaDateTime(String(row['Booking Date/Time'] || row['bookingDate'] || '')),
+            targetDeadline: normalizeDhakaDateTime(String(row['Target Deadline'] || row['targetDeadline'] || '')),
             clientName: String(row['Client / Brand Name'] || row['clientName'] || ''),
             clientContact: String(row['Client Contact'] || row['clientContact'] || ''),
             salesRep: String(row['Sales Representative'] || row['salesRep'] || ''),
@@ -497,7 +498,7 @@ export class GoogleSheetsService {
 
           incomingExpenses.push({
             id,
-            dateTime: String(row['Date & Time'] || row['dateTime'] || '').slice(0, 16).replace('T', ' '),
+            dateTime: normalizeDhakaDateTime(String(row['Date & Time'] || row['dateTime'] || '')),
             category: String(row['Expense Category'] || row['category'] || 'Other'),
             subCategoryPurpose: String(row['Sub-Category / Purpose'] || row['subCategoryPurpose'] || ''),
             vendorReceiverName: String(row['Vendor / Receiver Name'] || row['vendorReceiverName'] || ''),
