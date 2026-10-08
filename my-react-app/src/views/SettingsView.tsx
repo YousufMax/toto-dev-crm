@@ -144,23 +144,23 @@ export const SettingsView: React.FC = () => {
     try {
       await api.saveTelegramConfig({
         salesBot: {
-          enabled: salesEnabled,
+          enabled: salesEnabled || Boolean(salesToken && salesChatId),
           botToken: salesToken,
           chatId: salesChatId,
         },
         expenseBot: {
-          enabled: expEnabled,
+          enabled: expEnabled || Boolean(expToken && expChatId),
           botToken: expToken,
           chatId: expChatId,
           largeExpenseThreshold: expThreshold,
         },
         payoutBot: {
-          enabled: payEnabled,
+          enabled: payEnabled || Boolean(payToken && payChatId),
           botToken: payToken,
           chatId: payChatId,
         },
       });
-      setStatusMsg('Telegram bot settings saved successfully.');
+      setStatusMsg('Telegram bot settings saved and active successfully.');
       setTimeout(() => setStatusMsg(''), 4000);
       fetchSettings();
     } catch (err: any) {

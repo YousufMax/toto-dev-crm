@@ -133,7 +133,14 @@ export class TelegramService {
   // --- BOT 1: Sales & Orders Notifications ---
   public async notifyNewOrder(order: Order): Promise<boolean> {
     const config = store.getSettings().telegram.salesBot;
-    if (!config.enabled || !config.botToken || !config.chatId) return false;
+    const botToken = config.botToken || process.env.TELEGRAM_SALES_BOT_TOKEN || '';
+    const chatId = config.chatId || process.env.TELEGRAM_SALES_CHAT_ID || '';
+    const enabled = config.enabled ?? Boolean(botToken && chatId);
+
+    if (!enabled || !botToken || !chatId) {
+      console.log(`[Telegram SalesBot] Notification skipped for order ${order.id} (enabled=${enabled}, hasToken=${Boolean(botToken)}, hasChatId=${Boolean(chatId)})`);
+      return false;
+    }
 
     const message = [
       `📦 *NEW ORDER — TOTO DEVELOPMENT*`,
@@ -156,13 +163,23 @@ export class TelegramService {
       `_Logged via ${order.source}_`,
     ].filter(Boolean).join('\n');
 
-    const result = await this.sendMessageToChats(config.botToken, config.chatId, message);
+    console.log(`[Telegram SalesBot] Dispatching New Order alert for ${order.id} to targets...`);
+    const result = await this.sendMessageToChats(botToken, chatId, message);
+    if (!result.success) {
+      console.warn(`[Telegram SalesBot] Failed to deliver new order alert for ${order.id}:`, result.errorDetails);
+    } else {
+      console.log(`[Telegram SalesBot] Successfully delivered new order alert for ${order.id} (${result.sentCount}/${result.totalCount} chats)`);
+    }
     return result.success;
   }
 
   public async notifyOrderUpdate(order: Order, changeSummary: string): Promise<boolean> {
     const config = store.getSettings().telegram.salesBot;
-    if (!config.enabled || !config.botToken || !config.chatId) return false;
+    const botToken = config.botToken || process.env.TELEGRAM_SALES_BOT_TOKEN || '';
+    const chatId = config.chatId || process.env.TELEGRAM_SALES_CHAT_ID || '';
+    const enabled = config.enabled ?? Boolean(botToken && chatId);
+
+    if (!enabled || !botToken || !chatId) return false;
 
     const message = [
       `🔄 *ORDER UPDATED — TOTO DEVELOPMENT*`,
@@ -175,14 +192,22 @@ export class TelegramService {
       `*Paid:* ৳${order.paidAmount.toLocaleString()} | *Due:* ৳${order.dueAmount.toLocaleString()}`,
     ].join('\n');
 
-    const result = await this.sendMessageToChats(config.botToken, config.chatId, message);
+    console.log(`[Telegram SalesBot] Dispatching Order Update alert for ${order.id}...`);
+    const result = await this.sendMessageToChats(botToken, chatId, message);
     return result.success;
   }
 
   // --- BOT 2: Expense Management Notifications ---
   public async notifyNewExpense(expense: Expense): Promise<boolean> {
     const config = store.getSettings().telegram.expenseBot;
-    if (!config.enabled || !config.botToken || !config.chatId) return false;
+    const botToken = config.botToken || process.env.TELEGRAM_EXPENSE_BOT_TOKEN || '';
+    const chatId = config.chatId || process.env.TELEGRAM_EXPENSE_CHAT_ID || '';
+    const enabled = config.enabled ?? Boolean(botToken && chatId);
+
+    if (!enabled || !botToken || !chatId) {
+      console.log(`[Telegram ExpenseBot] Notification skipped for expense ${expense.id} (enabled=${enabled}, hasToken=${Boolean(botToken)}, hasChatId=${Boolean(chatId)})`);
+      return false;
+    }
 
     const isLarge = expense.amount >= (config.largeExpenseThreshold || 10000);
 
@@ -202,13 +227,23 @@ export class TelegramService {
       expense.remarks ? `*Remarks:* _${expense.remarks}_` : '',
     ].filter(Boolean).join('\n');
 
-    const result = await this.sendMessageToChats(config.botToken, config.chatId, message);
+    console.log(`[Telegram ExpenseBot] Dispatching New Expense alert for ${expense.id}...`);
+    const result = await this.sendMessageToChats(botToken, chatId, message);
+    if (!result.success) {
+      console.warn(`[Telegram ExpenseBot] Failed to deliver expense alert for ${expense.id}:`, result.errorDetails);
+    } else {
+      console.log(`[Telegram ExpenseBot] Successfully delivered expense alert for ${expense.id}`);
+    }
     return result.success;
   }
 
   public async notifyExpenseApproved(expense: Expense, approver: string): Promise<boolean> {
     const config = store.getSettings().telegram.expenseBot;
-    if (!config.enabled || !config.botToken || !config.chatId) return false;
+    const botToken = config.botToken || process.env.TELEGRAM_EXPENSE_BOT_TOKEN || '';
+    const chatId = config.chatId || process.env.TELEGRAM_EXPENSE_CHAT_ID || '';
+    const enabled = config.enabled ?? Boolean(botToken && chatId);
+
+    if (!enabled || !botToken || !chatId) return false;
 
     const message = [
       `✅ *EXPENSE APPROVED & CLEARED*`,
@@ -221,14 +256,22 @@ export class TelegramService {
       `*Status:* ${expense.approvalStatus}`,
     ].join('\n');
 
-    const result = await this.sendMessageToChats(config.botToken, config.chatId, message);
+    console.log(`[Telegram ExpenseBot] Dispatching Expense Approved alert for ${expense.id}...`);
+    const result = await this.sendMessageToChats(botToken, chatId, message);
     return result.success;
   }
 
   // --- BOT 3: Project Payout Notifications ---
   public async notifyNewPayout(payout: Payout): Promise<boolean> {
     const config = store.getSettings().telegram.payoutBot;
-    if (!config.enabled || !config.botToken || !config.chatId) return false;
+    const botToken = config.botToken || process.env.TELEGRAM_PAYOUT_BOT_TOKEN || '';
+    const chatId = config.chatId || process.env.TELEGRAM_PAYOUT_CHAT_ID || '';
+    const enabled = config.enabled ?? Boolean(botToken && chatId);
+
+    if (!enabled || !botToken || !chatId) {
+      console.log(`[Telegram PayoutBot] Notification skipped for payout ${payout.id} (enabled=${enabled}, hasToken=${Boolean(botToken)}, hasChatId=${Boolean(chatId)})`);
+      return false;
+    }
 
     const message = [
       `💼 *RESOURCE PAYOUT CREATED*`,
@@ -245,13 +288,23 @@ export class TelegramService {
       `*Payment Status:* ${payout.paymentStatus}`,
     ].join('\n');
 
-    const result = await this.sendMessageToChats(config.botToken, config.chatId, message);
+    console.log(`[Telegram PayoutBot] Dispatching New Payout alert for ${payout.id}...`);
+    const result = await this.sendMessageToChats(botToken, chatId, message);
+    if (!result.success) {
+      console.warn(`[Telegram PayoutBot] Failed to deliver payout alert for ${payout.id}:`, result.errorDetails);
+    } else {
+      console.log(`[Telegram PayoutBot] Successfully delivered payout alert for ${payout.id}`);
+    }
     return result.success;
   }
 
   public async notifyPayoutUpdate(payout: Payout, statusText: string): Promise<boolean> {
     const config = store.getSettings().telegram.payoutBot;
-    if (!config.enabled || !config.botToken || !config.chatId) return false;
+    const botToken = config.botToken || process.env.TELEGRAM_PAYOUT_BOT_TOKEN || '';
+    const chatId = config.chatId || process.env.TELEGRAM_PAYOUT_CHAT_ID || '';
+    const enabled = config.enabled ?? Boolean(botToken && chatId);
+
+    if (!enabled || !botToken || !chatId) return false;
 
     const message = [
       `💰 *PAYOUT UPDATE — TOTO DEVELOPMENT*`,
@@ -266,7 +319,8 @@ export class TelegramService {
       payout.transactionRefId ? `*Txn ID:* \`${payout.transactionRefId}\`` : '',
     ].filter(Boolean).join('\n');
 
-    const result = await this.sendMessageToChats(config.botToken, config.chatId, message);
+    console.log(`[Telegram PayoutBot] Dispatching Payout Update alert for ${payout.id}...`);
+    const result = await this.sendMessageToChats(botToken, chatId, message);
     return result.success;
   }
 
