@@ -221,16 +221,22 @@ payoutsRouter.delete('/:id', requireSuperAdmin, async (req: AuthenticatedRequest
     return res.status(404).json({ success: false, message: `Payout ${payoutId} not found.` });
   }
 
-  // Delete from CRM database
-  const ok = store.deletePayout(payoutId, actor, true);
-  if (!ok) {
-    return res.status(404).json({ success: false, message: `Payout ${payoutId} could not be deleted.` });
+  // 1. Propagate deletion to Google Sheets first and await result
+  try {
+    await googleSheetsService.deleteRecordFromSheets('payout', payoutId);
+  } catch (err: any) {
+    console.error(`[Payouts] Failed to delete ${payoutId} from Google Sheets:`, err.message);
+    return res.status(502).json({ 
+      success: false, 
+      message: `Failed to remove Payout ${payoutId} from Google Sheets: ${err.message}. Deletion was aborted to prevent data desynchronization.` 
+    });
   }
 
-  // Propagate deletion to Google Sheets
-  googleSheetsService.deleteRecordFromSheets('payout', payoutId).catch(err => {
-    console.warn(`[Payouts] Failed to delete ${payoutId} from Sheets:`, err.message);
-  });
+  // 2. Delete from CRM database and record tombstone
+  const ok = store.deletePayout(payoutId, actor, true);
+  if (!ok) {
+    return res.status(500).json({ success: false, message: `Payout ${payoutId} could not be deleted from local store.` });
+  }
 
   res.json({ 
     success: true, 

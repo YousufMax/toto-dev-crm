@@ -108,6 +108,8 @@ app.listen(PORT, async () => {
       DEFAULT_USERS,
       store.getUsersWithCredentials()
     );
+    // Sync deleted records tombstone registry from PostgreSQL into store memory
+    await store.syncDeletedRecordsFromDb();
     console.log(`🔒 PostgreSQL Auth & Security Engine is connected and ready!`);
   } catch (pgErr) {
     console.error(`[PostgreSQL Warning] Failed to connect to PostgreSQL:`, pgErr);

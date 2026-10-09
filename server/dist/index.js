@@ -89,6 +89,8 @@ app.listen(PORT, async () => {
         // Initialize and verify PostgreSQL Authentication & Security Database
         await postgresAuthRepo.initSchema();
         await postgresAuthRepo.migrateInitialData(DEFAULT_ROLES, DEFAULT_EMPLOYEES, DEFAULT_USERS, store.getUsersWithCredentials());
+        // Sync deleted records tombstone registry from PostgreSQL into store memory
+        await store.syncDeletedRecordsFromDb();
         console.log(`🔒 PostgreSQL Auth & Security Engine is connected and ready!`);
     }
     catch (pgErr) {

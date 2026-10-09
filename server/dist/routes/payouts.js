@@ -176,15 +176,22 @@ payoutsRouter.delete('/:id', requireSuperAdmin, async (req, res) => {
     if (!payout) {
         return res.status(404).json({ success: false, message: `Payout ${payoutId} not found.` });
     }
-    // Delete from CRM database
+    // 1. Propagate deletion to Google Sheets first and await result
+    try {
+        await googleSheetsService.deleteRecordFromSheets('payout', payoutId);
+    }
+    catch (err) {
+        console.error(`[Payouts] Failed to delete ${payoutId} from Google Sheets:`, err.message);
+        return res.status(502).json({
+            success: false,
+            message: `Failed to remove Payout ${payoutId} from Google Sheets: ${err.message}. Deletion was aborted to prevent data desynchronization.`
+        });
+    }
+    // 2. Delete from CRM database and record tombstone
     const ok = store.deletePayout(payoutId, actor, true);
     if (!ok) {
-        return res.status(404).json({ success: false, message: `Payout ${payoutId} could not be deleted.` });
+        return res.status(500).json({ success: false, message: `Payout ${payoutId} could not be deleted from local store.` });
     }
-    // Propagate deletion to Google Sheets
-    googleSheetsService.deleteRecordFromSheets('payout', payoutId).catch(err => {
-        console.warn(`[Payouts] Failed to delete ${payoutId} from Sheets:`, err.message);
-    });
     res.json({
         success: true,
         message: `Payout ${payoutId} has been permanently deleted by Super Admin and removed from active dataset & Google Sheets.`

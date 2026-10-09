@@ -191,15 +191,22 @@ ordersRouter.delete('/:id', requireSuperAdmin, async (req, res) => {
     if (!order) {
         return res.status(404).json({ success: false, message: `Order ${orderId} not found.` });
     }
-    // Delete from CRM database
+    // 1. Propagate deletion to Google Sheets first and await result
+    try {
+        await googleSheetsService.deleteRecordFromSheets('order', orderId);
+    }
+    catch (err) {
+        console.error(`[Orders] Failed to delete ${orderId} from Google Sheets:`, err.message);
+        return res.status(502).json({
+            success: false,
+            message: `Failed to remove Order ${orderId} from Google Sheets: ${err.message}. Deletion was aborted to prevent data desynchronization.`
+        });
+    }
+    // 2. Delete from CRM database and record tombstone
     const ok = store.deleteOrder(orderId, actor, true);
     if (!ok) {
-        return res.status(404).json({ success: false, message: `Order ${orderId} could not be deleted.` });
+        return res.status(500).json({ success: false, message: `Order ${orderId} could not be deleted from local store.` });
     }
-    // Propagate deletion to Google Sheets
-    googleSheetsService.deleteRecordFromSheets('order', orderId).catch(err => {
-        console.warn(`[Orders] Failed to delete ${orderId} from Sheets:`, err.message);
-    });
     res.json({
         success: true,
         message: `Order ${orderId} has been permanently deleted by Super Admin and removed from active dataset & Google Sheets.`

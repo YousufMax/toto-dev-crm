@@ -119,6 +119,15 @@ export class PostgresAuthRepository {
         ip_address VARCHAR(100),
         user_agent TEXT
       );
+
+      CREATE TABLE IF NOT EXISTS deleted_records (
+        id VARCHAR(100) PRIMARY KEY,
+        entity_type VARCHAR(50) NOT NULL,
+        deleted_by VARCHAR(255) NOT NULL,
+        deleted_at TIMESTAMPTZ DEFAULT NOW(),
+        source VARCHAR(100) DEFAULT 'Dashboard'
+      );
+      CREATE INDEX IF NOT EXISTS idx_deleted_records_type ON deleted_records(entity_type);
     `);
 
     this.initialized = true;
@@ -957,6 +966,59 @@ export class PostgresAuthRepository {
         JSON.stringify(entry.metadata || {}),
       ]
     );
+  }
+
+  // --- Persistent Tombstone Registry (Prevents resurrection of deleted records) ---
+  public async addDeletedRecord(
+    id: string,
+    entityType: 'order' | 'expense' | 'payout',
+    deletedBy: string,
+    source: string = 'CRM'
+  ): Promise<boolean> {
+    try {
+      await this.initSchema();
+      await query(
+        `INSERT INTO deleted_records (id, entity_type, deleted_by, deleted_at, source)
+         VALUES ($1, $2, $3, NOW(), $4)
+         ON CONFLICT (id) DO UPDATE SET 
+           deleted_by = EXCLUDED.deleted_by,
+           deleted_at = NOW(),
+           source = EXCLUDED.source`,
+        [id, entityType, deletedBy, source]
+      );
+      return true;
+    } catch (err: any) {
+      console.error(`[PostgresAuthRepository] Failed to add deleted record tombstone for ${id}:`, err.message);
+      return false;
+    }
+  }
+
+  public async getDeletedRecords(): Promise<Array<{ id: string; entityType: 'order' | 'expense' | 'payout'; deletedBy: string; deletedAt: string; source: string }>> {
+    try {
+      await this.initSchema();
+      const res = await query(`SELECT id, entity_type, deleted_by, deleted_at, source FROM deleted_records ORDER BY deleted_at DESC`);
+      return res.rows.map(r => ({
+        id: r.id,
+        entityType: r.entity_type as 'order' | 'expense' | 'payout',
+        deletedBy: r.deleted_by,
+        deletedAt: r.deleted_at?.toISOString?.() || r.deleted_at,
+        source: r.source || 'CRM',
+      }));
+    } catch (err: any) {
+      console.error('[PostgresAuthRepository] Failed to fetch deleted records:', err.message);
+      return [];
+    }
+  }
+
+  public async isRecordDeleted(id: string): Promise<boolean> {
+    try {
+      await this.initSchema();
+      const res = await query(`SELECT 1 FROM deleted_records WHERE LOWER(id) = LOWER($1) LIMIT 1`, [id]);
+      return (res.rowCount || 0) > 0;
+    } catch (err: any) {
+      console.error(`[PostgresAuthRepository] Failed to check if record ${id} is deleted:`, err.message);
+      return false;
+    }
   }
 
   // Helper row mapping

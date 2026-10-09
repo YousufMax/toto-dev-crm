@@ -285,3 +285,11 @@ export interface AppSettings {
   currencySymbol: string;
   timezone: string;
 }
+
+export interface TombstoneRecord {
+  id: string;
+  entityType: 'order' | 'expense' | 'payout';
+  deletedBy: string;
+  deletedAt: string;
+  source: string;
+}

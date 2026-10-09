@@ -1346,16 +1346,17 @@
       "serviceName": "max",
       "quantityUnit": "1 Unit",
       "totalAmount": 10000,
-      "paidAmount": 3000,
-      "dueAmount": 7000,
+      "paidAmount": 6000,
+      "dueAmount": 4000,
       "paymentMethod": "bKash",
       "paymentStatus": "Partial",
       "deliveryStatus": "In Progress",
       "remarks": "",
       "createdAt": "2026-10-08T16:05:44.059Z",
-      "updatedAt": "2026-10-08T16:05:44.059Z",
+      "updatedAt": "2026-10-08T17:13:09.541Z",
       "source": "Google Sheets",
-      "isArchived": false
+      "isArchived": false,
+      "updatedBy": "Google Sheets Sync"
     },
     {
       "id": "ORD-1003",
@@ -1375,6 +1376,49 @@
       "remarks": "",
       "createdAt": "2026-10-08T16:05:44.059Z",
       "updatedAt": "2026-10-08T16:05:44.059Z",
+      "source": "Google Sheets",
+      "isArchived": false
+    },
+    {
+      "id": "ORD-1004",
+      "bookingDate": "2026-10-09 00:28",
+      "targetDeadline": "2026-10-14 18:00",
+      "clientName": "fjrvskjs",
+      "clientContact": "00010o02o",
+      "salesRep": "Rajib",
+      "serviceName": "hehehs",
+      "quantityUnit": "1 Unit",
+      "totalAmount": 3000,
+      "paidAmount": 0,
+      "dueAmount": 3000,
+      "paymentMethod": "bKash",
+      "paymentStatus": "Unpaid",
+      "deliveryStatus": "In Progress",
+      "remarks": "",
+      "createdAt": "2026-10-08T17:23:09.928Z",
+      "updatedAt": "2026-10-08T18:33:10.288Z",
+      "source": "Google Sheets",
+      "isArchived": false,
+      "updatedBy": "Google Sheets Sync"
+    },
+    {
+      "id": "ORD-1005",
+      "bookingDate": "2026-10-08 23:54",
+      "targetDeadline": "2026-10-23 18:00",
+      "clientName": "jghghhevshp",
+      "clientContact": "ekzksckncskn",
+      "salesRep": "Rajib",
+      "serviceName": "kmemkskmsmkz",
+      "quantityUnit": "1 Unit",
+      "totalAmount": 4000,
+      "paidAmount": 0,
+      "dueAmount": 4000,
+      "paymentMethod": "bKash",
+      "paymentStatus": "Unpaid",
+      "deliveryStatus": "In Progress",
+      "remarks": "",
+      "createdAt": "2026-10-08T17:58:10.349Z",
+      "updatedAt": "2026-10-08T17:58:10.349Z",
       "source": "Google Sheets",
       "isArchived": false
     }
@@ -1658,6 +1702,25 @@
       "updatedBy": "Google Sheets Sync",
       "source": "Google Sheets",
       "isArchived": false
+    },
+    {
+      "id": "EXP-2026-1019",
+      "dateTime": "2026-10-08 23:00",
+      "category": "Marketing & Ads",
+      "subCategoryPurpose": "Marketing meta ads dollar purchase",
+      "vendorReceiverName": "Akram",
+      "amount": 13000,
+      "paymentMethod": "bKash",
+      "paidFromAccount": "City Bank A/C",
+      "transactionRefId": "",
+      "receiptInvoiceLink": "",
+      "approvedBy": "3 person",
+      "approvalStatus": "Approved",
+      "remarks": "",
+      "createdAt": "2026-10-08T17:03:11.401Z",
+      "updatedAt": "2026-10-08T17:03:11.401Z",
+      "source": "Google Sheets",
+      "isArchived": false
     }
   ],
   "payouts": [
@@ -1908,9 +1971,71 @@
       "updatedBy": "MD Yousuf Ali",
       "source": "Dashboard",
       "isArchived": false
+    },
+    {
+      "id": "PAY-PRJ-515",
+      "projectOrderId": "ORD-1004",
+      "serviceName": "Motion Video",
+      "clientName": "Shapno",
+      "resourceWorkerName": "SHARIAR",
+      "totalProjectBudget": 6000,
+      "commissionType": "Per Unit",
+      "agreedPayoutAmount": 3000,
+      "advancePaid": 1500,
+      "dueFinalPayable": 1500,
+      "deliveryStatus": "In Progress",
+      "paymentStatus": "Partial",
+      "approvalStatus": "Pending Approval",
+      "paymentMethod": "bKash",
+      "transactionRefId": "",
+      "remarks": "Sharir Task 3 reels video \nAgreed Payment - 3000\npaid - 1500\nDue - 1500",
+      "createdAt": "2026-10-08T17:53:10.802Z",
+      "updatedAt": "2026-10-08T17:53:10.802Z",
+      "source": "Google Sheets",
+      "isArchived": false
     }
   ],
   "auditLogs": [
+    {
+      "id": "AUD-1791482290351-38",
+      "timestamp": "10/8/2026, 23:58:10",
+      "entityType": "Order",
+      "entityId": "ORD-1005",
+      "action": "CREATE",
+      "changedBy": "Google Sheets Sync",
+      "source": "Google Sheets",
+      "details": "Added new Order ORD-1005 from Google Sheets (jghghhevshp, Total: ৳4000)."
+    },
+    {
+      "id": "AUD-1791481990839-246",
+      "timestamp": "10/8/2026, 23:53:10",
+      "entityType": "Payout",
+      "entityId": "PAY-PRJ-515",
+      "action": "CREATE",
+      "changedBy": "Google Sheets Sync",
+      "source": "Google Sheets",
+      "details": "Added new Payout PAY-PRJ-515 from Google Sheets (SHARIAR, Agreed: ৳3000)."
+    },
+    {
+      "id": "AUD-1791480189929-806",
+      "timestamp": "10/8/2026, 23:23:09",
+      "entityType": "Order",
+      "entityId": "ORD-1004",
+      "action": "CREATE",
+      "changedBy": "Google Sheets Sync",
+      "source": "Google Sheets",
+      "details": "Added new Order ORD-1004 from Google Sheets (Shoes, Total: ৳12000)."
+    },
+    {
+      "id": "AUD-1791478991409-198",
+      "timestamp": "10/8/2026, 23:03:11",
+      "entityType": "Expense",
+      "entityId": "EXP-2026-1019",
+      "action": "CREATE",
+      "changedBy": "Google Sheets Sync",
+      "source": "Google Sheets",
+      "details": "Added new Expense EXP-2026-1019 from Google Sheets (Marketing & Ads, Amount: ৳13000)."
+    },
     {
       "id": "AUD-1791475544061-930",
       "timestamp": "10/8/2026, 22:05:44",
@@ -4470,39 +4595,39 @@
       "isConfigured": true,
       "appsScriptUrl": "https://script.google.com/macros/s/AKfycbx6QcViFYDS4KN8mU5fqR2wRDgot-ZquHRPBKoQfieimgqrVL443TyTwZEER8jUymWHPQ/exec",
       "deploymentId": "AKfycbx6QcViFYDS4KN8mU5fqR2wRDgot-ZquHRPBKoQfieimgqrVL443TyTwZEER8jUymWHPQ",
-      "lastSyncedAt": "2026-10-08T16:48:10.297Z",
+      "lastSyncedAt": "2026-10-08T18:38:11.056Z",
       "lastSyncStatus": "success",
-      "lastSyncMessage": "Full reconciliation via Apps Script completed: 3 orders (+0, ~0, -0), 14 expenses (+0, ~0, -0), 11 payouts (+0, ~0, -0). Total Active: 28.",
+      "lastSyncMessage": "Full reconciliation via Apps Script completed: 5 orders (+0, ~0, -0), 15 expenses (+0, ~0, -0), 12 payouts (+0, ~0, -0). Total Active: 32.",
       "syncSummary": {
         "orders": {
           "added": 0,
           "updated": 0,
           "removed": 0,
-          "unchanged": 3,
+          "unchanged": 5,
           "duplicates": 0,
           "invalid": 0,
-          "totalActive": 3
+          "totalActive": 5
         },
         "expenses": {
           "added": 0,
           "updated": 0,
           "removed": 0,
-          "unchanged": 14,
+          "unchanged": 15,
           "duplicates": 1,
           "invalid": 0,
-          "totalActive": 14
+          "totalActive": 15
         },
         "payouts": {
           "added": 0,
           "updated": 0,
           "removed": 0,
-          "unchanged": 11,
+          "unchanged": 12,
           "duplicates": 1,
           "invalid": 0,
-          "totalActive": 11
+          "totalActive": 12
         },
-        "totalActiveRecords": 28,
-        "timestamp": "2026-10-08T16:48:10.297Z"
+        "totalActiveRecords": 32,
+        "timestamp": "2026-10-08T18:38:11.056Z"
       }
     },
     "telegram": {
@@ -4542,5 +4667,6 @@
     ],
     "currencySymbol": "৳",
     "timezone": "Asia/Dhaka"
-  }
+  },
+  "deletedRecords": []
 }

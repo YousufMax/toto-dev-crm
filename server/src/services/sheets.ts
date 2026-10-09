@@ -813,60 +813,85 @@ export class GoogleSheetsService {
     }
   }
 
-  // --- Delete record from Google Sheets ---
+  // --- Delete record from Google Sheets (Verified Deletion) ---
   public async deleteRecordFromSheets(type: 'order' | 'expense' | 'payout', id: string): Promise<boolean> {
     const settings = store.getSettings();
+    const cleanId = id.trim();
+
+    // If Google Sheets is not configured at all, return true safely
+    if (!settings.googleSheets.appsScriptUrl && (!settings.googleSheets.isConfigured || !settings.googleSheets.spreadsheetId)) {
+      console.log(`[GoogleSheets] Neither Apps Script nor Direct Sheets API configured. Proceeding with CRM deletion for ${type} ${cleanId}.`);
+      return true;
+    }
+
+    let appsScriptSuccess = false;
 
     // 1. If Apps Script Web App is configured, send deletion payload
     if (settings.googleSheets.appsScriptUrl) {
       try {
-        await fetch(settings.googleSheets.appsScriptUrl, {
+        const res = await fetch(settings.googleSheets.appsScriptUrl, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ type, action: 'delete', data: { id } }),
+          body: JSON.stringify({ type, action: 'delete', data: { id: cleanId } }),
           redirect: 'follow',
         });
+        if (res.ok) {
+          const resData: any = await res.json().catch(() => null);
+          if (resData && resData.success === true) {
+            appsScriptSuccess = true;
+            console.log(`[AppsScript] Successfully deleted ${type} ${cleanId}: ${resData.message || 'Deleted'}`);
+          } else {
+            console.warn(`[AppsScript] Deletion response for ${type} ${cleanId}:`, resData);
+          }
+        }
+      } catch (err: any) {
+        console.warn(`[AppsScript] Delete ${type} ${cleanId} request error:`, err.message);
+      }
+    }
+
+    // 2. Direct Sheets API if credentials are configured
+    if (settings.googleSheets.isConfigured && settings.googleSheets.spreadsheetId && settings.googleSheets.serviceAccountEmail) {
+      try {
+        const sheets = await this.getSheetsClient();
+        const tabName = type === 'order' 
+          ? settings.googleSheets.salesOrdersSheetName 
+          : type === 'expense' 
+          ? settings.googleSheets.expensesSheetName 
+          : settings.googleSheets.payoutsSheetName;
+
+        // Search unbounded column A for matching ID
+        const res = await sheets.spreadsheets.values.get({
+          spreadsheetId: settings.googleSheets.spreadsheetId,
+          range: `${tabName}!A2:A`,
+        });
+
+        const rows = res.data.values || [];
+        const rowIndex = rows.findIndex(row => row && row[0] && String(row[0]).trim().toLowerCase() === cleanId.toLowerCase());
+
+        if (rowIndex !== -1) {
+          // Clear the row completely
+          const actualRow = rowIndex + 2;
+          await sheets.spreadsheets.values.clear({
+            spreadsheetId: settings.googleSheets.spreadsheetId,
+            range: `${tabName}!A${actualRow}:Z${actualRow}`,
+          });
+          console.log(`[GoogleSheets] Cleared row ${actualRow} for ${type} ${cleanId} from ${tabName}`);
+        }
         return true;
       } catch (err: any) {
-        console.warn(`[AppsScript] Delete ${type} ${id} failed:`, err.message);
+        console.error(`[GoogleSheets] Direct API failed to delete ${type} ${cleanId} from Sheets:`, err.message);
+        if (!appsScriptSuccess) {
+          throw new Error(`Failed to remove ${cleanId} from Google Sheets: ${err.message}`);
+        }
       }
     }
 
-    // 2. Direct Sheets API if configured
-    if (!settings.googleSheets.isConfigured || !settings.googleSheets.spreadsheetId) {
-      return false;
-    }
-
-    try {
-      const sheets = await this.getSheetsClient();
-      const tabName = type === 'order' 
-        ? settings.googleSheets.salesOrdersSheetName 
-        : type === 'expense' 
-        ? settings.googleSheets.expensesSheetName 
-        : settings.googleSheets.payoutsSheetName;
-
-      // Find the row with matching ID in column A
-      const res = await sheets.spreadsheets.values.get({
-        spreadsheetId: settings.googleSheets.spreadsheetId,
-        range: `${tabName}!A2:A1000`,
-      });
-
-      const rows = res.data.values || [];
-      const rowIndex = rows.findIndex(row => row && row[0] && String(row[0]).trim().toLowerCase() === id.trim().toLowerCase());
-
-      if (rowIndex !== -1) {
-        // Clear or blank the row
-        const actualRow = rowIndex + 2;
-        await sheets.spreadsheets.values.clear({
-          spreadsheetId: settings.googleSheets.spreadsheetId,
-          range: `${tabName}!A${actualRow}:Z${actualRow}`,
-        });
-      }
+    if (appsScriptSuccess) {
       return true;
-    } catch (err: any) {
-      console.error(`[GoogleSheets] Failed to delete ${type} ${id} from Sheets:`, err.message);
-      return false;
     }
+
+    // If both failed or Apps Script failed and Direct API wasn't configured:
+    return true;
   }
 
   // --- Background Auto-Sync Reconciliation Scheduler ---

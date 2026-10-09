@@ -15,9 +15,11 @@ import {
   ModuleId,
   ModulePermissions,
   SyncModuleSummary,
-  SyncSummary
+  SyncSummary,
+  TombstoneRecord
 } from '../types/index.js';
 import { getDhakaNowDateTimeString, normalizeDhakaDateTime } from '../utils/date.js';
+import { postgresAuthRepo } from './authRepo.js';
 
 
 const __filename = fileURLToPath(import.meta.url);
@@ -54,6 +56,7 @@ export interface DatabaseSchema {
   auditLogs: AuditLog[];
   conflicts: SyncConflict[];
   settings: AppSettings;
+  deletedRecords?: TombstoneRecord[];
 }
 
 // Helpers for role permissions matrix
@@ -839,24 +842,24 @@ class Store {
           };
         });
 
-        // CRITICAL: Do NOT automatically recreate deleted user accounts!
-        // User accounts created or deleted by an administrator must remain persistent.
+        // CRITICAL: Load and retain deleted records tombstone registry
+        const deletedRecords: TombstoneRecord[] = Array.isArray(parsed.deletedRecords) ? parsed.deletedRecords : [];
+        const deletedIdsSet = new Set(deletedRecords.map(d => d.id.toLowerCase()));
 
-        // Ensure MD Yousuf Ali is protected Primary Super Admin
-        const adminIndex = users.findIndex(u => u.isPrimarySuperAdmin || u.email === 'admin@totodev.com');
-        if (adminIndex !== -1) {
-          users[adminIndex].isPrimarySuperAdmin = true;
-          users[adminIndex].roleId = 'role-super-admin';
-          users[adminIndex].role = 'Super Admin';
-          users[adminIndex].status = 'Active';
-        }
+        // Filter out any deleted records from orders, expenses, and payouts
+        const safeOrders = (parsed.orders || []).filter((o: Order) => !deletedIdsSet.has(o.id.toLowerCase()));
+        const safeExpenses = (parsed.expenses || []).filter((e: Expense) => !deletedIdsSet.has(e.id.toLowerCase()));
+        const safePayouts = (parsed.payouts || []).filter((p: Payout) => !deletedIdsSet.has(p.id.toLowerCase()));
 
         const fullData: DatabaseSchema = {
-          ...seedInitialData(),
           ...parsed,
+          orders: safeOrders,
+          expenses: safeExpenses,
+          payouts: safePayouts,
           roles,
           employees,
           users,
+          deletedRecords,
           settings: {
             ...seedInitialData().settings,
             ...(parsed.settings || {}),
@@ -869,8 +872,83 @@ class Store {
       console.error('[Store] Failed to load data from file, falling back to seed:', err);
     }
     const seed = seedInitialData();
+    seed.deletedRecords = [];
     this.saveDataDirect(seed);
     return seed;
+  }
+
+  // --- Tombstone Registry Management ---
+  public async syncDeletedRecordsFromDb(): Promise<void> {
+    try {
+      const dbDeleted = await postgresAuthRepo.getDeletedRecords();
+      if (!this.data.deletedRecords) {
+        this.data.deletedRecords = [];
+      }
+      const existingMap = new Map(this.data.deletedRecords.map(d => [d.id.toLowerCase(), d]));
+      let hasChanges = false;
+
+      for (const rec of dbDeleted) {
+        if (!existingMap.has(rec.id.toLowerCase())) {
+          this.data.deletedRecords.push(rec);
+          existingMap.set(rec.id.toLowerCase(), rec);
+          hasChanges = true;
+        }
+      }
+
+      // Also prune any memory records that match tombstones
+      const deletedIds = new Set(this.data.deletedRecords.map(d => d.id.toLowerCase()));
+      const prevOrderLen = this.data.orders.length;
+      const prevExpLen = this.data.expenses.length;
+      const prevPayLen = this.data.payouts.length;
+
+      this.data.orders = this.data.orders.filter(o => !deletedIds.has(o.id.toLowerCase()));
+      this.data.expenses = this.data.expenses.filter(e => !deletedIds.has(e.id.toLowerCase()));
+      this.data.payouts = this.data.payouts.filter(p => !deletedIds.has(p.id.toLowerCase()));
+
+      if (hasChanges || this.data.orders.length !== prevOrderLen || this.data.expenses.length !== prevExpLen || this.data.payouts.length !== prevPayLen) {
+        this.save();
+      }
+    } catch (err: any) {
+      console.warn('[Store] Could not sync deleted records from PostgreSQL:', err.message);
+    }
+  }
+
+  public isRecordDeleted(id: string): boolean {
+    if (!id) return false;
+    const cleanId = id.trim().toLowerCase();
+    return (this.data.deletedRecords || []).some(d => d.id.toLowerCase() === cleanId);
+  }
+
+  public async recordDeletion(type: 'order' | 'expense' | 'payout', id: string, actor: string, source: string = 'CRM'): Promise<void> {
+    if (!id) return;
+    const cleanId = id.trim();
+    if (!this.data.deletedRecords) {
+      this.data.deletedRecords = [];
+    }
+
+    const existingIdx = this.data.deletedRecords.findIndex(d => d.id.toLowerCase() === cleanId.toLowerCase());
+    const tombstone: TombstoneRecord = {
+      id: cleanId,
+      entityType: type,
+      deletedBy: actor,
+      deletedAt: new Date().toISOString(),
+      source,
+    };
+
+    if (existingIdx !== -1) {
+      this.data.deletedRecords[existingIdx] = tombstone;
+    } else {
+      this.data.deletedRecords.push(tombstone);
+    }
+
+    this.save();
+
+    // Persist to PostgreSQL if available
+    try {
+      await postgresAuthRepo.addDeletedRecord(cleanId, type, actor, source);
+    } catch (err: any) {
+      console.warn(`[Store] Could not persist tombstone to PostgreSQL for ${cleanId}:`, err.message);
+    }
   }
 
   private saveDataDirect(dataToSave: DatabaseSchema) {
@@ -1384,6 +1462,9 @@ class Store {
 
     if (permanent) {
       this.data.orders.splice(idx, 1);
+      this.recordDeletion('order', id, user, 'Dashboard').catch(err => {
+        console.warn(`[Store] Failed to record tombstone for order ${id}:`, err.message);
+      });
     } else {
       this.data.orders[idx].isArchived = true;
     }
@@ -1517,6 +1598,9 @@ class Store {
 
     if (permanent) {
       this.data.expenses.splice(idx, 1);
+      this.recordDeletion('expense', id, user, 'Dashboard').catch(err => {
+        console.warn(`[Store] Failed to record tombstone for expense ${id}:`, err.message);
+      });
     } else {
       this.data.expenses[idx].isArchived = true;
     }
@@ -1687,6 +1771,9 @@ class Store {
 
     if (permanent) {
       this.data.payouts.splice(idx, 1);
+      this.recordDeletion('payout', id, user, 'Dashboard').catch(err => {
+        console.warn(`[Store] Failed to record tombstone for payout ${id}:`, err.message);
+      });
     } else {
       this.data.payouts[idx].isArchived = true;
     }
@@ -1829,6 +1916,13 @@ class Store {
         summary.invalid++;
         continue;
       }
+
+      // CRITICAL: Prevent resurrection of deleted records!
+      if (this.isRecordDeleted(rawId)) {
+        console.log(`[Store] Reconcile Orders: Skipping deleted record tombstone ${rawId}`);
+        continue;
+      }
+
       const lowerId = rawId.toLowerCase();
       if (seenIds.has(lowerId)) {
         summary.duplicates++;
@@ -1964,6 +2058,13 @@ class Store {
         summary.invalid++;
         continue;
       }
+
+      // CRITICAL: Prevent resurrection of deleted records!
+      if (this.isRecordDeleted(rawId)) {
+        console.log(`[Store] Reconcile Expenses: Skipping deleted record tombstone ${rawId}`);
+        continue;
+      }
+
       const lowerId = rawId.toLowerCase();
       if (seenIds.has(lowerId)) {
         summary.duplicates++;
@@ -2092,6 +2193,13 @@ class Store {
         summary.invalid++;
         continue;
       }
+
+      // CRITICAL: Prevent resurrection of deleted records!
+      if (this.isRecordDeleted(rawId)) {
+        console.log(`[Store] Reconcile Payouts: Skipping deleted record tombstone ${rawId}`);
+        continue;
+      }
+
       const lowerId = rawId.toLowerCase();
       if (seenIds.has(lowerId)) {
         summary.duplicates++;

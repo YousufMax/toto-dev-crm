@@ -214,16 +214,22 @@ expensesRouter.delete('/:id', requireSuperAdmin, async (req: AuthenticatedReques
     return res.status(404).json({ success: false, message: `Expense ${expenseId} not found.` });
   }
 
-  // Delete from CRM database
-  const ok = store.deleteExpense(expenseId, actor, true);
-  if (!ok) {
-    return res.status(404).json({ success: false, message: `Expense ${expenseId} could not be deleted.` });
+  // 1. Propagate deletion to Google Sheets first and await result
+  try {
+    await googleSheetsService.deleteRecordFromSheets('expense', expenseId);
+  } catch (err: any) {
+    console.error(`[Expenses] Failed to delete ${expenseId} from Google Sheets:`, err.message);
+    return res.status(502).json({ 
+      success: false, 
+      message: `Failed to remove Expense ${expenseId} from Google Sheets: ${err.message}. Deletion was aborted to prevent data desynchronization.` 
+    });
   }
 
-  // Propagate deletion to Google Sheets
-  googleSheetsService.deleteRecordFromSheets('expense', expenseId).catch(err => {
-    console.warn(`[Expenses] Failed to delete ${expenseId} from Sheets:`, err.message);
-  });
+  // 2. Delete from CRM database and record tombstone
+  const ok = store.deleteExpense(expenseId, actor, true);
+  if (!ok) {
+    return res.status(500).json({ success: false, message: `Expense ${expenseId} could not be deleted from local store.` });
+  }
 
   res.json({ 
     success: true, 
