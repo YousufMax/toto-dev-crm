@@ -326,6 +326,8 @@ export class GoogleSheetsService {
                     });
                 }
             }
+            // Sync latest tombstones from PostgreSQL to prevent resurrected deleted records
+            await store.syncDeletedRecordsFromDb();
             // --- FULL RECONCILIATION EXECUTION ---
             // Compare retrieved Google Sheets datasets with CRM operational datasets
             const summary = store.reconcileAll({
@@ -482,6 +484,8 @@ export class GoogleSheetsService {
                     });
                 }
             }
+            // Sync latest tombstones from PostgreSQL to prevent resurrected deleted records
+            await store.syncDeletedRecordsFromDb();
             // --- FULL RECONCILIATION EXECUTION ---
             const summary = store.reconcileAll({
                 orders: incomingOrders,
@@ -764,8 +768,13 @@ export class GoogleSheetsService {
                 if (res.ok) {
                     const resData = await res.json().catch(() => null);
                     if (resData && resData.success === true) {
-                        appsScriptSuccess = true;
-                        console.log(`[AppsScript] Successfully deleted ${type} ${cleanId}: ${resData.message || 'Deleted'}`);
+                        if (resData.message && resData.message.includes('Synchronized to Google Sheet')) {
+                            console.warn(`[AppsScript] Warning: Apps Script responded with '${resData.message}'. Deployed Apps Script may need an update to handle action: 'delete'. Permanent deletion is safely recorded in CRM tombstones.`);
+                        }
+                        else {
+                            appsScriptSuccess = true;
+                            console.log(`[AppsScript] Successfully deleted ${type} ${cleanId}: ${resData.message || 'Deleted'}`);
+                        }
                     }
                     else {
                         console.warn(`[AppsScript] Deletion response for ${type} ${cleanId}:`, resData);

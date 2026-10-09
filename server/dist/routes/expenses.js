@@ -170,24 +170,20 @@ expensesRouter.delete('/:id', requireSuperAdmin, async (req, res) => {
     if (!expense) {
         return res.status(404).json({ success: false, message: `Expense ${expenseId} not found.` });
     }
-    // 1. Propagate deletion to Google Sheets first and await result
+    // 1. Delete from CRM database and record persistent tombstone FIRST
+    const ok = await store.deleteExpense(expenseId, actor, true);
+    if (!ok) {
+        return res.status(500).json({ success: false, message: `Expense ${expenseId} could not be deleted from local store.` });
+    }
+    // 2. Propagate deletion to Google Sheets (verified attempt)
     try {
         await googleSheetsService.deleteRecordFromSheets('expense', expenseId);
     }
     catch (err) {
-        console.error(`[Expenses] Failed to delete ${expenseId} from Google Sheets:`, err.message);
-        return res.status(502).json({
-            success: false,
-            message: `Failed to remove Expense ${expenseId} from Google Sheets: ${err.message}. Deletion was aborted to prevent data desynchronization.`
-        });
-    }
-    // 2. Delete from CRM database and record tombstone
-    const ok = store.deleteExpense(expenseId, actor, true);
-    if (!ok) {
-        return res.status(500).json({ success: false, message: `Expense ${expenseId} could not be deleted from local store.` });
+        console.warn(`[Expenses] Warning: Google Sheets deletion reported issue for ${expenseId}:`, err.message);
     }
     res.json({
         success: true,
-        message: `Expense ${expenseId} has been permanently deleted by Super Admin and removed from active dataset & Google Sheets.`
+        message: `Expense ${expenseId} has been permanently deleted by Super Admin and recorded in the tombstone registry.`
     });
 });

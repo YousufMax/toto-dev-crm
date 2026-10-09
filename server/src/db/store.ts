@@ -456,286 +456,10 @@ function seedInitialData(): DatabaseSchema {
   const threeDaysAgo = new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
   const fiveDaysAgo = new Date(now.getTime() - 5 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
 
-  const orders: Order[] = [
-    {
-      id: 'ORD-1001',
-      bookingDate: `${todayStr} 10:30`,
-      targetDeadline: `${todayStr} 18:00`,
-      clientName: 'Rajesh / VK Brand',
-      clientContact: '01711223344',
-      salesRep: 'Rajib',
-      serviceName: 'Graphic Design',
-      quantityUnit: '4 Pcs',
-      totalAmount: 4000,
-      paidAmount: 2000,
-      dueAmount: 2000,
-      paymentMethod: 'bKash',
-      paymentStatus: 'Partial',
-      deliveryStatus: 'In Progress',
-      remarks: 'Logo and Social Media Banner design',
-      createdAt: `${todayStr}T10:30:00+06:00`,
-      updatedAt: `${todayStr}T10:30:00+06:00`,
-      source: 'Google Sheets',
-    },
-    {
-      id: 'ORD-1002',
-      bookingDate: `${todayStr} 11:15`,
-      targetDeadline: `${todayStr} 20:00`,
-      clientName: 'Green Life Agro',
-      clientContact: '01899887766',
-      salesRep: 'Tanvir',
-      serviceName: 'Full-Stack Web Development',
-      quantityUnit: '1 System',
-      totalAmount: 35000,
-      paidAmount: 15000,
-      dueAmount: 20000,
-      paymentMethod: 'Bank Transfer',
-      paymentStatus: 'Partial',
-      deliveryStatus: 'In Progress',
-      remarks: 'Custom CRM Portal with inventory tracking',
-      createdAt: `${todayStr}T11:15:00+06:00`,
-      updatedAt: `${todayStr}T11:15:00+06:00`,
-      source: 'Dashboard',
-    },
-    {
-      id: 'ORD-1003',
-      bookingDate: `${yesterday} 14:00`,
-      targetDeadline: `${todayStr} 15:00`,
-      clientName: 'Apex Fashion Ltd',
-      clientContact: '01912345678',
-      salesRep: 'Rajib',
-      serviceName: 'UI/UX Mobile App Redesign',
-      quantityUnit: '12 Screens',
-      totalAmount: 18000,
-      paidAmount: 18000,
-      dueAmount: 0,
-      paymentMethod: 'Nagad',
-      paymentStatus: 'Paid',
-      deliveryStatus: 'Completed',
-      remarks: 'E-commerce mobile app design in Figma',
-      createdAt: `${yesterday}T14:00:00+06:00`,
-      updatedAt: `${todayStr}T14:30:00+06:00`,
-      source: 'Google Sheets',
-    },
-    {
-      id: 'ORD-1004',
-      bookingDate: `${threeDaysAgo} 16:45`,
-      targetDeadline: `${yesterday} 12:00`,
-      clientName: 'Smart Solution BD',
-      clientContact: '01700998811',
-      salesRep: 'Tanvir',
-      serviceName: 'SEO & Content Marketing',
-      quantityUnit: '1 Month',
-      totalAmount: 12000,
-      paidAmount: 6000,
-      dueAmount: 6000,
-      paymentMethod: 'bKash',
-      paymentStatus: 'Partial',
-      deliveryStatus: 'Review',
-      remarks: 'Technical SEO Audit & Keyword strategy',
-      createdAt: `${threeDaysAgo}T16:45:00+06:00`,
-      updatedAt: `${yesterday}T16:00:00+06:00`,
-      source: 'Dashboard',
-    },
-    {
-      id: 'ORD-1005',
-      bookingDate: `${fiveDaysAgo} 09:30`,
-      targetDeadline: `${threeDaysAgo} 18:00`,
-      clientName: 'TechHub Dhaka',
-      clientContact: '01655443322',
-      salesRep: 'Rajib',
-      serviceName: 'API Integration & Webhook',
-      quantityUnit: '2 Endpoints',
-      totalAmount: 8000,
-      paidAmount: 8000,
-      dueAmount: 0,
-      paymentMethod: 'Bank Transfer',
-      paymentStatus: 'Paid',
-      deliveryStatus: 'Delivered',
-      remarks: 'Payment gateway integration with SMS notification',
-      createdAt: `${fiveDaysAgo}T09:30:00+06:00`,
-      updatedAt: `${threeDaysAgo}T17:00:00+06:00`,
-      source: 'Google Sheets',
-    }
-  ];
-
-  const expenses: Expense[] = [
-    {
-      id: 'EXP-2026-1001',
-      dateTime: `${todayStr} 10:30`,
-      category: 'Employee Salary',
-      subCategoryPurpose: 'September Technical Team Salary',
-      vendorReceiverName: 'Developer Sakib',
-      amount: 15000,
-      paymentMethod: 'Bank Transfer',
-      paidFromAccount: 'City Bank A/C',
-      transactionRefId: 'TXN987654321',
-      receiptInvoiceLink: 'https://drive.google.com/sample-receipt-1',
-      approvedBy: 'MD Yousuf Ali',
-      approvalStatus: 'Paid',
-      remarks: 'Full monthly salary cleared',
-      createdAt: `${todayStr}T10:30:00+06:00`,
-      updatedAt: `${todayStr}T10:30:00+06:00`,
-      source: 'Google Sheets',
-    },
-    {
-      id: 'EXP-2026-1002',
-      dateTime: `${todayStr} 12:45`,
-      category: 'Hosting / Domain',
-      subCategoryPurpose: 'Production Cloud Cluster Renewal',
-      vendorReceiverName: 'DigitalOcean / Cloudflare',
-      amount: 4500,
-      paymentMethod: 'Credit Card',
-      paidFromAccount: 'Eastern Bank Card',
-      transactionRefId: 'INV-DO-9821',
-      receiptInvoiceLink: 'https://drive.google.com/sample-receipt-2',
-      approvedBy: 'MD Yousuf Ali',
-      approvalStatus: 'Approved',
-      remarks: 'Monthly server & DNS load balancer hosting',
-      createdAt: `${todayStr}T12:45:00+06:00`,
-      updatedAt: `${todayStr}T12:45:00+06:00`,
-      source: 'Dashboard',
-    },
-    {
-      id: 'EXP-2026-1003',
-      dateTime: `${yesterday} 16:20`,
-      category: 'Office Expense',
-      subCategoryPurpose: 'High Speed Fiber Internet Bill',
-      vendorReceiverName: 'Carnival Internet',
-      amount: 2500,
-      paymentMethod: 'bKash',
-      paidFromAccount: 'bKash Merchant',
-      transactionRefId: 'BKT8829104',
-      receiptInvoiceLink: 'https://drive.google.com/sample-receipt-3',
-      approvedBy: 'Fatima Zohra',
-      approvalStatus: 'Paid',
-      remarks: 'Monthly office high bandwidth connectivity',
-      createdAt: `${yesterday}T16:20:00+06:00`,
-      updatedAt: `${yesterday}T16:20:00+06:00`,
-      source: 'Dashboard',
-    },
-    {
-      id: 'EXP-2026-1004',
-      dateTime: `${threeDaysAgo} 11:00`,
-      category: 'Marketing & Ads',
-      subCategoryPurpose: 'Meta Ads Campaign for Q4 Sales',
-      vendorReceiverName: 'Facebook Ads',
-      amount: 6000,
-      paymentMethod: 'Credit Card',
-      paidFromAccount: 'City Bank Dual Currency',
-      transactionRefId: 'FB-ADS-99120',
-      receiptInvoiceLink: 'https://drive.google.com/sample-receipt-4',
-      approvedBy: 'MD Yousuf Ali',
-      approvalStatus: 'Paid',
-      remarks: 'Lead generation campaign for design & web clients',
-      createdAt: `${threeDaysAgo}T11:00:00+06:00`,
-      updatedAt: `${threeDaysAgo}T11:00:00+06:00`,
-      source: 'Google Sheets',
-    }
-  ];
-
-  const payouts: Payout[] = [
-    {
-      id: 'PAY-PRJ-501',
-      projectOrderId: 'ORD-1001',
-      serviceName: 'Graphic Design',
-      clientName: 'Rajesh / VK Brand',
-      resourceWorkerName: 'Freelancer Rahim',
-      totalProjectBudget: 4000,
-      commissionType: 'Fixed Commission',
-      agreedPayoutAmount: 1500,
-      advancePaid: 500,
-      dueFinalPayable: 1000,
-      deliveryStatus: 'In Progress',
-      paymentStatus: 'Partial',
-      approvalStatus: 'Advance Paid',
-      paymentMethod: 'bKash',
-      transactionRefId: 'TRX987654321',
-      remarks: 'Advance paid, final payable after file approval',
-      createdAt: `${todayStr}T10:45:00+06:00`,
-      updatedAt: `${todayStr}T10:45:00+06:00`,
-      source: 'Google Sheets',
-    },
-    {
-      id: 'PAY-PRJ-502',
-      projectOrderId: 'ORD-1002',
-      serviceName: 'Full-Stack Web Development',
-      clientName: 'Green Life Agro',
-      resourceWorkerName: 'Developer Sakib',
-      totalProjectBudget: 35000,
-      commissionType: 'Percentage (%)',
-      commissionRate: 40,
-      agreedPayoutAmount: 14000,
-      advancePaid: 5000,
-      dueFinalPayable: 9000,
-      deliveryStatus: 'In Progress',
-      paymentStatus: 'Partial',
-      approvalStatus: 'Advance Paid',
-      paymentMethod: 'Bank Transfer',
-      transactionRefId: 'BTX-5544321',
-      remarks: 'Frontend architecture and backend database schema',
-      createdAt: `${todayStr}T11:30:00+06:00`,
-      updatedAt: `${todayStr}T11:30:00+06:00`,
-      source: 'Dashboard',
-    },
-    {
-      id: 'PAY-PRJ-503',
-      projectOrderId: 'ORD-1003',
-      serviceName: 'UI/UX Mobile App Redesign',
-      clientName: 'Apex Fashion Ltd',
-      resourceWorkerName: 'Freelancer Rahim',
-      totalProjectBudget: 18000,
-      commissionType: 'Fixed Commission',
-      agreedPayoutAmount: 7000,
-      advancePaid: 3000,
-      dueFinalPayable: 0,
-      deliveryStatus: 'Completed',
-      paymentStatus: 'Paid',
-      approvalStatus: 'Final Paid',
-      paymentMethod: 'Nagad',
-      transactionRefId: 'NGD-990011',
-      remarks: 'All 12 design screens delivered and client approved',
-      createdAt: `${yesterday}T14:30:00+06:00`,
-      updatedAt: `${todayStr}T15:00:00+06:00`,
-      source: 'Google Sheets',
-    }
-  ];
-
-  const auditLogs: AuditLog[] = [
-    {
-      id: 'AUD-001',
-      entityType: 'Order',
-      entityId: 'ORD-1001',
-      action: 'CREATE',
-      changedBy: 'Rajib Ahmed',
-      timestamp: `${todayStr} 10:30:00`,
-      source: 'Google Sheets',
-      details: 'Created Order ORD-1001 for Rajesh / VK Brand (Graphic Design)',
-    },
-    {
-      id: 'AUD-002',
-      entityType: 'Payout',
-      entityId: 'PAY-PRJ-501',
-      action: 'CREATE',
-      changedBy: 'Hasan Mahmud',
-      timestamp: `${todayStr} 10:45:00`,
-      source: 'Google Sheets',
-      details: 'Assigned Freelancer Rahim for ORD-1001, Advance: ৳500',
-    },
-    {
-      id: 'AUD-003',
-      entityType: 'Expense',
-      entityId: 'EXP-2026-1001',
-      action: 'APPROVAL',
-      fieldChanged: 'approvalStatus',
-      previousValue: 'Pending Approval',
-      newValue: 'Paid',
-      changedBy: 'MD Yousuf Ali',
-      timestamp: `${todayStr} 10:30:00`,
-      source: 'Google Sheets',
-      details: 'Approved and paid Developer Sakib September salary ৳15,000',
-    }
-  ];
+  const orders: Order[] = [];
+  const expenses: Expense[] = [];
+  const payouts: Payout[] = [];
+  const auditLogs: AuditLog[] = [];
 
   const settings: AppSettings = {
     googleSheets: {
@@ -1456,15 +1180,17 @@ class Store {
     return updated;
   }
 
-  public deleteOrder(id: string, user: string, permanent = false): boolean {
+  public async deleteOrder(id: string, user: string, permanent = false): Promise<boolean> {
     const idx = this.data.orders.findIndex(o => o.id === id);
     if (idx === -1) return false;
 
     if (permanent) {
       this.data.orders.splice(idx, 1);
-      this.recordDeletion('order', id, user, 'Dashboard').catch(err => {
+      try {
+        await this.recordDeletion('order', id, user, 'Dashboard');
+      } catch (err: any) {
         console.warn(`[Store] Failed to record tombstone for order ${id}:`, err.message);
-      });
+      }
     } else {
       this.data.orders[idx].isArchived = true;
     }
@@ -1477,7 +1203,7 @@ class Store {
       source: 'Dashboard',
       details: permanent ? `Permanently deleted Order ${id}` : `Archived Order ${id}`,
     });
-    this.save();
+    this.saveDataDirect(this.data);
     return true;
   }
 
@@ -1592,15 +1318,17 @@ class Store {
     return updated;
   }
 
-  public deleteExpense(id: string, user: string, permanent = false): boolean {
+  public async deleteExpense(id: string, user: string, permanent = false): Promise<boolean> {
     const idx = this.data.expenses.findIndex(e => e.id === id);
     if (idx === -1) return false;
 
     if (permanent) {
       this.data.expenses.splice(idx, 1);
-      this.recordDeletion('expense', id, user, 'Dashboard').catch(err => {
+      try {
+        await this.recordDeletion('expense', id, user, 'Dashboard');
+      } catch (err: any) {
         console.warn(`[Store] Failed to record tombstone for expense ${id}:`, err.message);
-      });
+      }
     } else {
       this.data.expenses[idx].isArchived = true;
     }
@@ -1613,7 +1341,7 @@ class Store {
       source: 'Dashboard',
       details: permanent ? `Permanently deleted Expense ${id}` : `Archived Expense ${id}`,
     });
-    this.save();
+    this.saveDataDirect(this.data);
     return true;
   }
 
@@ -1765,15 +1493,17 @@ class Store {
     return updated;
   }
 
-  public deletePayout(id: string, user: string, permanent = false): boolean {
+  public async deletePayout(id: string, user: string, permanent = false): Promise<boolean> {
     const idx = this.data.payouts.findIndex(p => p.id === id);
     if (idx === -1) return false;
 
     if (permanent) {
       this.data.payouts.splice(idx, 1);
-      this.recordDeletion('payout', id, user, 'Dashboard').catch(err => {
+      try {
+        await this.recordDeletion('payout', id, user, 'Dashboard');
+      } catch (err: any) {
         console.warn(`[Store] Failed to record tombstone for payout ${id}:`, err.message);
-      });
+      }
     } else {
       this.data.payouts[idx].isArchived = true;
     }
@@ -1786,7 +1516,7 @@ class Store {
       source: 'Dashboard',
       details: permanent ? `Permanently deleted Payout ${id}` : `Archived Payout ${id}`,
     });
-    this.save();
+    this.saveDataDirect(this.data);
     return true;
   }
 

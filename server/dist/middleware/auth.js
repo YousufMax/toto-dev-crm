@@ -39,9 +39,21 @@ export async function authenticate(req, res, next) {
                 userId = headerUserId;
             }
             else if (headerUserName) {
-                const found = await postgresAuthRepo.getUserByEmailOrUsername(headerUserName);
-                if (found)
-                    userId = found.id;
+                try {
+                    const found = await postgresAuthRepo.getUserByEmailOrUsername(headerUserName);
+                    if (found)
+                        userId = found.id;
+                }
+                catch (e) {
+                    // Fall back to local store
+                }
+                if (!userId) {
+                    const local = store.getUsersWithCredentials().find(u => u.username?.toLowerCase() === headerUserName.toLowerCase() ||
+                        u.email?.toLowerCase() === headerUserName.toLowerCase() ||
+                        u.name?.toLowerCase() === headerUserName.toLowerCase());
+                    if (local)
+                        userId = local.id;
+                }
             }
         }
         let user;
