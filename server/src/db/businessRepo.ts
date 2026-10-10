@@ -103,13 +103,14 @@ export class PostgresBusinessRepository {
   public async getNextSequence(sequenceName: 'order' | 'expense' | 'payout', startingNumber: number): Promise<number> {
     try {
       await this.initSchema();
+      const targetVal = startingNumber + 1;
       const res = await query(
         `INSERT INTO record_sequences (sequence_name, current_val)
          VALUES ($1, $2)
          ON CONFLICT (sequence_name)
-         DO UPDATE SET current_val = GREATEST(record_sequences.current_val, EXCLUDED.current_val) + 1
+         DO UPDATE SET current_val = GREATEST(record_sequences.current_val + 1, EXCLUDED.current_val)
          RETURNING current_val`,
-        [sequenceName, startingNumber]
+        [sequenceName, targetVal]
       );
       return parseInt(res.rows[0].current_val, 10);
     } catch (err: any) {
@@ -119,6 +120,47 @@ export class PostgresBusinessRepository {
   }
 
   // --- Orders ---
+  public async insertOrder(order: Order): Promise<boolean> {
+    await this.initSchema();
+    await query(
+      `INSERT INTO orders (
+        id, booking_date, target_deadline, client_name, client_contact,
+        sales_rep, service_name, quantity_unit, total_amount, paid_amount,
+        due_amount, payment_method, payment_status, delivery_status, remarks,
+        source, is_archived, sheet_row_index, created_at, updated_at, updated_by
+      ) VALUES (
+        $1, $2, $3, $4, $5,
+        $6, $7, $8, $9, $10,
+        $11, $12, $13, $14, $15,
+        $16, $17, $18, $19, $20, $21
+      )`,
+      [
+        order.id,
+        order.bookingDate,
+        order.targetDeadline,
+        order.clientName,
+        order.clientContact || '',
+        order.salesRep || '',
+        order.serviceName,
+        order.quantityUnit || '1 Unit',
+        order.totalAmount || 0,
+        order.paidAmount || 0,
+        order.dueAmount || 0,
+        order.paymentMethod || 'bKash',
+        order.paymentStatus || 'Unpaid',
+        order.deliveryStatus || 'Pending',
+        order.remarks || '',
+        order.source || 'Dashboard',
+        Boolean(order.isArchived),
+        order.sheetRowIndex || null,
+        order.createdAt || new Date().toISOString(),
+        order.updatedAt || new Date().toISOString(),
+        order.updatedBy || 'System'
+      ]
+    );
+    return true;
+  }
+
   public async saveOrder(order: Order): Promise<boolean> {
     try {
       await this.initSchema();
@@ -225,6 +267,45 @@ export class PostgresBusinessRepository {
   }
 
   // --- Expenses ---
+  public async insertExpense(expense: Expense): Promise<boolean> {
+    await this.initSchema();
+    await query(
+      `INSERT INTO expenses (
+        id, date_time, category, sub_category_purpose, vendor_receiver_name,
+        amount, payment_method, paid_from_account, transaction_ref_id, receipt_invoice_link,
+        approved_by, approval_status, remarks, source, is_archived,
+        sheet_row_index, created_at, updated_at, updated_by
+      ) VALUES (
+        $1, $2, $3, $4, $5,
+        $6, $7, $8, $9, $10,
+        $11, $12, $13, $14, $15,
+        $16, $17, $18, $19
+      )`,
+      [
+        expense.id,
+        expense.dateTime,
+        expense.category || 'Other',
+        expense.subCategoryPurpose || '',
+        expense.vendorReceiverName || '',
+        expense.amount || 0,
+        expense.paymentMethod || 'Bank Transfer',
+        expense.paidFromAccount || 'Company Account',
+        expense.transactionRefId || '',
+        expense.receiptInvoiceLink || '',
+        expense.approvedBy || '',
+        expense.approvalStatus || 'Pending Approval',
+        expense.remarks || '',
+        expense.source || 'Dashboard',
+        Boolean(expense.isArchived),
+        expense.sheetRowIndex || null,
+        expense.createdAt || new Date().toISOString(),
+        expense.updatedAt || new Date().toISOString(),
+        expense.updatedBy || 'System'
+      ]
+    );
+    return true;
+  }
+
   public async saveExpense(expense: Expense): Promise<boolean> {
     try {
       await this.initSchema();
@@ -327,6 +408,51 @@ export class PostgresBusinessRepository {
   }
 
   // --- Payouts ---
+  public async insertPayout(payout: Payout): Promise<boolean> {
+    await this.initSchema();
+    await query(
+      `INSERT INTO payouts (
+        id, project_order_id, service_name, client_name, resource_worker_name,
+        total_project_budget, commission_type, commission_rate, agreed_payout_amount,
+        advance_paid, due_final_payable, delivery_status, payment_status,
+        approval_status, payment_method, transaction_ref_id, remarks,
+        source, is_archived, sheet_row_index, created_at, updated_at, updated_by
+      ) VALUES (
+        $1, $2, $3, $4, $5,
+        $6, $7, $8, $9,
+        $10, $11, $12, $13,
+        $14, $15, $16, $17,
+        $18, $19, $20, $21, $22, $23
+      )`,
+      [
+        payout.id,
+        payout.projectOrderId || '',
+        payout.serviceName || '',
+        payout.clientName || '',
+        payout.resourceWorkerName || '',
+        payout.totalProjectBudget || 0,
+        payout.commissionType || 'Fixed Commission',
+        payout.commissionRate || null,
+        payout.agreedPayoutAmount || 0,
+        payout.advancePaid || 0,
+        payout.dueFinalPayable || 0,
+        payout.deliveryStatus || 'Pending',
+        payout.paymentStatus || 'Unpaid',
+        payout.approvalStatus || 'Pending Approval',
+        payout.paymentMethod || 'bKash',
+        payout.transactionRefId || '',
+        payout.remarks || '',
+        payout.source || 'Dashboard',
+        Boolean(payout.isArchived),
+        payout.sheetRowIndex || null,
+        payout.createdAt || new Date().toISOString(),
+        payout.updatedAt || new Date().toISOString(),
+        payout.updatedBy || 'System'
+      ]
+    );
+    return true;
+  }
+
   public async savePayout(payout: Payout): Promise<boolean> {
     try {
       await this.initSchema();

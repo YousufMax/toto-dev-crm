@@ -709,6 +709,10 @@ class Store {
     return (this.data.deletedRecords || []).some(d => d.id.toLowerCase() === cleanId);
   }
 
+  public getDeletedRecords(): TombstoneRecord[] {
+    return this.data.deletedRecords || [];
+  }
+
   public async recordDeletion(type: 'order' | 'expense' | 'payout', id: string, actor: string, source: string = 'CRM'): Promise<void> {
     if (!id) return;
     const cleanId = id.trim();
@@ -1116,7 +1120,7 @@ class Store {
     return this.data.orders.find(o => o.id === id);
   }
 
-  public generateOrderId(): string {
+  public async generateOrderId(): Promise<string> {
     const numbers: number[] = [];
 
     // Collect from current orders
@@ -1151,26 +1155,30 @@ class Store {
     let max = numbers.length > 0 ? Math.max(...numbers) : 1000;
     if (max < 1000) max = 1000;
 
-    let candidate = max + 1;
+    // Use PostgreSQL atomic sequence generator with row lock
+    let candidate = await postgresBusinessRepo.getNextSequence('order', max);
     while (
       this.isRecordDeleted(`ORD-${candidate}`) ||
       this.data.orders.some(o => o.id.toLowerCase() === `ORD-${candidate}`.toLowerCase())
     ) {
-      candidate++;
+      candidate = await postgresBusinessRepo.getNextSequence('order', candidate);
     }
 
     return `ORD-${candidate}`;
   }
 
   public async createOrder(orderInput: Partial<Order>, user: string, source: 'Dashboard' | 'Google Sheets' | 'API' = 'Dashboard'): Promise<Order> {
-    const id = orderInput.id || this.generateOrderId();
+    const id = orderInput.id || await this.generateOrderId();
     if (this.data.orders.some(o => o.id.toLowerCase() === id.toLowerCase())) {
       throw new Error(`Order ID ${id} already exists! Duplicate IDs are strictly prohibited.`);
+    }
+    if (this.isRecordDeleted(id)) {
+      throw new Error(`Order ID ${id} was previously deleted. Reusing deleted IDs is strictly prohibited.`);
     }
 
     const totalAmount = Number(orderInput.totalAmount) || 0;
     const paidAmount = Number(orderInput.paidAmount) || 0;
-    const dueAmount = totalAmount - paidAmount;
+    const dueAmount = Math.max(0, totalAmount - paidAmount);
 
     const now = new Date().toISOString();
     const dhakaNow = getDhakaNowDateTimeString();
@@ -1197,6 +1205,9 @@ class Store {
       sheetRowIndex: orderInput.sheetRowIndex,
     };
 
+    // Authoritative ACID persistence in PostgreSQL FIRST
+    await postgresBusinessRepo.insertOrder(newOrder);
+
     this.data.orders.unshift(newOrder);
     this.addAuditLog({
       entityType: 'Order',
@@ -1207,13 +1218,6 @@ class Store {
       details: `Created Order ${id} for ${newOrder.clientName} (Total: ৳${totalAmount})`,
     });
     this.save();
-
-    // Authoritative ACID persistence in PostgreSQL
-    try {
-      await postgresBusinessRepo.saveOrder(newOrder);
-    } catch (err: any) {
-      console.warn(`[Store] Failed to save order ${id} to PostgreSQL:`, err.message);
-    }
 
     return newOrder;
   }
@@ -1227,7 +1231,7 @@ class Store {
     const current = this.data.orders[idx];
     const totalAmount = updates.totalAmount !== undefined ? Number(updates.totalAmount) : current.totalAmount;
     const paidAmount = updates.paidAmount !== undefined ? Number(updates.paidAmount) : current.paidAmount;
-    const dueAmount = totalAmount - paidAmount;
+    const dueAmount = Math.max(0, totalAmount - paidAmount);
     const paymentStatus = updates.paymentStatus 
       || (paidAmount >= totalAmount && totalAmount > 0 ? 'Paid' : (paidAmount > 0 ? 'Partial' : 'Unpaid'));
 
@@ -1278,6 +1282,9 @@ class Store {
       updatedBy: user,
     };
 
+    // Authoritative update in PostgreSQL
+    await postgresBusinessRepo.saveOrder(updated);
+
     this.data.orders[idx] = updated;
     this.addAuditLog({
       entityType: 'Order',
@@ -1288,12 +1295,6 @@ class Store {
       details: `Updated details for Order ${id}`,
     });
     this.save();
-
-    try {
-      await postgresBusinessRepo.saveOrder(updated);
-    } catch (err: any) {
-      console.warn(`[Store] Failed to update order ${id} in PostgreSQL:`, err.message);
-    }
 
     return updated;
   }
@@ -1344,7 +1345,7 @@ class Store {
     return this.data.expenses.find(e => e.id === id);
   }
 
-  public generateExpenseId(): string {
+  public async generateExpenseId(): Promise<string> {
     const year = new Date().getFullYear();
     const prefix = `EXP-${year}-`;
     const numbers: number[] = [];
@@ -1378,21 +1379,24 @@ class Store {
     let max = numbers.length > 0 ? Math.max(...numbers) : 1000;
     if (max < 1000) max = 1000;
 
-    let candidate = max + 1;
+    let candidate = await postgresBusinessRepo.getNextSequence('expense', max);
     while (
       this.isRecordDeleted(`${prefix}${candidate}`) ||
       this.data.expenses.some(e => e.id.toLowerCase() === `${prefix}${candidate}`.toLowerCase())
     ) {
-      candidate++;
+      candidate = await postgresBusinessRepo.getNextSequence('expense', candidate);
     }
 
     return `${prefix}${candidate}`;
   }
 
   public async createExpense(expenseInput: Partial<Expense>, user: string, source: 'Dashboard' | 'Google Sheets' | 'API' = 'Dashboard'): Promise<Expense> {
-    const id = expenseInput.id || this.generateExpenseId();
+    const id = expenseInput.id || await this.generateExpenseId();
     if (this.data.expenses.some(e => e.id.toLowerCase() === id.toLowerCase())) {
       throw new Error(`Expense ID ${id} already exists! Duplicate IDs are strictly prohibited.`);
+    }
+    if (this.isRecordDeleted(id)) {
+      throw new Error(`Expense ID ${id} was previously deleted. Reusing deleted IDs is strictly prohibited.`);
     }
 
     const amount = Number(expenseInput.amount) || 0;
@@ -1420,6 +1424,9 @@ class Store {
       sheetRowIndex: expenseInput.sheetRowIndex,
     };
 
+    // Authoritative ACID persistence in PostgreSQL FIRST
+    await postgresBusinessRepo.insertExpense(newExpense);
+
     this.data.expenses.unshift(newExpense);
     this.addAuditLog({
       entityType: 'Expense',
@@ -1430,12 +1437,6 @@ class Store {
       details: `Created Expense ${id} of ৳${amount} for ${newExpense.category}`,
     });
     this.save();
-
-    try {
-      await postgresBusinessRepo.saveExpense(newExpense);
-    } catch (err: any) {
-      console.warn(`[Store] Failed to save expense ${id} to PostgreSQL:`, err.message);
-    }
 
     return newExpense;
   }
@@ -1474,6 +1475,9 @@ class Store {
       updatedBy: user,
     };
 
+    // Authoritative update in PostgreSQL
+    await postgresBusinessRepo.saveExpense(updated);
+
     this.data.expenses[idx] = updated;
     this.addAuditLog({
       entityType: 'Expense',
@@ -1484,12 +1488,6 @@ class Store {
       details: `Updated Expense ${id}`,
     });
     this.save();
-
-    try {
-      await postgresBusinessRepo.saveExpense(updated);
-    } catch (err: any) {
-      console.warn(`[Store] Failed to update expense ${id} in PostgreSQL:`, err.message);
-    }
 
     return updated;
   }
@@ -1567,7 +1565,7 @@ class Store {
     return this.data.payouts.filter(p => p.projectOrderId.toLowerCase() === orderId.toLowerCase() && !p.isArchived);
   }
 
-  public generatePayoutId(): string {
+  public async generatePayoutId(): Promise<string> {
     const numbers: number[] = [];
 
     for (const p of this.data.payouts) {
@@ -1599,21 +1597,24 @@ class Store {
     let max = numbers.length > 0 ? Math.max(...numbers) : 500;
     if (max < 500) max = 500;
 
-    let candidate = max + 1;
+    let candidate = await postgresBusinessRepo.getNextSequence('payout', max);
     while (
       this.isRecordDeleted(`PAY-PRJ-${candidate}`) ||
       this.data.payouts.some(p => p.id.toLowerCase() === `PAY-PRJ-${candidate}`.toLowerCase())
     ) {
-      candidate++;
+      candidate = await postgresBusinessRepo.getNextSequence('payout', candidate);
     }
 
     return `PAY-PRJ-${candidate}`;
   }
 
   public async createPayout(payoutInput: Partial<Payout>, user: string, source: 'Dashboard' | 'Google Sheets' | 'API' = 'Dashboard'): Promise<Payout> {
-    const id = payoutInput.id || this.generatePayoutId();
+    const id = payoutInput.id || await this.generatePayoutId();
     if (this.data.payouts.some(p => p.id.toLowerCase() === id.toLowerCase())) {
       throw new Error(`Payout ID ${id} already exists! Duplicate IDs are strictly prohibited.`);
+    }
+    if (this.isRecordDeleted(id)) {
+      throw new Error(`Payout ID ${id} was previously deleted. Reusing deleted IDs is strictly prohibited.`);
     }
 
     const totalBudget = Number(payoutInput.totalProjectBudget) || 0;
@@ -1653,6 +1654,9 @@ class Store {
       sheetRowIndex: payoutInput.sheetRowIndex,
     };
 
+    // Authoritative ACID persistence in PostgreSQL FIRST
+    await postgresBusinessRepo.insertPayout(newPayout);
+
     this.data.payouts.unshift(newPayout);
     this.addAuditLog({
       entityType: 'Payout',
@@ -1663,12 +1667,6 @@ class Store {
       details: `Created Payout ${id} for ${newPayout.resourceWorkerName} on ${newPayout.projectOrderId} (Agreed: ৳${agreedPayout})`,
     });
     this.save();
-
-    try {
-      await postgresBusinessRepo.savePayout(newPayout);
-    } catch (err: any) {
-      console.warn(`[Store] Failed to save payout ${id} to PostgreSQL:`, err.message);
-    }
 
     return newPayout;
   }
@@ -1707,6 +1705,9 @@ class Store {
       updatedBy: user,
     };
 
+    // Authoritative update in PostgreSQL
+    await postgresBusinessRepo.savePayout(updated);
+
     this.data.payouts[idx] = updated;
     this.addAuditLog({
       entityType: 'Payout',
@@ -1717,12 +1718,6 @@ class Store {
       details: `Updated Payout ${id}`,
     });
     this.save();
-
-    try {
-      await postgresBusinessRepo.savePayout(updated);
-    } catch (err: any) {
-      console.warn(`[Store] Failed to update payout ${id} in PostgreSQL:`, err.message);
-    }
 
     return updated;
   }
@@ -1932,9 +1927,14 @@ class Store {
       validIncoming.push(orderRecord);
     }
 
-    // 1. Identify records to remove (only records originating from Google Sheets that are now missing)
+    // 1. Identify records to remove (only records originating strictly from Google Sheets that are now missing)
     const currentActive = this.data.orders.filter(o => !o.isArchived);
-    const toRemove = currentActive.filter(o => o.source === 'Google Sheets' && !seenIds.has(o.id.toLowerCase()));
+    let toRemove: Order[] = [];
+    if (validIncoming.length === 0 && currentActive.length > 0) {
+      console.warn(`[Store] Safety Circuit Breaker: Incoming orders is 0 while active count is ${currentActive.length}. Skipping delete prune to prevent accidental data loss.`);
+    } else {
+      toRemove = currentActive.filter(o => o.source === 'Google Sheets' && !seenIds.has(o.id.toLowerCase()));
+    }
     summary.removed = toRemove.length;
 
     for (const rem of toRemove) {
@@ -1946,7 +1946,9 @@ class Store {
         source,
         details: `Removed Order ${rem.id} from active dataset as it was deleted from Google Sheets.`,
       });
-      postgresBusinessRepo.deleteOrder(rem.id).catch(() => {});
+      postgresBusinessRepo.deleteOrder(rem.id).catch(err => {
+        console.warn(`[Store] Failed to delete order ${rem.id} from PostgreSQL during sync:`, err.message);
+      });
     }
 
     // 2. Build authoritative orders dataset
@@ -1967,7 +1969,9 @@ class Store {
           source,
           details: `Added new Order ${incoming.id} from Google Sheets (${incoming.clientName}, Total: ৳${incoming.totalAmount}).`,
         });
-        postgresBusinessRepo.saveOrder(incoming).catch(() => {});
+        postgresBusinessRepo.saveOrder(incoming).catch(err => {
+          console.warn(`[Store] Failed to save synced order ${incoming.id} to PostgreSQL:`, err.message);
+        });
       } else {
         const isChanged = 
           existing.totalAmount !== incoming.totalAmount ||
@@ -1989,6 +1993,7 @@ class Store {
           const updated: Order = {
             ...existing,
             ...incoming,
+            source: existing.source || 'Dashboard', // CRITICAL: NEVER morph CRM-created records into 'Google Sheets'
             createdAt: existing.createdAt, // Preserve original timestamp
             updatedAt: new Date().toISOString(),
             updatedBy: 'Google Sheets Sync',
@@ -2000,7 +2005,9 @@ class Store {
           } else {
             reconciledList.push(updated);
           }
-          postgresBusinessRepo.saveOrder(updated).catch(() => {});
+          postgresBusinessRepo.saveOrder(updated).catch(err => {
+            console.warn(`[Store] Failed to save updated order ${updated.id} to PostgreSQL:`, err.message);
+          });
         } else {
           summary.unchanged++;
           existing.isArchived = false;
@@ -2082,9 +2089,14 @@ class Store {
       validIncoming.push(expenseRecord);
     }
 
-    // 1. Identify records to remove (only records originating from Google Sheets that are now missing)
+    // 1. Identify records to remove (only records originating strictly from Google Sheets that are now missing)
     const currentActive = this.data.expenses.filter(e => !e.isArchived);
-    const toRemove = currentActive.filter(e => e.source === 'Google Sheets' && !seenIds.has(e.id.toLowerCase()));
+    let toRemove: Expense[] = [];
+    if (validIncoming.length === 0 && currentActive.length > 0) {
+      console.warn(`[Store] Safety Circuit Breaker: Incoming expenses is 0 while active count is ${currentActive.length}. Skipping delete prune to prevent accidental data loss.`);
+    } else {
+      toRemove = currentActive.filter(e => e.source === 'Google Sheets' && !seenIds.has(e.id.toLowerCase()));
+    }
     summary.removed = toRemove.length;
 
     for (const rem of toRemove) {
@@ -2096,7 +2108,9 @@ class Store {
         source,
         details: `Removed Expense ${rem.id} from active dataset as it was deleted from Google Sheets.`,
       });
-      postgresBusinessRepo.deleteExpense(rem.id).catch(() => {});
+      postgresBusinessRepo.deleteExpense(rem.id).catch(err => {
+        console.warn(`[Store] Failed to delete expense ${rem.id} from PostgreSQL during sync:`, err.message);
+      });
     }
 
     // 2. Build authoritative expenses dataset
@@ -2117,7 +2131,9 @@ class Store {
           source,
           details: `Added new Expense ${incoming.id} from Google Sheets (${incoming.category}, Amount: ৳${incoming.amount}).`,
         });
-        postgresBusinessRepo.saveExpense(incoming).catch(() => {});
+        postgresBusinessRepo.saveExpense(incoming).catch(err => {
+          console.warn(`[Store] Failed to save synced expense ${incoming.id} to PostgreSQL:`, err.message);
+        });
       } else {
         const isChanged =
           existing.amount !== incoming.amount ||
@@ -2137,6 +2153,7 @@ class Store {
           const updated: Expense = {
             ...existing,
             ...incoming,
+            source: existing.source || 'Dashboard', // CRITICAL: NEVER morph CRM-created records into 'Google Sheets'
             createdAt: existing.createdAt,
             updatedAt: new Date().toISOString(),
             updatedBy: 'Google Sheets Sync',
@@ -2148,7 +2165,9 @@ class Store {
           } else {
             reconciledList.push(updated);
           }
-          postgresBusinessRepo.saveExpense(updated).catch(() => {});
+          postgresBusinessRepo.saveExpense(updated).catch(err => {
+            console.warn(`[Store] Failed to save updated expense ${updated.id} to PostgreSQL:`, err.message);
+          });
         } else {
           summary.unchanged++;
           existing.isArchived = false;
@@ -2239,9 +2258,14 @@ class Store {
       validIncoming.push(payoutRecord);
     }
 
-    // 1. Identify records to remove (only records originating from Google Sheets that are now missing)
+    // 1. Identify records to remove (only records originating strictly from Google Sheets that are now missing)
     const currentActive = this.data.payouts.filter(p => !p.isArchived);
-    const toRemove = currentActive.filter(p => p.source === 'Google Sheets' && !seenIds.has(p.id.toLowerCase()));
+    let toRemove: Payout[] = [];
+    if (validIncoming.length === 0 && currentActive.length > 0) {
+      console.warn(`[Store] Safety Circuit Breaker: Incoming payouts is 0 while active count is ${currentActive.length}. Skipping delete prune to prevent accidental data loss.`);
+    } else {
+      toRemove = currentActive.filter(p => p.source === 'Google Sheets' && !seenIds.has(p.id.toLowerCase()));
+    }
     summary.removed = toRemove.length;
 
     for (const rem of toRemove) {
@@ -2253,7 +2277,9 @@ class Store {
         source,
         details: `Removed Payout ${rem.id} from active dataset as it was deleted from Google Sheets.`,
       });
-      postgresBusinessRepo.deletePayout(rem.id).catch(() => {});
+      postgresBusinessRepo.deletePayout(rem.id).catch(err => {
+        console.warn(`[Store] Failed to delete payout ${rem.id} from PostgreSQL during sync:`, err.message);
+      });
     }
 
     // 2. Build authoritative payouts dataset
@@ -2274,7 +2300,9 @@ class Store {
           source,
           details: `Added new Payout ${incoming.id} from Google Sheets (${incoming.resourceWorkerName}, Agreed: ৳${incoming.agreedPayoutAmount}).`,
         });
-        postgresBusinessRepo.savePayout(incoming).catch(() => {});
+        postgresBusinessRepo.savePayout(incoming).catch(err => {
+          console.warn(`[Store] Failed to save synced payout ${incoming.id} to PostgreSQL:`, err.message);
+        });
       } else {
         const isChanged =
           existing.totalProjectBudget !== incoming.totalProjectBudget ||
@@ -2294,6 +2322,7 @@ class Store {
           const updated: Payout = {
             ...existing,
             ...incoming,
+            source: existing.source || 'Dashboard', // CRITICAL: NEVER morph CRM-created records into 'Google Sheets'
             createdAt: existing.createdAt,
             updatedAt: new Date().toISOString(),
             updatedBy: 'Google Sheets Sync',
@@ -2305,7 +2334,9 @@ class Store {
           } else {
             reconciledList.push(updated);
           }
-          postgresBusinessRepo.savePayout(updated).catch(() => {});
+          postgresBusinessRepo.savePayout(updated).catch(err => {
+            console.warn(`[Store] Failed to save updated payout ${updated.id} to PostgreSQL:`, err.message);
+          });
         } else {
           summary.unchanged++;
           existing.isArchived = false;

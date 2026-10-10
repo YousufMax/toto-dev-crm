@@ -938,4 +938,3 @@ export class GoogleSheetsService {
 }
 
 export const googleSheetsService = new GoogleSheetsService();
-googleSheetsService.startAutoSync();

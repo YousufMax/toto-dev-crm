@@ -1314,10 +1314,204 @@
       "updatedAt": "2026-10-06T14:12:19.958Z"
     }
   ],
-  "orders": [],
-  "expenses": [],
-  "payouts": [],
+  "orders": [
+    {
+      "id": "ORD-10004",
+      "bookingDate": "2026-10-10 22:52",
+      "targetDeadline": "2026-10-12 18:00",
+      "clientName": "MN",
+      "clientContact": "1678",
+      "salesRep": "Rajib",
+      "serviceName": "Bd",
+      "quantityUnit": "1 Unit",
+      "totalAmount": 1000,
+      "paidAmount": 0,
+      "dueAmount": 1000,
+      "paymentMethod": "bKash",
+      "paymentStatus": "Unpaid",
+      "deliveryStatus": "In Progress",
+      "remarks": "",
+      "source": "Google Sheets",
+      "isArchived": false,
+      "createdAt": "2026-10-10T16:52:28.774Z",
+      "updatedAt": "2026-10-10T16:55:56.926Z",
+      "updatedBy": "Google Sheets Sync"
+    },
+    {
+      "id": "ORD-10005",
+      "bookingDate": "2026-10-10 22:53",
+      "targetDeadline": "2026-10-12 18:00",
+      "clientName": "MN",
+      "clientContact": "1678",
+      "salesRep": "Rajib",
+      "serviceName": "Bm",
+      "quantityUnit": "1 Unit",
+      "totalAmount": 1000,
+      "paidAmount": 0,
+      "dueAmount": 1000,
+      "paymentMethod": "bKash",
+      "paymentStatus": "Unpaid",
+      "deliveryStatus": "In Progress",
+      "remarks": "",
+      "source": "Google Sheets",
+      "isArchived": false,
+      "createdAt": "2026-10-10T16:53:57.515Z",
+      "updatedAt": "2026-10-10T16:55:57.052Z",
+      "updatedBy": "Google Sheets Sync"
+    },
+    {
+      "id": "ORD-10006",
+      "bookingDate": "2026-10-10 22:54",
+      "targetDeadline": "2026-10-12 18:00",
+      "clientName": "MN",
+      "clientContact": "1678",
+      "salesRep": "Mehejabin",
+      "serviceName": "Bm",
+      "quantityUnit": "1 Unit",
+      "totalAmount": 1000,
+      "paidAmount": 0,
+      "dueAmount": 1000,
+      "paymentMethod": "bKash",
+      "paymentStatus": "Unpaid",
+      "deliveryStatus": "In Progress",
+      "remarks": "",
+      "source": "Google Sheets",
+      "isArchived": false,
+      "createdAt": "2026-10-10T16:54:10.644Z",
+      "updatedAt": "2026-10-10T16:55:57.058Z",
+      "updatedBy": "Google Sheets Sync"
+    },
+    {
+      "id": "ORD-10007",
+      "bookingDate": "2026-10-10 22:54",
+      "targetDeadline": "2026-10-12 18:00",
+      "clientName": "MN",
+      "clientContact": "1678",
+      "salesRep": "Mehejabin",
+      "serviceName": "Bm",
+      "quantityUnit": "1 Unit",
+      "totalAmount": 1000,
+      "paidAmount": 0,
+      "dueAmount": 1000,
+      "paymentMethod": "bKash",
+      "paymentStatus": "Unpaid",
+      "deliveryStatus": "In Progress",
+      "remarks": "",
+      "source": "Google Sheets",
+      "isArchived": false,
+      "createdAt": "2026-10-10T16:54:20.641Z",
+      "updatedAt": "2026-10-10T16:55:57.062Z",
+      "updatedBy": "Google Sheets Sync"
+    }
+  ],
+  "expenses": [
+    {
+      "id": "EXP-2026-10002",
+      "dateTime": "2026-10-10 22:44",
+      "category": "Office Expense",
+      "subCategoryPurpose": "",
+      "vendorReceiverName": "Fiber Optic Internet",
+      "amount": 3500,
+      "paymentMethod": "Bank Transfer",
+      "paidFromAccount": "Company Account",
+      "transactionRefId": "",
+      "receiptInvoiceLink": "",
+      "approvedBy": "",
+      "approvalStatus": "Pending Approval",
+      "remarks": "",
+      "source": "Google Sheets",
+      "isArchived": false,
+      "createdAt": "2026-10-10T16:55:56.919Z",
+      "updatedAt": "2026-10-10T16:55:56.919Z",
+      "updatedBy": "System"
+    }
+  ],
+  "payouts": [
+    {
+      "id": "PAY-PRJ-518",
+      "projectOrderId": "ORD-10004",
+      "serviceName": "",
+      "clientName": "",
+      "resourceWorkerName": "Sr Developer Sakib",
+      "totalProjectBudget": 25000,
+      "commissionType": "Fixed Commission",
+      "agreedPayoutAmount": 8000,
+      "advancePaid": 3000,
+      "dueFinalPayable": 5000,
+      "deliveryStatus": "Pending",
+      "paymentStatus": "Partial",
+      "approvalStatus": "Pending Approval",
+      "paymentMethod": "bKash",
+      "transactionRefId": "",
+      "remarks": "",
+      "source": "Google Sheets",
+      "isArchived": false,
+      "createdAt": "2026-10-10T16:55:56.923Z",
+      "updatedAt": "2026-10-10T16:55:56.923Z",
+      "updatedBy": "System"
+    }
+  ],
   "auditLogs": [
+    {
+      "id": "AUD-1791651356924-279",
+      "timestamp": "10/10/2026, 22:55:56",
+      "entityType": "Payout",
+      "entityId": "PAY-PRJ-518",
+      "action": "CREATE",
+      "changedBy": "Google Sheets Sync",
+      "source": "Google Sheets",
+      "details": "Added new Payout PAY-PRJ-518 from Google Sheets (Sr Developer Sakib, Agreed: ৳8000)."
+    },
+    {
+      "id": "AUD-1791651356920-45",
+      "timestamp": "10/10/2026, 22:55:56",
+      "entityType": "Expense",
+      "entityId": "EXP-2026-10002",
+      "action": "CREATE",
+      "changedBy": "Google Sheets Sync",
+      "source": "Google Sheets",
+      "details": "Added new Expense EXP-2026-10002 from Google Sheets (Office Expense, Amount: ৳3500)."
+    },
+    {
+      "id": "AUD-1791651260644-281",
+      "timestamp": "10/10/2026, 22:54:20",
+      "entityType": "Order",
+      "entityId": "ORD-10007",
+      "action": "CREATE",
+      "changedBy": "MD Yousuf Ali",
+      "source": "Dashboard",
+      "details": "Created Order ORD-10007 for MN (Total: ৳1000)"
+    },
+    {
+      "id": "AUD-1791651250646-870",
+      "timestamp": "10/10/2026, 22:54:10",
+      "entityType": "Order",
+      "entityId": "ORD-10006",
+      "action": "CREATE",
+      "changedBy": "MD Yousuf Ali",
+      "source": "Dashboard",
+      "details": "Created Order ORD-10006 for MN (Total: ৳1000)"
+    },
+    {
+      "id": "AUD-1791651237518-706",
+      "timestamp": "10/10/2026, 22:53:57",
+      "entityType": "Order",
+      "entityId": "ORD-10005",
+      "action": "CREATE",
+      "changedBy": "MD Yousuf Ali",
+      "source": "Dashboard",
+      "details": "Created Order ORD-10005 for MN (Total: ৳1000)"
+    },
+    {
+      "id": "AUD-1791651148783-931",
+      "timestamp": "10/10/2026, 22:52:28",
+      "entityType": "Order",
+      "entityId": "ORD-10004",
+      "action": "CREATE",
+      "changedBy": "MD Yousuf Ali",
+      "source": "Dashboard",
+      "details": "Created Order ORD-10004 for MN (Total: ৳1000)"
+    },
     {
       "id": "AUD-1791649957817-461",
       "timestamp": "10/10/2026, 22:32:37",
@@ -4017,39 +4211,39 @@
       "isConfigured": true,
       "appsScriptUrl": "https://script.google.com/macros/s/AKfycbx6QcViFYDS4KN8mU5fqR2wRDgot-ZquHRPBKoQfieimgqrVL443TyTwZEER8jUymWHPQ/exec",
       "deploymentId": "AKfycbx6QcViFYDS4KN8mU5fqR2wRDgot-ZquHRPBKoQfieimgqrVL443TyTwZEER8jUymWHPQ",
-      "lastSyncedAt": "2026-10-08T18:38:11.056Z",
+      "lastSyncedAt": "2026-10-10T17:18:38.462Z",
       "lastSyncStatus": "success",
-      "lastSyncMessage": "Full reconciliation via Apps Script completed: 5 orders (+0, ~0, -0), 15 expenses (+0, ~0, -0), 12 payouts (+0, ~0, -0). Total Active: 32.",
+      "lastSyncMessage": "Full reconciliation via Apps Script completed: 4 orders (+0, ~0, -0), 1 expenses (+0, ~0, -0), 1 payouts (+0, ~0, -0). Total Active: 6.",
       "syncSummary": {
         "orders": {
           "added": 0,
           "updated": 0,
           "removed": 0,
-          "unchanged": 0,
+          "unchanged": 4,
           "duplicates": 0,
           "invalid": 0,
-          "totalActive": 0
+          "totalActive": 4
         },
         "expenses": {
           "added": 0,
           "updated": 0,
           "removed": 0,
-          "unchanged": 0,
+          "unchanged": 1,
           "duplicates": 0,
           "invalid": 0,
-          "totalActive": 0
+          "totalActive": 1
         },
         "payouts": {
           "added": 0,
           "updated": 0,
           "removed": 0,
-          "unchanged": 0,
+          "unchanged": 1,
           "duplicates": 0,
           "invalid": 0,
-          "totalActive": 0
+          "totalActive": 1
         },
-        "totalActiveRecords": 0,
-        "timestamp": "2026-10-09T12:05:30.909Z"
+        "totalActiveRecords": 6,
+        "timestamp": "2026-10-10T17:18:38.462Z"
       }
     },
     "telegram": {
@@ -4237,6 +4431,69 @@
       "deletedBy": "Regression Tester",
       "deletedAt": "2026-10-09T08:08:32.554Z",
       "source": "Dashboard"
+    },
+    {
+      "id": "PAY-PRJ-520",
+      "entityType": "payout",
+      "deletedBy": "TestRunner",
+      "deletedAt": "2026-10-10T17:15:11.720Z",
+      "source": "Dashboard"
+    },
+    {
+      "id": "ORD-100003",
+      "entityType": "order",
+      "deletedBy": "TestRunner",
+      "deletedAt": "2026-10-10T17:15:11.692Z",
+      "source": "Dashboard"
+    },
+    {
+      "id": "ORD-100002",
+      "entityType": "order",
+      "deletedBy": "TestRunner",
+      "deletedAt": "2026-10-10T17:15:11.679Z",
+      "source": "Dashboard"
+    },
+    {
+      "id": "ORD-100001",
+      "entityType": "order",
+      "deletedBy": "TestRunner",
+      "deletedAt": "2026-10-10T17:15:11.667Z",
+      "source": "Dashboard"
+    },
+    {
+      "id": "ORD-100000",
+      "entityType": "order",
+      "deletedBy": "TestRunner",
+      "deletedAt": "2026-10-10T17:15:11.615Z",
+      "source": "Dashboard"
+    },
+    {
+      "id": "PAY-ZOMBIE-TEST-1",
+      "entityType": "payout",
+      "deletedBy": "Super Admin",
+      "deletedAt": "2026-10-10T17:15:11.514Z",
+      "source": "Test"
+    },
+    {
+      "id": "EXP-ZOMBIE-TEST-1",
+      "entityType": "expense",
+      "deletedBy": "Super Admin",
+      "deletedAt": "2026-10-10T17:15:11.513Z",
+      "source": "Test"
+    },
+    {
+      "id": "ORD-ZOMBIE-TEST-1",
+      "entityType": "order",
+      "deletedBy": "Super Admin",
+      "deletedAt": "2026-10-10T17:15:11.511Z",
+      "source": "Test"
+    },
+    {
+      "id": "ORD-99998",
+      "entityType": "order",
+      "deletedBy": "TestRunner",
+      "deletedAt": "2026-10-10T17:15:11.493Z",
+      "source": "RegressionTest"
     }
   ]
 }

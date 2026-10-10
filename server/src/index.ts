@@ -19,7 +19,9 @@ import { employeesRouter } from './routes/employees.js';
 import { authenticate } from './middleware/auth.js';
 import { postgresAuthRepo } from './db/authRepo.js';
 import { postgresBusinessRepo } from './db/businessRepo.js';
+import { query } from './db/postgres.js';
 import { store, DEFAULT_ROLES, DEFAULT_EMPLOYEES, DEFAULT_USERS } from './db/store.js';
+import { googleSheetsService } from './services/sheets.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -42,15 +44,52 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 // Global Authentication Middleware
 app.use(authenticate);
 
-// Health Check
-app.get('/api/health', (req, res) => {
+// Comprehensive Health & Diagnostic Check
+app.get('/api/health', async (req, res) => {
+  let dbStatus = 'disconnected';
+  let dbLatencyMs = -1;
+  const start = Date.now();
+
+  try {
+    const dbRes = await query('SELECT 1');
+    if (dbRes && dbRes.rows) {
+      dbStatus = 'connected';
+      dbLatencyMs = Date.now() - start;
+    }
+  } catch (err: any) {
+    dbStatus = `error: ${err.message}`;
+  }
+
+  const syncSettings = store.getSettings().googleSheets;
+
   res.json({
     success: true,
-    status: 'online',
+    status: dbStatus === 'connected' ? 'online' : 'degraded',
     system: 'TOTO Development CRM & Operations System',
     timestamp: new Date().toISOString(),
     timezone: 'Asia/Dhaka',
     version: '1.0.0',
+    database: {
+      status: dbStatus,
+      latencyMs: dbLatencyMs,
+    },
+    metrics: {
+      activeOrders: store.getOrders().length,
+      activeExpenses: store.getExpenses().length,
+      activePayouts: store.getPayouts().length,
+      tombstonesCount: store.getDeletedRecords().length,
+      auditLogsCount: store.getAuditLogs().length,
+    },
+    sync: {
+      isConfigured: Boolean(syncSettings.spreadsheetId || syncSettings.appsScriptUrl),
+      lastSyncStatus: syncSettings.lastSyncStatus || 'idle',
+      lastSyncedAt: syncSettings.lastSyncedAt || null,
+      lastSyncMessage: syncSettings.lastSyncMessage || 'Ready',
+    },
+    process: {
+      uptimeSeconds: Math.floor(process.uptime()),
+      memoryUsageMb: Math.round(process.memoryUsage().heapUsed / 1024 / 1024),
+    }
   });
 });
 
@@ -116,6 +155,10 @@ app.listen(PORT, async () => {
     // Sync active business records from PostgreSQL into store memory
     await store.syncBusinessRecordsFromDb();
     console.log(`🔒 PostgreSQL Auth & Business Persistence Engines connected and ready!`);
+
+    // Start background Google Sheets auto-sync reconciliation ONLY after DB hydration is fully complete
+    googleSheetsService.startAutoSync();
+    console.log(`🔄 Google Sheets Background Reconciliation Engine active!`);
   } catch (pgErr) {
     console.error(`[PostgreSQL Warning] Failed to connect to PostgreSQL:`, pgErr);
   }
