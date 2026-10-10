@@ -22,12 +22,14 @@ interface ExpensesViewProps {
   onOpenNewExpense: () => void;
   categories: string[];
   userRole: string;
+  refreshTrigger?: number;
 }
 
 export const ExpensesView: React.FC<ExpensesViewProps> = ({
   onOpenNewExpense,
   categories,
   userRole,
+  refreshTrigger,
 }) => {
   const { user: currentUser } = useAuth();
   const isSuperAdmin = Boolean(
@@ -70,7 +72,7 @@ export const ExpensesView: React.FC<ExpensesViewProps> = ({
 
   useEffect(() => {
     fetchExpenses();
-  }, [search, category, paymentMethod, approvalStatus, startDate, endDate]);
+  }, [search, category, paymentMethod, approvalStatus, startDate, endDate, refreshTrigger]);
 
   const handleApprove = async (id: string, status = 'Approved') => {
     try {

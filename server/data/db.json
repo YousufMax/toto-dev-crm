@@ -1319,6 +1319,46 @@
   "payouts": [],
   "auditLogs": [
     {
+      "id": "AUD-1791649957817-461",
+      "timestamp": "10/10/2026, 22:32:37",
+      "entityType": "Payout",
+      "entityId": "PAY-PRJ-517",
+      "action": "CREATE",
+      "changedBy": "Automated Test",
+      "source": "Dashboard",
+      "details": "Created Payout PAY-PRJ-517 for Lead Dev Tanvir on ORD-10002 (Agreed: ৳4500)"
+    },
+    {
+      "id": "AUD-1791649957813-330",
+      "timestamp": "10/10/2026, 22:32:37",
+      "entityType": "Expense",
+      "entityId": "EXP-2026-10001",
+      "action": "CREATE",
+      "changedBy": "Automated Test",
+      "source": "Dashboard",
+      "details": "Created Expense EXP-2026-10001 of ৳2500 for Software / Subscription"
+    },
+    {
+      "id": "AUD-1791649957809-48",
+      "timestamp": "10/10/2026, 22:32:37",
+      "entityType": "Order",
+      "entityId": "ORD-10003",
+      "action": "CREATE",
+      "changedBy": "Automated Test",
+      "source": "Dashboard",
+      "details": "Created Order ORD-10003 for Audit Test Client 2 (Total: ৳35000)"
+    },
+    {
+      "id": "AUD-1791649957799-70",
+      "timestamp": "10/10/2026, 22:32:37",
+      "entityType": "Order",
+      "entityId": "ORD-10002",
+      "action": "CREATE",
+      "changedBy": "Automated Test",
+      "source": "Dashboard",
+      "details": "Created Order ORD-10002 for Audit Test Client 1 (Total: ৳15000)"
+    },
+    {
       "id": "AUD-1791547530903-140",
       "timestamp": "10/9/2026, 18:05:30",
       "entityType": "Payout",
@@ -4182,6 +4222,20 @@
       "entityType": "payout",
       "deletedBy": "Tester",
       "deletedAt": "2026-10-09T12:05:30.901Z",
+      "source": "Dashboard"
+    },
+    {
+      "id": "TEST-ORD-1791544810711",
+      "entityType": "order",
+      "deletedBy": "Regression Tester",
+      "deletedAt": "2026-10-09T11:20:10.822Z",
+      "source": "Dashboard"
+    },
+    {
+      "id": "TEST-ORD-1791533312400",
+      "entityType": "order",
+      "deletedBy": "Regression Tester",
+      "deletedAt": "2026-10-09T08:08:32.554Z",
       "source": "Dashboard"
     }
   ]

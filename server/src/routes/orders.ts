@@ -146,7 +146,7 @@ ordersRouter.get('/:id', requirePermission('orders', 'view'), (req: Authenticate
 ordersRouter.post('/', requirePermission('orders', 'create'), async (req: AuthenticatedRequest, res) => {
   try {
     const actor = req.user?.name || (req.headers['x-user-name'] as string) || 'Admin';
-    const newOrder = store.createOrder(req.body, actor, 'Dashboard');
+    const newOrder = await store.createOrder(req.body, actor, 'Dashboard');
 
     // Async push to Google Sheets
     googleSheetsService.pushOrder(newOrder).catch(err => {
@@ -177,7 +177,7 @@ ordersRouter.put('/:id', requirePermission('orders', 'edit'), async (req: Authen
     const previousPayment = current.paymentStatus;
     const previousPaid = current.paidAmount;
 
-    const updatedOrder = store.updateOrder(req.params.id, req.body, actor, 'Dashboard');
+    const updatedOrder = await store.updateOrder(req.params.id, req.body, actor, 'Dashboard');
 
     // Sync to Google Sheets
     googleSheetsService.pushOrder(updatedOrder).catch(err => {
@@ -217,7 +217,7 @@ ordersRouter.patch('/:id', requirePermission('orders', 'edit'), async (req: Auth
       return res.status(404).json({ success: false, message: `Order ${req.params.id} not found.` });
     }
 
-    const updatedOrder = store.updateOrder(req.params.id, req.body, actor, 'Dashboard');
+    const updatedOrder = await store.updateOrder(req.params.id, req.body, actor, 'Dashboard');
     googleSheetsService.pushOrder(updatedOrder).catch(err => {
       console.warn('[Orders] Sheets push error:', err.message);
     });
@@ -272,7 +272,7 @@ ordersRouter.post('/bulk-status', requirePermission('orders', 'changeStatus'), a
       const updates: any = {};
       if (deliveryStatus) updates.deliveryStatus = deliveryStatus;
       if (paymentStatus) updates.paymentStatus = paymentStatus;
-      const order = store.updateOrder(id, updates, actor, 'Dashboard');
+      const order = await store.updateOrder(id, updates, actor, 'Dashboard');
       googleSheetsService.pushOrder(order).catch(() => {});
       updatedCount++;
     } catch {}

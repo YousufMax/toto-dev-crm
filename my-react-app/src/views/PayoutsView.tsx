@@ -22,12 +22,14 @@ interface PayoutsViewProps {
   onOpenNewPayout: () => void;
   onSelectOrderById: (orderId: string) => void;
   userRole: string;
+  refreshTrigger?: number;
 }
 
 export const PayoutsView: React.FC<PayoutsViewProps> = ({
   onOpenNewPayout,
   onSelectOrderById,
   userRole,
+  refreshTrigger,
 }) => {
   const { user: currentUser } = useAuth();
   const isSuperAdmin = Boolean(
@@ -76,7 +78,7 @@ export const PayoutsView: React.FC<PayoutsViewProps> = ({
 
   useEffect(() => {
     fetchPayouts();
-  }, [search, worker, deliveryStatus, paymentStatus, commissionType]);
+  }, [search, worker, deliveryStatus, paymentStatus, commissionType, refreshTrigger]);
 
   const uniqueWorkers = Array.from(new Set(payouts.map(p => p.resourceWorkerName).filter(Boolean)));
 

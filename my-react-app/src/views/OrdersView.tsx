@@ -30,12 +30,14 @@ interface OrdersViewProps {
   onSelectOrder: (order: Order) => void;
   onOpenNewOrder: () => void;
   userRole: string;
+  refreshTrigger?: number;
 }
 
 export const OrdersView: React.FC<OrdersViewProps> = ({
   onSelectOrder,
   onOpenNewOrder,
   userRole,
+  refreshTrigger,
 }) => {
   const { user: currentUser } = useAuth();
   const isSuperAdmin = Boolean(
@@ -94,7 +96,7 @@ export const OrdersView: React.FC<OrdersViewProps> = ({
 
   useEffect(() => {
     fetchOrders();
-  }, [search, paymentStatus, deliveryStatus, salesRep, startDate, endDate]);
+  }, [search, paymentStatus, deliveryStatus, salesRep, startDate, endDate, refreshTrigger]);
 
   // Unique sales reps for filter dropdown
   const uniqueReps = Array.from(new Set(orders.map(o => o.salesRep).filter(Boolean)));

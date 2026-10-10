@@ -83,13 +83,13 @@ syncRouter.get('/conflicts', (req, res) => {
     res.json({ success: true, conflicts: store.getConflicts() });
 });
 // POST resolve conflict
-syncRouter.post('/resolve-conflict', (req, res) => {
+syncRouter.post('/resolve-conflict', async (req, res) => {
     const { conflictId, resolution } = req.body; // resolution: 'keep_sheet' | 'keep_dashboard'
     const actor = req.headers['x-user-name'] || 'Admin';
     if (!conflictId || !resolution) {
         return res.status(400).json({ success: false, message: 'conflictId and resolution are required.' });
     }
-    const ok = store.resolveConflict(conflictId, resolution, actor);
+    const ok = await store.resolveConflict(conflictId, resolution, actor);
     if (!ok) {
         return res.status(404).json({ success: false, message: 'Conflict record not found.' });
     }

@@ -84,7 +84,7 @@ payoutsRouter.get('/:id', requirePermission('payouts', 'view'), (req, res) => {
 payoutsRouter.post('/', requirePermission('payouts', 'create'), async (req, res) => {
     try {
         const actor = req.user?.name || req.headers['x-user-name'] || 'Admin';
-        const newPayout = store.createPayout(req.body, actor, 'Dashboard');
+        const newPayout = await store.createPayout(req.body, actor, 'Dashboard');
         // Async push to Google Sheets
         googleSheetsService.pushPayout(newPayout).catch(err => {
             console.warn('[Payouts] Sheets push error:', err.message);
@@ -110,7 +110,7 @@ payoutsRouter.put('/:id', requirePermission('payouts', 'edit'), async (req, res)
         const previousStatus = current.deliveryStatus;
         const previousPayment = current.paymentStatus;
         const previousAdvance = current.advancePaid;
-        const updatedPayout = store.updatePayout(req.params.id, req.body, actor, 'Dashboard');
+        const updatedPayout = await store.updatePayout(req.params.id, req.body, actor, 'Dashboard');
         // Sync to Google Sheets
         googleSheetsService.pushPayout(updatedPayout).catch(err => {
             console.warn('[Payouts] Sheets push error:', err.message);
@@ -152,7 +152,7 @@ payoutsRouter.post('/:id/pay', requirePermission('payouts', 'edit'), async (req,
             : ((current.advancePaid || 0) + payAmt);
         const paymentStatus = newAdvance >= current.agreedPayoutAmount ? 'Paid' : 'Partial';
         const approvalStatus = type === 'final' ? 'Final Paid' : 'Advance Paid';
-        const updatedPayout = store.updatePayout(req.params.id, {
+        const updatedPayout = await store.updatePayout(req.params.id, {
             advancePaid: newAdvance,
             paymentStatus,
             approvalStatus,

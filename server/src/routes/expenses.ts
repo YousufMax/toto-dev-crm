@@ -142,7 +142,7 @@ expensesRouter.get('/:id', requirePermission('expenses', 'view'), (req: Authenti
 expensesRouter.post('/', requirePermission('expenses', 'create'), async (req: AuthenticatedRequest, res) => {
   try {
     const actor = req.user?.name || (req.headers['x-user-name'] as string) || 'Admin';
-    const newExpense = store.createExpense(req.body, actor, 'Dashboard');
+    const newExpense = await store.createExpense(req.body, actor, 'Dashboard');
 
     // Async push to Google Sheets
     googleSheetsService.pushExpense(newExpense).catch(err => {
@@ -169,7 +169,7 @@ expensesRouter.put('/:id', requirePermission('expenses', 'edit'), async (req: Au
       return res.status(404).json({ success: false, message: `Expense ${req.params.id} not found.` });
     }
 
-    const updatedExpense = store.updateExpense(req.params.id, req.body, actor, 'Dashboard');
+    const updatedExpense = await store.updateExpense(req.params.id, req.body, actor, 'Dashboard');
 
     // Sync to Google Sheets
     googleSheetsService.pushExpense(updatedExpense).catch(err => {
@@ -191,7 +191,7 @@ expensesRouter.post('/:id/approve', requirePermission('expenses', 'approve'), as
       return res.status(404).json({ success: false, message: `Expense ${req.params.id} not found.` });
     }
 
-    const updatedExpense = store.updateExpense(req.params.id, {
+    const updatedExpense = await store.updateExpense(req.params.id, {
       approvalStatus: 'Approved',
       approvedBy: actor,
     }, actor, 'Dashboard');

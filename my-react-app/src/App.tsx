@@ -54,9 +54,11 @@ function AppContent() {
   const [syncStatus, setSyncStatus] = useState<'idle' | 'syncing' | 'success' | 'error'>('idle');
   const [lastSyncedAt, setLastSyncedAt] = useState<string>('');
   const [conflictsCount, setConflictsCount] = useState<number>(0);
+  const [refreshKey, setRefreshKey] = useState<number>(0);
 
   // Initial Data Fetch
   const refreshCoreState = async () => {
+    setRefreshKey(prev => prev + 1);
     try {
       const [uRes, oRes, eRes, pRes, syncRes, catRes] = await Promise.allSettled([
         api.getUsers(),
@@ -260,6 +262,7 @@ function AppContent() {
               onSelectOrder={order => setSelectedOrderId(order.id)}
               onOpenNewOrder={() => setIsAddOrderOpen(true)}
               userRole={currentUser.role}
+              refreshTrigger={refreshKey}
             />
           )}
 
@@ -268,6 +271,7 @@ function AppContent() {
               onOpenNewExpense={() => setIsAddExpenseOpen(true)}
               categories={categories}
               userRole={currentUser.role}
+              refreshTrigger={refreshKey}
             />
           )}
 
@@ -279,6 +283,7 @@ function AppContent() {
               }}
               onSelectOrderById={id => setSelectedOrderId(id)}
               userRole={currentUser.role}
+              refreshTrigger={refreshKey}
             />
           )}
 

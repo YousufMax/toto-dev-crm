@@ -17,6 +17,7 @@ import { rolesRouter } from './routes/roles.js';
 import { employeesRouter } from './routes/employees.js';
 import { authenticate } from './middleware/auth.js';
 import { postgresAuthRepo } from './db/authRepo.js';
+import { postgresBusinessRepo } from './db/businessRepo.js';
 import { store, DEFAULT_ROLES, DEFAULT_EMPLOYEES, DEFAULT_USERS } from './db/store.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -89,9 +90,13 @@ app.listen(PORT, async () => {
         // Initialize and verify PostgreSQL Authentication & Security Database
         await postgresAuthRepo.initSchema();
         await postgresAuthRepo.migrateInitialData(DEFAULT_ROLES, DEFAULT_EMPLOYEES, DEFAULT_USERS, store.getUsersWithCredentials());
+        // Initialize PostgreSQL business tables (orders, expenses, payouts, sequences)
+        await postgresBusinessRepo.initSchema();
         // Sync deleted records tombstone registry from PostgreSQL into store memory
         await store.syncDeletedRecordsFromDb();
-        console.log(`🔒 PostgreSQL Auth & Security Engine is connected and ready!`);
+        // Sync active business records from PostgreSQL into store memory
+        await store.syncBusinessRecordsFromDb();
+        console.log(`🔒 PostgreSQL Auth & Business Persistence Engines connected and ready!`);
     }
     catch (pgErr) {
         console.error(`[PostgreSQL Warning] Failed to connect to PostgreSQL:`, pgErr);

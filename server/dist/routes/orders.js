@@ -112,7 +112,7 @@ ordersRouter.get('/:id', requirePermission('orders', 'view'), (req, res) => {
 ordersRouter.post('/', requirePermission('orders', 'create'), async (req, res) => {
     try {
         const actor = req.user?.name || req.headers['x-user-name'] || 'Admin';
-        const newOrder = store.createOrder(req.body, actor, 'Dashboard');
+        const newOrder = await store.createOrder(req.body, actor, 'Dashboard');
         // Async push to Google Sheets
         googleSheetsService.pushOrder(newOrder).catch(err => {
             console.warn('[Orders] Sheets push error:', err.message);
@@ -138,7 +138,7 @@ ordersRouter.put('/:id', requirePermission('orders', 'edit'), async (req, res) =
         const previousDelivery = current.deliveryStatus;
         const previousPayment = current.paymentStatus;
         const previousPaid = current.paidAmount;
-        const updatedOrder = store.updateOrder(req.params.id, req.body, actor, 'Dashboard');
+        const updatedOrder = await store.updateOrder(req.params.id, req.body, actor, 'Dashboard');
         // Sync to Google Sheets
         googleSheetsService.pushOrder(updatedOrder).catch(err => {
             console.warn('[Orders] Sheets push error:', err.message);
@@ -173,7 +173,7 @@ ordersRouter.patch('/:id', requirePermission('orders', 'edit'), async (req, res)
         if (!current) {
             return res.status(404).json({ success: false, message: `Order ${req.params.id} not found.` });
         }
-        const updatedOrder = store.updateOrder(req.params.id, req.body, actor, 'Dashboard');
+        const updatedOrder = await store.updateOrder(req.params.id, req.body, actor, 'Dashboard');
         googleSheetsService.pushOrder(updatedOrder).catch(err => {
             console.warn('[Orders] Sheets push error:', err.message);
         });
@@ -223,7 +223,7 @@ ordersRouter.post('/bulk-status', requirePermission('orders', 'changeStatus'), a
                 updates.deliveryStatus = deliveryStatus;
             if (paymentStatus)
                 updates.paymentStatus = paymentStatus;
-            const order = store.updateOrder(id, updates, actor, 'Dashboard');
+            const order = await store.updateOrder(id, updates, actor, 'Dashboard');
             googleSheetsService.pushOrder(order).catch(() => { });
             updatedCount++;
         }
